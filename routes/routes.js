@@ -5,7 +5,7 @@ router.get('/', (req, res) => {
   res.render('index')
 })
 
-router.post('/', function(req, res) {
+router.post('/api/signup', function(req, res) {
   console.log(req.body);
 })
 

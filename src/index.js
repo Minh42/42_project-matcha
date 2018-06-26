@@ -1,6 +1,7 @@
+require("../assets/stylesheets/styles.scss");
+
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import Header from './layout/Header';
 import Content from './layout/Content';
 import Footer from './layout/Footer';
