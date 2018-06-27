@@ -34,9 +34,7 @@ let config = {
       },
       plugins: [
         new MiniCssExtractPlugin("styles.css"),
-        new webpack.HotModuleReplacementPlugin({
-          multiStep: true
-        }),
+        new webpack.HotModuleReplacementPlugin(),
         new WebpackShellPlugin({onBuildEnd: ['nodemon ./server.js']})
       ],
       devServer: {
@@ -49,7 +47,9 @@ let config = {
         port: 3000, // Defaults to 8080
         watchContentBase: true,
         proxy: {
-          '/api': 'http://localhost:8080'
+          '/api': {
+            target: 'http://localhost:8080'
+          }
         }
       },
       devtool: "eval-source-map"

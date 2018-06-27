@@ -77,7 +77,7 @@ class FormContainer extends Component {
 
 	render() {
 		return (
-			<form method="post" action="/api/signup" enctype="application/json" className="signup" onSubmit={this.handleFormSubmit}>
+			<form method="post" action="/signup" enctype="application/json" className="signup" onSubmit={this.handleFormSubmit}>
 				<Input 
 					type={'text'}
 					title={'First Name'}
@@ -144,6 +144,7 @@ class FormContainer extends Component {
 					placeholder={'Describe your past experience and skills'} 
 				/> */}
 				<Button type="submit" className="button is-rounded" title="submit" style={buttonStyle}/>
+
 			</form>
 		);
 	}
