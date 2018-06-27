@@ -2,6 +2,7 @@ const path = require('path')
 const express = require('express')
 const routes = require('./routes/routes.js')
 const bodyParser = require('body-parser')
+const session = require('express-session')
 const mustacheExpress = require('mustache-express')
 const app = express()
 
@@ -12,7 +13,14 @@ app.set('view engine', 'mustache');
 const middlewares = [
   express.static(path.join(__dirname, 'public')),
   bodyParser.urlencoded({ extended: true }),
-  bodyParser.json()
+  bodyParser.json(),
+  session({
+    secret: 'abcdef',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }
+  }),
+  require('./src/middlewares/flash')
 ]
 
 app.use(middlewares)

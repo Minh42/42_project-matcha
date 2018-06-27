@@ -35,7 +35,7 @@ let config = {
       plugins: [
         new MiniCssExtractPlugin("styles.css"),
         new webpack.HotModuleReplacementPlugin(),
-        new WebpackShellPlugin({onBuildEnd: ['nodemon ./server.js']})
+        new WebpackShellPlugin({onBuildEnd: ['nodemon --watch src server.js']})
       ],
       devServer: {
         contentBase: path.resolve(__dirname, "./views"),

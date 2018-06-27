@@ -3,8 +3,6 @@ import React, {Component} from 'react';
 import Input from '../components/Input';
 import TextArea from '../components/TextArea';
 import Select from '../components/Select';
-// import Checkbox from '../components/CheckBox';
-// import Radio from '../components/Radio';
 import Button from '../components/Button'; 
 
 const buttonStyle = {
@@ -77,7 +75,7 @@ class FormContainer extends Component {
 
 	render() {
 		return (
-			<form method="post" action="/signup" enctype="application/json" className="signup" onSubmit={this.handleFormSubmit}>
+			<form method="post" action="/api/signup" encType="application/json" className="signup" onSubmit={this.handleFormSubmit}>
 				<Input 
 					type={'text'}
 					title={'First Name'}
@@ -144,7 +142,6 @@ class FormContainer extends Component {
 					placeholder={'Describe your past experience and skills'} 
 				/> */}
 				<Button type="submit" className="button is-rounded" title="submit" style={buttonStyle}/>
-
 			</form>
 		);
 	}

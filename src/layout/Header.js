@@ -16,21 +16,6 @@ const buttonStyle = {
     paddingRight: '30px'
   };
 
-  const buttonStyleSubmit = {
-    fontFamily: 'Amatic SC',
-    fontWeight: 'bold',
-    color: 'white',
-    backgroundImage: '-moz-linear-gradient(30deg, #F9BE02, #F53240)',
-    backgroundImage: '-webkit-linear-gradient(30deg, #F9BE02, #F53240)',
-    backgroundImage: ':-o-linear-gradient(30deg, #F9BE02, #F53240)',
-    backgroundImage: 'linear-gradient(60deg, #F9BE02, #F53240)',
-	borderRadius: '30px',
-	border: 'none',
-    paddingLeft: '30px',
-	paddingRight: '30px',
-	fontSize: '18px'
-  };
-
 const buttonTitle = {
     fontFamily: 'Amatic SC',
     fontWeight: 'bold',
@@ -91,12 +76,9 @@ class Header extends Component{
 				            <button className="delete" aria-label="close" onClick={this.closeModal}></button>
 				        </header>
 				        <section className="modal-card-body">
-				 	        <LoginContainer />
-                             <a href="#">Forgot your password ?</a>
+				 	        <LoginContainer /> 
 				        </section>
-				        <footer className="modal-card-foot">
-					        <Button className="button is-rounded" title="submit" style={buttonStyleSubmit}/>
-				        </footer>
+		
 			        </div>
 			        </div>
 

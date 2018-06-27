@@ -3,6 +3,22 @@ import React, {Component} from 'react';
 import Input from '../components/Input';
 import TextArea from '../components/TextArea';
 import Select from '../components/Select';
+import Button from '../components/Button';
+
+const buttonStyleSubmit = {
+    fontFamily: 'Amatic SC',
+    fontWeight: 'bold',
+    color: 'white',
+    backgroundImage: '-moz-linear-gradient(30deg, #F9BE02, #F53240)',
+    backgroundImage: '-webkit-linear-gradient(30deg, #F9BE02, #F53240)',
+    backgroundImage: ':-o-linear-gradient(30deg, #F9BE02, #F53240)',
+    backgroundImage: 'linear-gradient(60deg, #F9BE02, #F53240)',
+	borderRadius: '30px',
+	border: 'none',
+    paddingLeft: '30px',
+	paddingRight: '30px',
+	fontSize: '18px'
+  };
 
 class LoginContainer extends Component {
 	constructor(props) {
@@ -50,11 +66,11 @@ class LoginContainer extends Component {
 
 	render() {
 		return (
-			<form className="login" onSubmit={this.handleFormSubmit}>
+			<form method="post" action='/api/signin' encType="application/json" className="signin" onSubmit={this.handleFormSubmit}>
 				<Input 
 					type={'text'}
-					title={'Login'}
-					name={'login'}
+					title={'Username'}
+					name={'username'}
 					value={this.state.login}
 					placeholder={'Username'}
 					handleChange = {this.handleChange}
@@ -62,11 +78,13 @@ class LoginContainer extends Component {
 				<Input 
 					type={'password'}
 					title={'Password'}
-					name={'newPassword'}
+					name={'password'}
 					value={this.state.newPassword}
 					placeholder={'6 characters minimum'}
 					handleChange = {this.handleChange}
-				/>		
+				/>
+				<a href="#">Forgot your password ?</a> 
+				<Button type="submit" className="button is-rounded" title="submit" style={buttonStyleSubmit}/>
 			</form>
 		);
 	}
