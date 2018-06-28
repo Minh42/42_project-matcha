@@ -3,6 +3,7 @@ import React from 'react';
 const Button = (props) => {
     return (
 		<button 
+		type={props.type}
 		id={props.id}
 		className={props.class}
 		aria-label={props.ariaLabel}

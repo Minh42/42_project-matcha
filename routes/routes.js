@@ -12,10 +12,23 @@ router.post('/api/signup', function(req, res) {
   lastname = req.body.lastname;
   login = req.body.login;
   email = req.body.email;
-  password = req.body.password;
-  confirmedPassword = req.body.confirmedPassword;
-  console.log(login);
-  console.log(login);  
+  newPassword = req.body.newPassword;
+  confirmedPassword = req.body.confirmedPassword; 
+
+  let check = require('../library/tools');
+
+  let messages = {};
+
+  if (check.isEmpty(firstname) || check.isEmpty(lastname) || check.isEmpty(login) 
+  || check.isEmpty(email) || check.isEmpty(newPassword) || check.isEmpty(confirmedPassword))
+  {
+    messages.empty = "Veuillez remplir les champs vide";
+  }
+  else {
+    console.log('IM HERE');
+    messages.empty = null;
+  }
+  return res.send(messages);
 })
 
 router.post('/api/signin', function(req, res) {
