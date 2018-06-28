@@ -1,5 +1,7 @@
+var bcrypt = require('bcrypt');
+
 function isEmpty(data) {
-	if (!data === undefined || !data === "") return false;
+	if (data === undefined || data === "") return false;
 	return true;
 }
 
@@ -33,11 +35,20 @@ function isEmail(email) {
 	return true;
 }
 
+function isHash(password) {
+	const saltRounds = 10;
+	var salt = bcrypt.genSaltSync(saltRounds);
+	var hash; 
+	hash = bcrypt.hashSync(password, salt);
+	return hash;
+}
+
 module.exports = {
 	isEmpty: isEmpty,
 	isFirstname: isFirstname,
 	isLastname: isLastname,
 	isUsername: isUsername,
 	isPassword: isPassword,
-	isEmail: isEmail
+	isEmail: isEmail,
+	isHash: isHash
 }

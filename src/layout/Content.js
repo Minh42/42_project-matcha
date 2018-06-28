@@ -38,7 +38,7 @@ const Content = () => {
                             <div className="card medium">
                                 <div className="card-image">
                                     <figure className="image">
-                                        <img src="src/img/portugal.jpg" alt="Mountains"/>
+                                        <img src="src/img/portugal.jpg" alt="portugal"/>
                                     </figure>
                                 </div>
                                 <div className="card-content">
@@ -52,7 +52,7 @@ const Content = () => {
                             <div className="card medium">
                                 <div className="card-image">
                                     <figure className="image">
-                                        <img src="src/img/australie.jpg" alt="Mountains"/>
+                                        <img src="src/img/australie.jpg" alt="australie"/>
                                     </figure>
                                 </div>
                                 <div className="card-content">
@@ -66,7 +66,7 @@ const Content = () => {
                             <div className="card medium">
                                 <div className="card-image">
                                     <figure className="image">
-                                        <img src="src/img/japon.jpg" alt="Mountains"/>
+                                        <img src="src/img/japon.jpg" alt="japon"/>
                                     </figure>
                                 </div>
                                 <div className="card-content">

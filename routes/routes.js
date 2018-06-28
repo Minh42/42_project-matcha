@@ -19,15 +19,59 @@ router.post('/api/signup', function(req, res) {
 
   let messages = {};
 
-  if (check.isEmpty(firstname) || check.isEmpty(lastname) || check.isEmpty(login) 
-  || check.isEmpty(email) || check.isEmpty(newPassword) || check.isEmpty(confirmedPassword))
+  if (!check.isEmpty(firstname) || !check.isEmpty(lastname) || !check.isEmpty(login) 
+  || !check.isEmpty(email) || !check.isEmpty(newPassword) || !check.isEmpty(confirmedPassword))
   {
     messages.empty = "Veuillez remplir les champs vide";
   }
-  else {
-    console.log('IM HERE');
+  else 
+  {
+    if (!check.isFirstname(firstname))
+      messages.errorFirstname = "Votre prenom n'est pas valide";
+    else
+      messages.errorFirstname = null;
+    if (!check.isLastname(lastname))
+      messages.errorLastname = "Votre nom n'est pas valide";
+    else
+      messages.errorLastname = null;
+    if (!check.isUsername(login))
+      messages.errorLogin = "Votre login n'est pas valide";
+    else
+      messages.errorLogin = null;
+    if (!check.isEmail(email))
+      messages.errorEmail = "Votre email n'est pas valide";
+    else
+      messages.errorEmail = null;
+    if (!check.isPassword(newPassword))
+      messages.errorPassword = "Votre password n'est pas valide";
+    else
+      messages.errorPassword = null;
+    if (!check.isPassword(confirmedPassword))
+      messages.errorConfirmedPassword = "Votre password n'est pas valide";
+    else
+      messages.errorConfirmedPassword = null;
+    
+    if (check.isFirstname(firstname) && check.isLastname(lastname) && check.isUsername(login)
+    && check.isEmail(email) && check.isPassword(newPassword) && check.isPassword(confirmedPassword))
+    {
+      if (newPassword === confirmedPassword)
+      {
+        var hashNewPassword = check.isHash(newPassword);
+        console.log(hashNewPassword);
+
+        let user = require('../models/user.class');
+
+        user.addUser(firstname, lastname, login, email, hashNewPassword);
+        messages.errorConfirmedPassword = null;
+        messages.newUser = true;
+      }
+      else
+        messages.errorConfirmedPassword = "your password not match";
+    }
+
     messages.empty = null;
   }
+  console.log(messages);
   return res.send(messages);
 })
 
