@@ -23,6 +23,7 @@ class SignupContainer extends React.Component{
 		super(props);
 		this.showModal = this.showModal.bind(this);
 		this.closeModal = this.closeModal.bind(this);
+		this.closeModalEmail = this.closeModalEmail.bind(this);
 	  }
 
 	showModal() {
@@ -31,6 +32,10 @@ class SignupContainer extends React.Component{
 	
 	closeModal() {
 		document.getElementById('modal').classList.remove("is-active");
+	}	
+
+	closeModalEmail() {
+		document.getElementById('modalEmail').classList.remove("is-active");
 	}	
 
 	render () {
@@ -58,6 +63,16 @@ class SignupContainer extends React.Component{
 				</header>
 				<section className="modal-card-body">
 				 	<FormContainer />
+				</section>
+			</div>
+			</div>
+
+			<div class="modal" id="modalEmail">
+			<div class="modal-background"></div>
+			<div className="modal-card">
+				<section className="modal-card-body">
+					Veuillez confirmer votre compte :)
+				<button class="modal-close is-large" aria-label="close" onClick={this.closeModalEmail}></button>
 				</section>
 			</div>
 			</div>

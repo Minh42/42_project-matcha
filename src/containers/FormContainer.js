@@ -1,5 +1,8 @@
 import React, {Component} from 'react';
 
+import axios from 'axios'
+import $ from 'jquery'
+
 import Input from '../components/Input';
 import TextArea from '../components/TextArea';
 import Select from '../components/Select';
@@ -40,6 +43,7 @@ class FormContainer extends Component {
 		}
 
 		this.handleChange = this.handleChange.bind(this);
+		this.handleSubmit = this.handleSubmit.bind(this);
 	}
 
 	handleChange(event) {
@@ -56,93 +60,126 @@ class FormContainer extends Component {
 		)
 	}
 
-	handleCheckBox(e) {
-
-		const newSelection = e.target.value;
-		let newSelectionArray;
-	
-		if(this.state.newUser.skills.indexOf(newSelection) > -1) {
-		  newSelectionArray = this.state.newUser.skills.filter(s => s !== newSelection)
-		} else {
-		  newSelectionArray = [...this.state.newUser.skills, newSelection];
+	handleSubmit(event) {
+		
+		var formData = {
+            firstname: $("#firstname").val(),
+            lastname: $("#lastname").val(),
+            login: $("#login").val(),
+            email: $("#email").val(),
+            newPassword: $("#newPassword").val(),
+			confirmedPassword: $("#confirmedPassword").val()
 		}
-	
-		  this.setState( prevState => ({ newUser:
-			{...prevState.newUser, skills: newSelectionArray }
-		  })
-		  )
-	}
+
+		axios({
+			method: 'post',
+			url: '/api/signup',
+			data: formData
+		})
+		.then((res) => {
+			console.log("Réponse : ", res.data.empty);
+			if (res.data.empty !== null)
+				$("#error").text(res.data.empty);
+			else
+				$("#error").text("");
+			if (res.data.errorFirstname !== null)
+				$("#errorFirstname").text(res.data.errorFirstname);
+			else
+				$("#errorFirstname").text("");
+			if (res.data.errorLastname !== null)
+				$("#errorLastname").text(res.data.errorLastname);
+			else
+				$("#errorLastname").text("");
+			if (res.data.errorLogin !== null)
+				$("#errorLogin").text(res.data.errorLogin);
+			else
+				$("#errorLogin").text("");
+			if (res.data.errorEmail !== null)
+				$("#errorEmail").text(res.data.errorEmail);
+			else
+				$("#errorEmail").text("");
+			if (res.data.errorPassword !== null)
+				$("#errorNewPassword").text(res.data.errorPassword);
+			else
+				$("#errorNewPassword").text("");
+			if (res.data.errorConfirmedPassword !== null)
+				$("#errorConfirmedPassword").text(res.data.errorConfirmedPassword);
+			else
+				$("#errorConfirmedPassword").text("");
+			if (res.data.newUser === true)
+			{
+				document.getElementById('modal').classList.remove("is-active");
+				document.getElementById('modalEmail').classList.add("is-active");
+			}
+		})
+		event.preventDefault();
+	  }
 
 	render() {
 		return (
-			<form method="post" action="/api/signup" encType="application/json" className="signup" onSubmit={this.handleFormSubmit}>
+			<form className="signup" onSubmit={this.handleSubmit}>
 				<Input 
 					type={'text'}
+					id={'firstname'}
 					title={'First Name'}
 					name={'firstname'}
 					value={this.state.firstname}
 					placeholder={'First name'}
 					handleChange = {this.handleChange}
 				/>
-				<p id="err_firstname"></p>
+				<p id="errorFirstname"></p>
 				<Input 
 					type={'text'}
+					id={'lastname'}
 					title={'Last Name'}
 					name={'lastname'}
 					value={this.state.lastname}
 					placeholder={'Last name'}
 					handleChange = {this.handleChange}
 				/>
+				<p id="errorLastname"></p>
 				<Input 
 					type={'text'}
+					id={'login'}
 					title={'Login'}
 					name={'login'}
 					value={this.state.login}
 					placeholder={'Username'}
 					handleChange = {this.handleChange}
 				/>
+				<p id="errorLogin"></p>
 				<Input 
 					type={'email'}
+					id={'email'}
 					title={'Email'}
 					name={'email'}
 					value={this.state.email}
 					placeholder={'Email address'}
 					handleChange = {this.handleChange}
 				/>
+				<p id="errorEmail"></p>
 				<Input 
 					type={'password'}
+					id={'newPassword'}
 					title={'Password'}
 					name={'newPassword'}
 					value={this.state.newPassword}
 					placeholder={'6 characters minimum'}
 					handleChange = {this.handleChange}
 				/>
+				<p id="errorNewPassword"></p>
 				<Input 
 					type={'password'}
+					id={'confirmedPassword'}
 					title={'Confirmed password'}
 					name={'confirmedPassword'}
 					value={this.state.confirmedPassword}
 					placeholder={'6 characters minimum'}
 					handleChange = {this.handleChange}
 				/>
-				{/* <Select 
-					title={'Gender'}
-					name={'gender'}
-					options = {this.state.genderOptions} 
-					value = {this.state.newUser.gender}
-					placeholder = {'Select Gender'}
-					handleChange = {this.handleChange}
-				/>
-				<TextArea
-					title={'About you'}
-					rows={10}
-					cols={10}
-					value={this.state.newUser.about}
-					name={'about'}
-					handleChange={this.handleChange}
-					placeholder={'Describe your past experience and skills'} 
-				/> */}
-				<Button type="submit" className="button is-rounded" title="submit" style={buttonStyle}/>
+				<p id="errorConfirmedPassword"></p>
+				<p id="error"></p>
+				<Button type='submit' className="button is-rounded" title="submit" style={buttonStyle}/>
 			</form>
 		);
 	}
