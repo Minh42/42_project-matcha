@@ -19,16 +19,37 @@ router.post('/api/signup', function(req, res) {
 })
 
 router.post('/api/signin', function(req, res) {
-  // console.log(req.body);
-  console.log(req.body.username);
-  console.log(req.body.password);
-  if (req.body.username === undefined || req.body.username === '') {
-    req.flash('error', "incorrect username")
+  var username = req.body.username;
+  var password = req.body.password;
+
+  let check = require('../library/tools')
+
+  if (check.isUsername(username)) {
+    console.log('HEY')
   }
   else {
-    let Check = require('../models/check')
+    console.log('WTF')
   }
-  res.redirect('/')
+
+  if (check.isPassword(password)) {
+    console.log('HEY')
+  }
+  else {
+    console.log('WTF')
+  }
+
+  // const User = new User();
+  // if (User.login(username, password)) {
+
+  // }
+
+  // if (req.body.username === undefined || req.body.username === '') {
+  //   req.flash('error', "incorrect username")
+  // }
+  // else {
+  //   let Check = require('../models/check')
+  // }
+  // res.redirect('/')
 })
 
 module.exports = router 
