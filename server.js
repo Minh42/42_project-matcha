@@ -2,7 +2,9 @@ const path = require('path')
 const express = require('express')
 const routes = require('./routes/routes.js')
 const bodyParser = require('body-parser')
+// const cookieParser = require('cookie-parser')
 const session = require('express-session')
+// const flash = require('express-flash');
 const mustacheExpress = require('mustache-express')
 const app = express()
 
@@ -14,6 +16,7 @@ const middlewares = [
   express.static(path.join(__dirname, 'public')),
   bodyParser.urlencoded({ extended: true }),
   bodyParser.json(),
+  // cookieParser(),
   session({
     secret: 'abcdef',
     resave: false,

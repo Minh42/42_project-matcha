@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import axios from 'axios';
+import $ from 'jquery'
 
 import Input from '../components/Input';
 import TextArea from '../components/TextArea';
@@ -31,10 +33,10 @@ class LoginContainer extends Component {
 			},
 		}
 		this.handleChange = this.handleChange.bind(this);
+		this.handleSubmit = this.handleSubmit.bind(this);
 	}
 
 	handleChange(event) {
-		console.log(event.target.value);
 		let value = event.target.value;
 		let name = event.target.name;
 		this.setState( prevState => {
@@ -47,26 +49,28 @@ class LoginContainer extends Component {
 		)
 	}
 
-	handleCheckBox(e) {
-
-		const newSelection = e.target.value;
-		let newSelectionArray;
-	
-		if(this.state.newUser.skills.indexOf(newSelection) > -1) {
-		  newSelectionArray = this.state.newUser.skills.filter(s => s !== newSelection)
-		} else {
-		  newSelectionArray = [...this.state.newUser.skills, newSelection];
+	handleSubmit(event) {
+		var formData = {
+            username: $("#username").val(),
+            password: $("#password").val(),
 		}
-	
-		  this.setState( prevState => ({ newUser:
-			{...prevState.newUser, skills: newSelectionArray }
-		  })
-		  )
+		axios({
+			method: 'post',
+			url: '/api/signin',
+			data: formData
+		})
+		.then((res) => {
+			if (res.data.empty !== null)
+				$("#error").text(res.data.empty);
+			else
+				$("#error").text("");
+		})
+		event.preventDefault();
 	}
 
 	render() {
 		return (
-			<form method="post" action='/api/signin' encType="application/json" className="signin" onSubmit={this.handleFormSubmit}>
+			<form method="post" action='/api/signin' encType="application/json" className="signin" onSubmit={this.handleSubmit}>
 				<Input 
 					type={'text'}
 					title={'Username'}
@@ -83,6 +87,7 @@ class LoginContainer extends Component {
 					placeholder={'6 characters minimum'}
 					handleChange = {this.handleChange}
 				/>
+				<p id="error"></p>
 				<a href="#">Forgot your password ?</a> 
 				<Button type="submit" className="button is-rounded" title="submit" style={buttonStyleSubmit}/>
 			</form>

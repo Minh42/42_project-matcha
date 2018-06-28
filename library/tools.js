@@ -1,3 +1,8 @@
+function isEmpty(data) {
+	if (data === undefined || data === "") return true;
+	return false;
+}
+
 function isFirstname(firstname) {
 	var regex = /^[a-zA-Z_]{1,30}$/
 	if (!regex.test(firstname)) return false;
@@ -29,6 +34,7 @@ function isEmail(email) {
 }
 
 module.exports = {
+	isEmpty: isEmpty,
 	isFirstname: isFirstname,
 	isLastname: isLastname,
 	isUsername: isUsername,

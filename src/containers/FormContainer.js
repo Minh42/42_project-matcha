@@ -84,6 +84,7 @@ class FormContainer extends Component {
 					placeholder={'First name'}
 					handleChange = {this.handleChange}
 				/>
+				<p id="err_firstname"></p>
 				<Input 
 					type={'text'}
 					title={'Last Name'}

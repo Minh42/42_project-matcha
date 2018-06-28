@@ -12,44 +12,44 @@ router.post('/api/signup', function(req, res) {
   lastname = req.body.lastname;
   login = req.body.login;
   email = req.body.email;
-  password = req.body.password;
-  confirmedPassword = req.body.confirmedPassword;
-  console.log(login);
-  console.log(login);  
+  newPassword = req.body.newPassword;
+  confirmedPassword = req.body.confirmedPassword; 
+
+  let check = require('../library/tools');
+
+  let messages = {};
+
+  if (check.isEmpty(firstname) || check.isEmpty(lastname) || check.isEmpty(login) 
+  || check.isEmpty(email) || check.isEmpty(newPassword) || check.isEmpty(confirmedPassword))
+  {
+    messages.empty = "Veuillez remplir les champs vide";
+  }
+  else {
+    console.log('IM HERE');
+    messages.empty = null;
+  }
+  return res.send(messages);
 })
 
 router.post('/api/signin', function(req, res) {
+
+  let check = require('../library/tools');
+  let user = require('../models/user');
+  let messages = {};
   var username = req.body.username;
   var password = req.body.password;
 
-  let check = require('../library/tools')
-
-  if (check.isUsername(username)) {
-    console.log('HEY')
-  }
+  if (check.isEmpty(username) || check.isEmpty(password))
+    messages.empty = "Incorrect username or password";
+  else if (!check.isUsername(username) || !check.isPassword(password))
+    messages.empty = "Incorrect username or password";
   else {
-    console.log('WTF')
+    messages.empty = null;
+    if (user.login(username, password)) {
+      
+    }
   }
-
-  if (check.isPassword(password)) {
-    console.log('HEY')
-  }
-  else {
-    console.log('WTF')
-  }
-
-  // const User = new User();
-  // if (User.login(username, password)) {
-
-  // }
-
-  // if (req.body.username === undefined || req.body.username === '') {
-  //   req.flash('error', "incorrect username")
-  // }
-  // else {
-  //   let Check = require('../models/check')
-  // }
-  // res.redirect('/')
+  return res.send(messages);
 })
 
 module.exports = router 
