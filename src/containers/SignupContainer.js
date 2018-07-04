@@ -67,12 +67,12 @@ class SignupContainer extends React.Component{
 			</div>
 			</div>
 
-			<div class="modal" id="modalEmail">
-			<div class="modal-background"></div>
+			<div className="modal" id="modalEmail">
+			<div className="modal-background"></div>
 			<div className="modal-card">
 				<section className="modal-card-body">
 					Veuillez confirmer votre compte :)
-				<button class="modal-close is-large" aria-label="close" onClick={this.closeModalEmail}></button>
+				<button className="modal-close is-large" aria-label="close" onClick={this.closeModalEmail}></button>
 				</section>
 			</div>
 			</div>
