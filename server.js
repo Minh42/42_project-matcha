@@ -6,6 +6,8 @@ const bodyParser = require('body-parser')
 const session = require('express-session')
 // const flash = require('express-flash');
 const mustacheExpress = require('mustache-express')
+const helmet = require('helmet')
+const csrf = require('csurf')
 const app = express()
 
 app.set('views', path.join(__dirname, 'views'))
@@ -13,6 +15,8 @@ app.engine('mustache', mustacheExpress());
 app.set('view engine', 'mustache');
 
 const middlewares = [
+  helmet(),
+  csrf({ cookie: true }),
   express.static(path.join(__dirname, 'public')),
   bodyParser.urlencoded({ extended: true }),
   bodyParser.json(),

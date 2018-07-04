@@ -1,14 +1,5 @@
-let conn = require('../config/db')
-
-const pg = require('pg');
-
-const pool = new pg.Pool({
-	user: 'postgres',
-	host: '192.168.99.100',
-	database: 'postgres',
-	password: 'mysecretpassword',
-	port: '5432'
-});
+const pool = require('../config/db')
+const bcrypt = require('bcrypt');
 
 class User {
 
@@ -23,19 +14,35 @@ class User {
         pool.query(requete, values)
     }
 
-    static login(username, password) {
-        console.log("IM HERE")
-
-        conn.query('SELECT * FROM users WHERE username = ?', ['username'], (error, results) => {
-            if (error) throw error;
-            // ...
-          })
-
-        conn.query('SELECT * FROM users WHERE username')
-        return true;
-        // if (err) throw err
-
+    static async login(username, password) {
+        try {
+            let res = await pool.query('SELECT * FROM users WHERE username = ? LIMIT 1', [username]);
+            let hash = res[0]['password'];
+            if(Object.keys(res).length > 0 && res[0]['status'] === 1) {
+                bcrypt.compare(password, hash, function(err, res) {
+                    if(res) {
+                        console.log('Passwords match');
+                        return true;
+                    } else {
+                        console.log('Passwords don\'t match');
+                        return false;
+                    } 
+                });
+                // if (password === "Born2Code") {
+                //     return true;
+                // }
+                // else
+                //     return false;
+            }
+            else {
+                return false;
+            }
+        } catch(err) {
+            throw new Error(err)
+        }  
     }
+
+
 }
 
 module.exports = User
