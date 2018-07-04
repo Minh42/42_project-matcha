@@ -77,11 +77,11 @@ class FormContainer extends Component {
 			data: formData
 		})
 		.then((res) => {
-			console.log("Réponse : ", res.data.empty);
+			console.log("Réponse : ", res.data);
 			if (res.data.empty !== null)
-				$("#error").text(res.data.empty);
+				$("#errorEmpty").text(res.data.empty);
 			else
-				$("#error").text("");
+				$("#errorEmpty").text("");
 			if (res.data.errorFirstname !== null)
 				$("#errorFirstname").text(res.data.errorFirstname);
 			else
@@ -177,8 +177,8 @@ class FormContainer extends Component {
 					placeholder={'6 characters minimum'}
 					handleChange = {this.handleChange}
 				/>
+				<p id="errorEmpty"></p>
 				<p id="errorConfirmedPassword"></p>
-				<p id="error"></p>
 				<Button type='submit' className="button is-rounded" title="submit" style={buttonStyle}/>
 			</form>
 		);

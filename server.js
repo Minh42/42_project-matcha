@@ -8,6 +8,8 @@ const session = require('express-session')
 const mustacheExpress = require('mustache-express')
 const app = express()
 
+require('./config/db');
+
 app.set('views', path.join(__dirname, 'views'))
 app.engine('mustache', mustacheExpress());
 app.set('view engine', 'mustache');

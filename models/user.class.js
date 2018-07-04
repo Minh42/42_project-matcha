@@ -1,26 +1,42 @@
 let conn = require('../config/db')
 
-const pg = require('pg');
-
-const pool = new pg.Pool({
-	user: 'postgres',
-	host: '192.168.99.100',
-	database: 'postgres',
-	password: 'mysecretpassword',
-	port: '5432'
-});
-
 class User {
 
     constructor(conn) {
         this.conn = conn;
     }
 
+    static loginExist(login) {       
+        const ret = new Promise((resolve, reject) => { 
+            conn.query("SELECT username FROM users", function (err, result) {
+                if (err) {
+                    reject(err);
+                }
+                Object.keys(result).forEach(function(key) {
+                var row = result[key];
+                    console.log(row.username);
+                    console.log(login);
+                    if (row.username === login) {
+                        resolve(true);
+                    }
+                    else {
+                        resolve(false);
+                    }
+                });
+            });
+        });
+        console.log(ret.resolve);
+        return(ret);
+    }
+
     static addUser(firstname, lastname, login, email, password) {
-        
-        const requete = 'INSERT INTO users(username, first_name, last_name, password, email) VALUES($1, $2, $3, $4, $5)'
-        const values = [login, firstname, lastname, password, email]
-        pool.query(requete, values)
+
+        const values = {username: login, first_name: firstname, last_name: lastname, password: password, email: email};
+        const requete = 'INSERT INTO users SET ?'
+       
+        conn.query(requete, values, (err, result) => {
+            if (err) throw err;
+        });
     }
 
     static login(username, password) {

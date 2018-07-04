@@ -54,40 +54,30 @@ router.post('/api/signup', function(req, res) {
     if (check.isFirstname(firstname) && check.isLastname(lastname) && check.isUsername(login)
     && check.isEmail(email) && check.isPassword(newPassword) && check.isPassword(confirmedPassword))
     {
-      if (newPassword === confirmedPassword)
+      let user = require('../models/user.class');
+
+      if (user.loginExist(login) === false)
       {
-        var hashNewPassword = check.isHash(newPassword);
-        console.log(hashNewPassword);
+        if (newPassword === confirmedPassword)
+        {
+          var hashNewPassword = check.isHash(newPassword);
+          console.log(hashNewPassword);
 
-        let user = require('../models/user.class');
-
-        user.addUser(firstname, lastname, login, email, hashNewPassword);
-        messages.errorConfirmedPassword = null;
-        messages.newUser = true;
+          user.addUser(firstname, lastname, login, email, hashNewPassword);
+          messages.errorConfirmedPassword = null;
+          messages.newUser = true;
+        }
+        else
+          messages.errorConfirmedPassword = "your password not match";
       }
       else
-        messages.errorConfirmedPassword = "your password not match";
+      {
+        messages.errorConfirmedPassword = "login or email already exist";
+      }
     }
-
     messages.empty = null;
   }
   console.log(messages);
-  return res.send(messages);
-})
-
-  let check = require('../library/tools');
-
-  let messages = {};
-
-  if (check.isEmpty(firstname) || check.isEmpty(lastname) || check.isEmpty(login) 
-  || check.isEmpty(email) || check.isEmpty(newPassword) || check.isEmpty(confirmedPassword))
-  {
-    messages.empty = "Veuillez remplir les champs vide";
-  }
-  else {
-    console.log('IM HERE');
-    messages.empty = null;
-  }
   return res.send(messages);
 })
 
