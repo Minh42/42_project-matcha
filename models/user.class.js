@@ -1,4 +1,5 @@
-let conn = require('../config/db')
+const pool = require('../config/db')
+const bcrypt = require('bcrypt');
 
 class User {
 
@@ -6,52 +7,84 @@ class User {
         this.conn = conn;
     }
 
-    static loginExist(login) {       
-        const ret = new Promise((resolve, reject) => { 
-            conn.query("SELECT username FROM users", function (err, result) {
-                if (err) {
-                    reject(err);
-                }
-                Object.keys(result).forEach(function(key) {
-                var row = result[key];
-                    console.log(row.username);
-                    console.log(login);
-                    if (row.username === login) {
-                        resolve(true);
-                    }
-                    else {
-                        resolve(false);
-                    }
-                });
-            });
-        });
-        console.log(ret.resolve);
-        return(ret);
+    static async loginExist(login) {   
+        try { 
+            console.log(login);
+            let ret = await pool.query("SELECT count(*) as username_exists FROM users WHERE username = ?", [login]);
+            console.log(ret[0].username_exists);
+            if (ret[0].username_exists > '0')
+                return true;
+            else
+                return false;
+        } 
+        catch(err) {
+            throw new Error(err)
+        }  
     }
 
-    static addUser(firstname, lastname, login, email, password) {
+    static async emailExist(email) {   
+        try {    
+            let ret = await pool.query("SELECT count(*) as email_exists FROM users WHERE email = ?", [email]);
+            console.log(ret[0].email_exists);
+            if (ret[0].email_exists > '0')
+                return true;
+            else
+                return false;
+        } 
+        catch(err) {
+            throw new Error(err)
+        }  
+    }
 
-        const values = {username: login, first_name: firstname, last_name: lastname, password: password, email: email};
-        const requete = 'INSERT INTO users SET ?'
+    static async addUser(firstname, lastname, login, email, password) {
+        try {
+            const values = {username: login, first_name: firstname, last_name: lastname, password: password, email: email};
+            const requete = 'INSERT INTO users SET ?'
        
-        conn.query(requete, values, (err, result) => {
-            if (err) throw err;
-        });
+            let ret = await pool.query(requete, values)
+                if (ret)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
     }
 
-    static login(username, password) {
-        console.log("IM HERE")
-
-        conn.query('SELECT * FROM users WHERE username = ?', ['username'], (error, results) => {
-            if (error) throw error;
-            // ...
-          })
-
-        conn.query('SELECT * FROM users WHERE username')
-        return true;
-        // if (err) throw err
-
+    static async login(username, password) {
+        try {
+            let res = await pool.query('SELECT * FROM users WHERE username = ? LIMIT 1', [username]);
+            let hash = res[0]['password'];
+            if(Object.keys(res).length > 0 && res[0]['status'] === 1) {
+                bcrypt.compare(password, hash, function(err, res) {
+                    if(res) {
+                        console.log('Passwords match');
+                        return true;
+                    } else {
+                        console.log('Passwords don\'t match');
+                        return false;
+                    } 
+                });
+                // if (password === "Born2Code") {
+                //     return true;
+                // }
+                // else
+                //     return false;
+            }
+            else {
+                return false;
+            }
+        } catch(err) {
+            throw new Error(err)
+        }  
     }
+
+
 }
 
 module.exports = User

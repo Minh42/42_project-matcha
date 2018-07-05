@@ -1,8 +1,8 @@
 var bcrypt = require('bcrypt');
 
 function isEmpty(data) {
-	if (data === undefined || data === "") return false;
-	return true;
+	if (data === undefined || data === "") return true;
+	return false;
 }
 
 function isFirstname(firstname) {
