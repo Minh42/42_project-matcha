@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const midUser = require('../Middleware/midUser.js');
+const midUser = require('../src/middlewares/midUser');
 
 router.get('/', (req, res) => {
   res.render('index')

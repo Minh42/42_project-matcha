@@ -1,5 +1,5 @@
-let check = require('../library/tools');
-let user = require('../models/user.class');
+let check = require('../../library/tools');
+let user = require('../../models/user.class');
 
 function empty(req, res, next) {
 
