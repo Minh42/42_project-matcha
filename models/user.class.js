@@ -56,35 +56,45 @@ class User {
         } 
     }
 
+    // static async forgot(email) {
+        
+        
+    //     try {
+
+
+
+    //     } catch(err) {
+    //         throw new Error(err)
+    //     }        
+    // }
+
     static async login(username, password) {
         try {
-            let res = await pool.query('SELECT * FROM users WHERE username = ? LIMIT 1', [username]);
-            let hash = res[0]['password'];
-            if(Object.keys(res).length > 0 && res[0]['status'] === 1) {
-                bcrypt.compare(password, hash, function(err, res) {
-                    if(res) {
-                        console.log('Passwords match');
-                        return true;
-                    } else {
-                        console.log('Passwords don\'t match');
-                        return false;
-                    } 
-                });
-                // if (password === "Born2Code") {
-                //     return true;
-                // }
-                // else
-                //     return false;
-            }
-            else {
-                return false;
-            }
+            let ret = await pool.query('SELECT * FROM users WHERE username = ? LIMIT 1', [username]);
+            // let hash = res[0]['password'];
+            // if(Object.keys(res).length > 0 && res[0]['status'] === 1) {
+                // bcrypt.compare(password, hash, function(err, res) {
+                //     if(res) {
+                //         console.log('Passwords match');
+                //         return true;
+                //     } else {
+                //         console.log('Passwords don\'t match');
+                //         return false;
+                //     } 
+                // });
+                if (password === "Born2Code") {
+                    return true;
+                }
+                else
+                    return false;
+            // }
+            // else {
+            //     return false;
+            // }
         } catch(err) {
             throw new Error(err)
         }  
     }
-
-
 }
 
 module.exports = User

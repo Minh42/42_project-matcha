@@ -1,11 +1,16 @@
 import React from 'react';
+import UsersContainer from '../containers/UsersContainer';
 
 const Footer = () => {
     return (
         <footer>
-            <div class="container">
-                <div class="content has-text-centered">
-                    <p>
+            <div className="container">
+                <div className="content has-text-centered">
+
+                
+                    {/* <UsersContainer /> */}
+                 
+                    {/* <p>
                         <a href="">
                             <i class="fab fa-facebook-f"></i>
                         </a>
@@ -15,7 +20,7 @@ const Footer = () => {
                         <a href="">
                             <i class="fab fa-instagram"></i>
                         </a>
-                    </p>
+                    </p> */}
                 </div>
             </div>
         </footer>

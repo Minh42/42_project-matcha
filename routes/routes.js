@@ -42,8 +42,9 @@ router.post('/api/signup', checkSignupValidation, function(req, res) {
 		})
 })
 
-router.post('/api/forgot', function(req, res) {
-  
+router.put('/auth/forgot', function(req, res) {
+  let user = require('../models/user.class');
+  user.forgot
 })
   
 router.post('/api/signin', function(req, res) {
@@ -58,18 +59,19 @@ router.post('/api/signin', function(req, res) {
   else if (!check.isUsername(username) || !check.isPassword(password))
     messages.error = "Incorrect username or password";
   else {
-    user.login(username, password).then(async function(res) {
-      if (res) {
-        console.log('Login successful');
-        messages.success = "Login successful";
+    user.login(username, password).then(function(ret) {
+      if (ret) {
+        // console.log('Login successful');
+        messages.error = "Login successful";
+        res.send(messages);
       }
       else {
-        console.log('Incorrect username or password');
-        messages.error = "Incorrect username or password";
+        // console.log('Incorrect username or password');
+        messages.success = "Incorrect username or password";
+        res.send(messages);
       }
-    })
+    })   
   }
-  return res.send(messages);
 })
 
 module.exports = router 

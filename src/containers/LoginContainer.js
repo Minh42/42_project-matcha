@@ -60,8 +60,8 @@ class LoginContainer extends Component {
 			data: formData
 		})
 		.then((res) => {
-			if (res.data.empty !== null)
-				$("#error").text(res.data.empty);
+			if (res.data.error !== null)
+				$("#error").text(res.data.error);
 			else
 				$("#error").text("");
 		})
@@ -88,7 +88,7 @@ class LoginContainer extends Component {
 					handleChange = {this.handleChange}
 				/>
 				<p id="error"></p>
-				<a href="#">Forgot your password ?</a> 
+				<a href="/auth/forgot">Forgot your password ?</a> 
 				<Button type="submit" className="button is-rounded" title="submit" style={buttonStyleSubmit}/>
 			</form>
 		);
