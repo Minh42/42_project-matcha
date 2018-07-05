@@ -4,8 +4,8 @@ import UsersContainer from '../containers/UsersContainer';
 const Footer = () => {
     return (
         <footer>
-            <div class="container">
-                <div class="content has-text-centered">
+            <div className="container">
+                <div className="content has-text-centered">
 
                 
                     {/* <UsersContainer /> */}
