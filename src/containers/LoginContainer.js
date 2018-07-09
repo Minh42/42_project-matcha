@@ -63,6 +63,7 @@ class LoginContainer extends Component {
                     component={this.renderField}
                 />
                 <button type="submit" className="button is-rounded" id="button">Sign In</button>
+                {this.errorMessage()}
             </form>
         );
     }
@@ -97,4 +98,4 @@ const reduxFormSignin = reduxForm({
     form: 'signin'
 })(LoginContainer);
 
-export default connect(mapStateToProps, mapDispatchToProps)(reduxFormSignin);
+export default connect(mapDispatchToProps)(reduxFormSignin);
