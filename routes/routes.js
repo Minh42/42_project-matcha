@@ -7,11 +7,8 @@ router.get('/', (req, res) => {
   res.render('index')
 })
 
-const checkSignupValidation = [midUser.empty,
-                              midUser.regex,
-                              midUser.findLogin,
-                              midUser.findEmail,
-                              midUser.comparePassword]; 
+const checkSignupValidation = [midUser.findLogin,
+                              midUser.findEmail]; 
 
 router.post('/api/signup', checkSignupValidation, function(req, res) {
   console.log(req.body);
@@ -23,13 +20,15 @@ router.post('/api/signup', checkSignupValidation, function(req, res) {
   var hashNewPassword = check.isHash(req.body.newPassword);
   console.log(hashNewPassword);
 
-  user.addUser(req.body.firstname, req.body.lastname, req.body.login, req.body.email, hashNewPassword)
+  user.addUser(req.body.firstName, req.body.lastName, req.body.login, req.body.email, hashNewPassword)
     .then(function(ret) {
       if (ret === true)
       {
+        console.log(messages)
         messages.error = null;
         messages.newUser = true;
     
+        console.log(messages);
         res.send(messages);
       }
       else

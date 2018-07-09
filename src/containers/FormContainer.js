@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form';
-import { signInAction } from '../actions/index';
+import { connect } from 'react-redux';
+import { signUpAction } from '../actions/index';
+
 import Button from '../components/Button';
 
 import axios from 'axios';
@@ -39,7 +41,8 @@ class FormContainer extends Component {
 				<label className="label">{field.label}</label>
 				<div className="control">
 					<input
-						className = {className}
+						className={className}
+						value={field.value}
 						type={field.type}
 						placeholder={field.placeholder}
 						{ ...field.input}
@@ -53,15 +56,7 @@ class FormContainer extends Component {
 	}
 
 	onSubmit (values){
-		var formData = {
-			firstname: values.firstName
-			// lastname: $("#lastname").val(),
-			// login: $("#login").val(),
-			// email: $("#email").val(),
-			// newPassword: $("#newPassword").val(),
-			// confirmedPassword: $("#confirmedPassword").val()
-			}
-			console.log(firstname);
+		this.props.signUpAction(values);
 	}
 
 	render() {
@@ -71,7 +66,8 @@ class FormContainer extends Component {
 		return (
 			<form className="signup" onSubmit={handleSubmit(this.onSubmit.bind(this))}>
 				<Field
-				 	label="Firstname"
+					label="Firstname"
+					value=""
 					name="firstName"
 					type="text"
 					component= {this.renderField}
@@ -162,4 +158,6 @@ function validate(values){
 export default reduxForm({
 	validate,
 	form : 'FormContainerForm'
-}) (FormContainer);
+}) (
+	connect(null, { signUpAction })(FormContainer)
+);
