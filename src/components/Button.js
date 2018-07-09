@@ -5,7 +5,7 @@ const Button = (props) => {
 		<button 
 		type={props.type}
 		id={props.id}
-		className={props.class}
+		className={props.className}
 		aria-label={props.ariaLabel}
 		style= {props.style} 
 		onClick= {props.action}>
