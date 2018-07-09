@@ -3,26 +3,6 @@ import ReactDOM from 'react-dom';
 import LoginContainer from '../containers/LoginContainer';
 import Button from "../components/Button";
 
-const buttonStyle = {
-    fontFamily: 'Amatic SC',
-    fontWeight: 'bold',
-    color: 'white',
-    backgroundImage: '-moz-linear-gradient(30deg, #F9BE02, #F53240)',
-    backgroundImage: '-webkit-linear-gradient(30deg, #F9BE02, #F53240)',
-    backgroundImage: ':-o-linear-gradient(30deg, #F9BE02, #F53240)',
-    backgroundImage: 'linear-gradient(60deg, #F9BE02, #F53240)',
-    border: 'none',
-    paddingLeft: '30px',
-    paddingRight: '30px'
-  };
-
-const buttonTitle = {
-    fontFamily: 'Amatic SC',
-    fontWeight: 'bold',
-    color: '#F9BE02',
-    fontSize: '50px'
-  };
-
 class Header extends Component{
 	constructor(props) {
 		super(props);
@@ -38,14 +18,13 @@ class Header extends Component{
 		document.getElementById('modal1').classList.remove("is-active");
 	}	
 
-
     render() {
         return (
             <nav className="navbar">
 
                 <div className="navbar-brand">
 
-                    <a className="navbar-item" style={buttonTitle}>
+                    <a className="navbar-item" id="logo">
                        <span> MATCHA </span>
                     </a>
 
@@ -64,26 +43,22 @@ class Header extends Component{
                 </div>
 
                 <div className="navbar-end">
-
                     <div className="navbar-item">
-                        <Button class="button is-rounded" title="Log In" action={this.showModal} style={buttonStyle}/>
+                        <Button class="button is-rounded" id="button" title="Log In" action={this.showModal}/>
                     </div>
                     <div className="modal" id="modal1">
 			        <div className="modal-background"></div>
-			        <div className="modal-card">
-				        <header className="modal-card-head">
-				            <p className="modal-card-title">Log In</p>
-				            <button className="delete" aria-label="close" onClick={this.closeModal}></button>
-				        </header>
-				        <section className="modal-card-body">
-				 	        <LoginContainer /> 
-				        </section>
-		
+                        <div className="modal-card">
+                            <header className="modal-card-head">
+                                <p className="modal-card-title">Log In</p>
+                                <button className="delete" aria-label="close" onClick={this.closeModal}></button>
+                            </header>
+                            <section className="modal-card-body">
+                                <LoginContainer /> 
+                            </section>
+                        </div>
 			        </div>
-			        </div>
-
                 </div>
-
             </nav>
         );
     }
