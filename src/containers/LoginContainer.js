@@ -98,4 +98,4 @@ const reduxFormSignin = reduxForm({
     form: 'signin'
 })(LoginContainer);
 
-export default connect(mapDispatchToProps)(reduxFormSignin);
+export default connect(null, mapDispatchToProps)(reduxFormSignin);
