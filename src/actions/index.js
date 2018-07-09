@@ -9,6 +9,7 @@ export const AUTHENTICATION_ERROR = 'authentication_error';
 export function signInAction({username, password}, history) {
 	return async (dispatch) => {
 		try {
+			console.log('IM HERE');
 			const res = await axios.post('/api/signin', {username, password});
 			if(res.data.success) {
 				dispatch({ 
