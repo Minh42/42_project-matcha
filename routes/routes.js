@@ -7,11 +7,8 @@ router.get('/', (req, res) => {
   res.render('index')
 })
 
-const checkSignupValidation = [midUser.empty,
-                              midUser.regex,
-                              midUser.findLogin,
-                              midUser.findEmail,
-                              midUser.comparePassword]; 
+const checkSignupValidation = [midUser.findLogin,
+                              midUser.findEmail]; 
 
 router.post('/api/signup', checkSignupValidation, function(req, res) {
   console.log(req.body);
@@ -23,13 +20,14 @@ router.post('/api/signup', checkSignupValidation, function(req, res) {
   var hashNewPassword = check.isHash(req.body.newPassword);
   console.log(hashNewPassword);
 
-  user.addUser(req.body.firstname, req.body.lastname, req.body.login, req.body.email, hashNewPassword)
+  user.addUser(req.body.firstName, req.body.lastName, req.body.login, req.body.email, hashNewPassword)
     .then(function(ret) {
       if (ret === true)
       {
         messages.error = null;
         messages.newUser = true;
     
+        console.log(messages);
         res.send(messages);
       }
       else
@@ -48,21 +46,30 @@ router.put('/auth/forgot', function(req, res) {
 })
   
 router.post('/api/signin', function(req, res) {
+  let check = require('../library/tools');
   let user = require('../models/user.class');
   let messages = {};
   let username = req.body.username;
   let password = req.body.password;
 
-  user.login(username, password).then(function(ret) {
+  if (check.isEmpty(username) || check.isEmpty(password)) 
+    messages.error = "Incorrect username or password";
+  else if (!check.isUsername(username) || !check.isPassword(password))
+    messages.error = "Incorrect username or password";
+  else {
+    user.login(username, password).then(function(ret) {
       if (ret) {
-        messages.success = "Login successful";
+        // console.log('Login successful');
+        messages.error = "Login successful";
         res.send(messages);
       }
       else {
-        messages.error = "Incorrect username or password";
+        // console.log('Incorrect username or password');
+        messages.success = "Incorrect username or password";
         res.send(messages);
       }
-  })   
+    })   
+  }
 })
 
 module.exports = router 

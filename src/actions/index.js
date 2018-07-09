@@ -4,6 +4,8 @@ export const AUTHENTICATED = 'authenticated_user';
 export const UNAUTHENTICATED = 'unauthenticated_user';
 export const AUTHENTICATION_ERROR = 'authentication_error';
 
+export const SIGNUP_ACTION = 'signup_action';
+
 // const URL = 'http://www.sample-website.com';
 
 export function signInAction({username, password}, history) {
