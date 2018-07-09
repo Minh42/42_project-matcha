@@ -1,5 +1,8 @@
 import React, {Component} from 'react';
 import { Field, reduxForm } from 'redux-form';
+import { signInAction } from '../actions/index';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 
 class LoginContainer extends Component {
     renderField(field) {
@@ -27,7 +30,17 @@ class LoginContainer extends Component {
     }
 
     onSubmit(values) {
-        console.log(values);
+        this.props.signInAction(values, this.props.history);
+    }
+
+    errorMessage() {
+        if (this.props.errorMessage) {
+            return (
+                <p class="help is-danger">
+                    {this.props.errorMessage}
+                </p>
+            );
+        }
     }
 
     render () {
@@ -49,13 +62,14 @@ class LoginContainer extends Component {
                     icon="fas fa-lock"
                     component={this.renderField}
                 />
-                <button type="submit" className="button is-rounded" id="button">Submit</button>
+                <button type="submit" className="button is-rounded" id="button">Sign In</button>
             </form>
         );
     }
 }
 
 function validate(values) {
+    // let check = require('../../library/tools');
     // console.log(values);
     const errors = {};
     if (!values.username) {
@@ -67,7 +81,20 @@ function validate(values) {
     return errors;
 }
 
-export default reduxForm({
+function mapStateToProps(state) {
+    return { errorMessage: state.auth.error };
+}
+
+/* Anything returned from this function will show up as propsi nside of LoginContainer */
+function mapDispatchToProps(dispatch) {
+    /* Whenever signInAction is called, the result should be passed to all our reducers
+        through the dispatch function */
+    return bindActionCreators({ signInAction: signInAction}, dispatch);
+}
+
+const reduxFormSignin = reduxForm({
     validate,
-    form: 'login'
+    form: 'signin'
 })(LoginContainer);
+
+export default connect(mapStateToProps, mapDispatchToProps)(reduxFormSignin);

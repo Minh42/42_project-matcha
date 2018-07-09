@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form';
+import { signInAction } from '../actions/index';
 import Button from '../components/Button';
 
 import axios from 'axios';
@@ -52,7 +53,15 @@ class FormContainer extends Component {
 	}
 
 	onSubmit (values){
-		console.log(values);
+		var formData = {
+			firstname: values.firstName
+			// lastname: $("#lastname").val(),
+			// login: $("#login").val(),
+			// email: $("#email").val(),
+			// newPassword: $("#newPassword").val(),
+			// confirmedPassword: $("#confirmedPassword").val()
+			}
+			console.log(firstname);
 	}
 
 	render() {
@@ -137,7 +146,7 @@ function validate(values){
 	if (!values.newPassword)
 		errors.newPassword = "Please enter your password";
 	else if (!check.isPassword(values.newPassword))
-		errors.newPassword = "Your password is invalid";
+		errors.newPassword = "Your password is invalid";0
 		
 	if (!values.confirmedPassword)
 		errors.confirmedPassword = "Please enter your password a second time";

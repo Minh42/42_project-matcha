@@ -4,18 +4,21 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import reduxThunk from 'redux-thunk';
 
 import App from './components/App';
 import reducers from './reducers';
 
-const createStoreWithMiddleware = applyMiddleware()(createStore);
+const createStoreWithMiddleware = applyMiddleware(reduxThunk)(createStore);
 
 ReactDOM.render(
     <Provider store={createStoreWithMiddleware(reducers)}>
-        <BrowserRouter>
-            <Route path="/" component={App} />
-        </BrowserRouter>
+        <Router>
+            <Route exact path="/" component={App} />
+            {/* <Route path="/signin" component={Signin} />
+            <Route path="/homepage" component={Homepage} /> */}
+        </Router>
     </Provider>
    , document.querySelector('.root'));
 
