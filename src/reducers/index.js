@@ -1,10 +1,10 @@
 import { combineReducers } from 'redux';
 import { reducer as formReducer } from 'redux-form';
-// import UsersReducer from './reducer_users';
+import authReducer from './reducer_auth';
 
 // mapping of our state
 const rootReducer = combineReducers({
-    // users: UsersReducer
+    auth: authReducer,
     form: formReducer
 });
 

@@ -119,7 +119,7 @@ class FormContainer extends Component {
 
 function validate(values){
 
-	let check = require('../../library/tools');
+
 	const errors = {};
 
 	if (!values.firstName)
