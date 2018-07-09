@@ -30,10 +30,10 @@ export function signInAction({username, password}, history) {
 export function signUpAction(values){
 
 	const res = axios.post('/api/signup', values);
-	console.log(res.data.error);
+	console.log(res.data);
 
-	return {
-		type : SIGNUP_ACTION,
-		payload : res
-	};
+	// return {
+	// 	type : SIGNUP_ACTION,
+	// 	payload : res
+	// };
 }

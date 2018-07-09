@@ -24,7 +24,6 @@ router.post('/api/signup', checkSignupValidation, function(req, res) {
     .then(function(ret) {
       if (ret === true)
       {
-        console.log(messages)
         messages.error = null;
         messages.newUser = true;
     
