@@ -2,34 +2,12 @@ import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
 import { signUpAction } from '../actions/index';
+import { bindActionCreators } from 'redux';
 
 import Button from '../components/Button';
-
-import axios from 'axios';
-import $ from 'jquery';
+// import $ from 'jquery'
 
 class FormContainer extends Component {
-	
-	// handleSubmit(event) {
-		
-	// 	var formData = {
-    //         firstname: $("#firstname").val(),
-    //         lastname: $("#lastname").val(),
-    //         login: $("#login").val(),
-    //         email: $("#email").val(),
-    //         newPassword: $("#newPassword").val(),
-	// 		confirmedPassword: $("#confirmedPassword").val()
-	// 	}
-
-	// 	axios({
-	// 		method: 'post',
-	// 		url: '/api/signup',
-	// 		data: formData
-	// 	})
-	// 	.then((res) => {
-	// 		console.log("Réponse : ", res.data);
-	//   })
-	// }
 
 	renderField(field) {
 
@@ -57,6 +35,16 @@ class FormContainer extends Component {
 
 	onSubmit (values){
 		this.props.signUpAction(values);
+	}
+
+	errorMessage() {
+		if (this.props.errorMessage) {
+            return (
+                <p className="help is-danger">
+                    {this.props.errorMessage}
+                </p>
+            );
+        }
 	}
 
 	render() {
@@ -109,6 +97,8 @@ class FormContainer extends Component {
 					placeholder="******"
 				/>
 				<Button type='submit' id="button" className="button is-rounded" title="submit"/>
+				{/* <p className='help is-danger' id='errorSignUp'></p> */}
+				{this.errorMessage()}
 			</form>
 		);
 	}
@@ -142,7 +132,7 @@ function validate(values){
 	if (!values.newPassword)
 		errors.newPassword = "Please enter your password";
 	else if (!check.isPassword(values.newPassword))
-		errors.newPassword = "Your password is invalid";0
+		errors.newPassword = "Your password is invalid";
 		
 	if (!values.confirmedPassword)
 		errors.confirmedPassword = "Please enter your password a second time";
@@ -154,10 +144,21 @@ function validate(values){
 	return errors;
 }
 
+function mapStateToProps(state) {
+	return { errorMessage : state.signup.error };
+}
 
-export default reduxForm({
+/* Anything returned from this function will end up as props on the FormContainer */
+function mapDispatchToProps(dispatch) { 
+	/* Whenever signUpAction is called, the result should be passed to all our reducers
+	through the dispatch function */
+	return bindActionCreators({ signUpAction : signUpAction}, dispatch);
+} 
+
+const reduxFormSignUp = reduxForm({
 	validate,
-	form : 'FormContainerForm'
-}) (
-	connect(null, { signUpAction })(FormContainer)
-);
+	form : 'signup'
+})(FormContainer);
+
+export default connect(mapStateToProps, mapDispatchToProps)(reduxFormSignUp);
+
