@@ -10,8 +10,6 @@ const helmet = require('helmet')
 // const csrf = require('csurf')
 const app = express()
 
-require('./config/db');
-
 app.set('views', path.join(__dirname, 'views'))
 app.engine('mustache', mustacheExpress());
 app.set('view engine', 'mustache');

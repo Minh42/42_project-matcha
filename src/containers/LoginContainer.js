@@ -35,8 +35,9 @@ class LoginContainer extends Component {
 
     errorMessage() {
         if (this.props.errorMessage) {
+            console.log('IM HERE');
             return (
-                <p class="help is-danger">
+                <p className="help is-danger">
                     {this.props.errorMessage}
                 </p>
             );
@@ -48,6 +49,7 @@ class LoginContainer extends Component {
 
         return (
             <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
+                {this.errorMessage()}
                 <Field
                     label="Username"
                     name="username"
@@ -63,7 +65,6 @@ class LoginContainer extends Component {
                     component={this.renderField}
                 />
                 <button type="submit" className="button is-rounded" id="button">Sign In</button>
-                {this.errorMessage()}
             </form>
         );
     }
@@ -98,4 +99,4 @@ const reduxFormSignin = reduxForm({
     form: 'signin'
 })(LoginContainer);
 
-export default connect(null, mapDispatchToProps)(reduxFormSignin);
+export default connect(mapStateToProps, mapDispatchToProps)(reduxFormSignin);

@@ -52,6 +52,7 @@
     "fs": "0.0.1-security",
     "helmet": "^3.12.1",
     "jquery": "^3.3.1",
+    "jsonwebtoken": "^8.3.0",
     "mustache": "^2.3.0",
     "mustache-express": "^1.2.7",
     "mysql": "^2.15.0",

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import setAuthorizationToken from '../../library/setAuthorizationToken';
 
 export const AUTHENTICATED = 'authenticated_user';
 export const UNAUTHENTICATED = 'unauthenticated_user';
@@ -11,20 +12,13 @@ export const SIGNUP_ACTION = 'signup_action';
 export function signInAction({username, password}, history) {
 	return async (dispatch) => {
 		try {
-			const res = await axios.post('/api/signin', {username, password});
-			if(res.data.success) {
-				dispatch({ 
-					type: AUTHENTICATED 
-				});
-				localStorage.setItem('user', res.data.token);
-				history.push('/homepage');
-			}
-			if (res.data.error) {
-				dispatch({
-					type: AUTHENTICATION_ERROR,
-					payload: 'Invalid email or password'
-				});
-			}
+			const res = await axios.post('/api/signin', {username, password}).then (res => {
+			dispatch({ type: AUTHENTICATED });
+			const token = res.data.token;
+			localStorage.setItem('jwtToken', token);
+			// setAuthorizationToken(token);
+			// history.push('/homepage');
+			})
 		} catch (error) {
 			dispatch({
 				type: AUTHENTICATION_ERROR,

@@ -1,6 +1,6 @@
 import { AUTHENTICATED, UNAUTHENTICATED, AUTHENTICATION_ERROR } from '../actions';
 
-export default function(state = null, action) {
+export default function(state = {}, action) {
   switch(action.type) {
     case AUTHENTICATED:
       return { ...state, authenticated: true };

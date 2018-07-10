@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
+const config = require('../server/config');
 
 const midUser = require('../src/middlewares/midUser');
 
@@ -46,30 +48,17 @@ router.put('/auth/forgot', function(req, res) {
 })
   
 router.post('/api/signin', function(req, res) {
-  let check = require('../library/tools');
   let user = require('../models/user.class');
   let messages = {};
-  let username = req.body.username;
-  let password = req.body.password;
-
-  if (check.isEmpty(username) || check.isEmpty(password)) 
-    messages.error = "Incorrect username or password";
-  else if (!check.isUsername(username) || !check.isPassword(password))
-    messages.error = "Incorrect username or password";
-  else {
-    user.login(username, password).then(function(ret) {
-      if (ret) {
-        // console.log('Login successful');
-        messages.error = "Login successful";
-        res.send(messages);
-      }
-      else {
-        // console.log('Incorrect username or password');
-        messages.success = "Incorrect username or password";
-        res.send(messages);
-      }
-    })   
-  }
+  let { username, password } = req.body;
+  user.login(username, password).then(function(ret) {
+    if (ret) {
+      const token = jwt.sign({ id: username }, config.jwtSecret);
+      res.json({token});
+    } else {
+      res.status(401).json( { errors: { form: 'Incorrect username or password'} });
+    }
+  })   
 })
 
 module.exports = router 
