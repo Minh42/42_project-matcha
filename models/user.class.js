@@ -36,9 +36,9 @@ class User {
         }  
     }
 
-    static async addUser(firstname, lastname, login, email, password) {
+    static async addUser(firstname, lastname, login, email, password, token) {
         try {
-            const values = {username: login, first_name: firstname, last_name: lastname, password: password, email: email};
+            const values = {username: login, first_name: firstname, last_name: lastname, password: password, email: email, token: token};
             const requete = 'INSERT INTO users SET ?'
        
             let ret = await pool.query(requete, values)
@@ -54,6 +54,20 @@ class User {
         catch(err) {
             throw new Error(err)
         } 
+    }
+
+    static async compareToken(login, token) {
+        try {    
+            let ret = await pool.query("SELECT count(*) as token_exists FROM users WHERE token = ? AND username = ?", [token, login]);
+            console.log(ret[0].token_exists);
+            if (ret[0].token_exists > '0')
+                return true;
+            else
+                return false;
+        } 
+        catch(err) {
+            throw new Error(err)
+        }  
     }
 
     // static async forgot(email) {
