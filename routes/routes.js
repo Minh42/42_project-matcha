@@ -32,8 +32,7 @@ router.post('/api/signup', checkSignupValidation, function(req, res) {
         console.log(messages);
         res.send(messages);
       }
-      else
-      {
+      else {
         console.log('error');
       }
     })

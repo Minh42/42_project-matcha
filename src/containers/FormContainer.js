@@ -161,4 +161,3 @@ const reduxFormSignUp = reduxForm({
 })(FormContainer);
 
 export default connect(mapStateToProps, mapDispatchToProps)(reduxFormSignUp);
-
