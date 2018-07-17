@@ -3,6 +3,7 @@ import { Field, reduxForm } from 'redux-form';
 import { signInAction } from '../actions/index';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { withRouter } from "react-router-dom";
 
 class LoginContainer extends Component {
     renderField(field) {
@@ -35,7 +36,6 @@ class LoginContainer extends Component {
 
     errorMessage() {
         if (this.props.errorMessage) {
-            console.log('IM HERE');
             return (
                 <p className="help is-danger">
                     {this.props.errorMessage}
@@ -64,7 +64,7 @@ class LoginContainer extends Component {
                     icon="fas fa-lock"
                     component={this.renderField}
                 />
-                <button type="submit" className="button is-rounded" id="button">Sign In</button>
+                <button type="submit" className="button is-rounded">Sign In</button>
             </form>
         );
     }
@@ -84,11 +84,12 @@ function validate(values) {
 }
 
 function mapStateToProps(state) {
-    console.log(state);
-    return { errorMessage: state.auth.error };
+    return { 
+        errorMessage: state.auth.error 
+    };
 }
 
-/* Anything returned from this function will show up as propsi nside of LoginContainer */
+/* Anything returned from this function will show up as props inside of LoginContainer */
 function mapDispatchToProps(dispatch) {
     /* Whenever signInAction is called, the result should be passed to all our reducers
         through the dispatch function */
@@ -100,4 +101,4 @@ const reduxFormSignin = reduxForm({
     form: 'signin'
 })(LoginContainer);
 
-export default connect(mapStateToProps, mapDispatchToProps)(reduxFormSignin);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(reduxFormSignin));

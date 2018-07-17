@@ -96,7 +96,7 @@ class FormContainer extends Component {
 					component= {this.renderField}
 					placeholder="******"
 				/>
-				<Button type='submit' id="button" className="button is-rounded" title="submit"/>
+				<Button type='submit' className="button is-rounded" title="submit"/>
 				{/* <p className='help is-danger' id='errorSignUp'></p> */}
 				{this.errorMessage()}
 			</form>

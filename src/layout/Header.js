@@ -18,7 +18,19 @@ class Header extends Component{
 	
 	closeModal() {
 		document.getElementById('modal').classList.remove("is-active");
-	}	
+    }	
+    
+    showNavbar() {
+        if (this.props.authenticated) {
+            return [
+                <Link to="/messages"><Button className="button is-rounded" title="My messages"/></Link>,
+                <Link to="/signout"><Button className="button is-rounded" title="Signout"/></Link>   
+            ];
+        }
+        return [
+            <Button className="button is-rounded" title="Sign In" action={this.showModal}/>
+        ];
+    }
 
     render() {
         return (
@@ -44,15 +56,15 @@ class Header extends Component{
 
                 <div className="navbar-end">
                     <div className="navbar-item">
-                    <Link to='/signin'>
-                        <Button class="button is-rounded" id="button" title="Log In" action={this.showModal}/>
-                    </Link>
+                        <div class="field is-grouped">
+                            {this.showNavbar()}
+                        </div>
                     </div>
                     <div className="modal" id="modal">
 			        <div className="modal-background"></div>
                         <div className="modal-card">
                             <header className="modal-card-head">
-                                <p className="modal-card-title">Log In</p>
+                                <p className="modal-card-title">Sign In</p>
                                 <button className="delete" aria-label="close" onClick={this.closeModal}></button>
                             </header>
                             <section className="modal-card-body">
@@ -67,8 +79,8 @@ class Header extends Component{
 }
 
 function mapStateToProps(state) {
-    return {
-      authenticated: state.auth.authenticated
+    return { 
+        authenticated: state.auth.authenticated 
     };
 }
 
