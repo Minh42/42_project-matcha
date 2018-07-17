@@ -11,6 +11,7 @@ import App from './components/App';
 import LoginContainer from './containers/LoginContainer';
 import reducers from './reducers';
 import setAuthorizationToken from "../library/setAuthorizationToken";
+// import Redirect from "react-router-dom/Redirect";
 
 const createStoreWithMiddleware = applyMiddleware(reduxThunk)(createStore);
 
@@ -21,8 +22,9 @@ ReactDOM.render(
         <Router>
             <Switch>
                 <Route exact path="/" component={App} />
-                <ModalRoute path="/signin" component={LoginContainer} />
-                {/* <Route path="/homepage" component={Footer} /> */}
+                {/* <Route path="/signin" component={Signin} /> */}
+                <Route path="/homepage" component={Footer} />
+                {/* <Route path="/redirectMail" component={RedirectMail} /> */}
             </Switch>
         </Router>
     </Provider>

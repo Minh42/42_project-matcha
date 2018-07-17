@@ -5,7 +5,9 @@ export const AUTHENTICATED = 'authenticated_user';
 export const UNAUTHENTICATED = 'unauthenticated_user';
 export const AUTHENTICATION_ERROR = 'authentication_error';
 
-export const SIGNUP_ACTION = 'signup_action';
+export const REGISTERATION_SUCCESS = 'registeration_success';
+export const REGISTERATION_ERROR = 'registeration_error';
+export const REGISTERATION_FAILED = 'registeration_failed';
 
 // const URL = 'http://www.sample-website.com';
 
@@ -32,13 +34,30 @@ export function signUpAction(values) {
 	return async (dispatch) => {
 		try {
 			const res = await axios.post('/api/signup', values);
-			console.log (res.data);
-		}
-					
+			console.log (res.data.error);
+			if (res.data.sucess === true)
+			{
+				console.log('success');
+				dispatch({ 
+					type: REGISTERATION_SUCCESS
+				});
+				// localStorage.setItem('user', res.data.token);
+				// history.push('/homepage');
+			}
+			if (res.data.error !== null)
+			{
+				console.log('error');
+				dispatch({ 
+					type: REGISTERATION_ERROR,
+					payload : res.data.error
+				});
+			}
+		}		
 		catch (error) {
+			console.log('failed');
 			dispatch({
-				type: AUTHENTICATION_ERROR,
-				payload: res
+				type: REGISTERATION_FAILED,
+				payload: 'Registeration failed'
 			});
 		}
 	}
