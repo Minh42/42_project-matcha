@@ -71,7 +71,7 @@ router.post('/api/signup', checkSignupValidation, function(req, res) {
 		})
 })
 
-router.get('/api/activationMail', function(req, rest) {
+router.get('/api/activationMail', function(req, res) {
   var login = req.param('login');
   var token = req.param('token');
 
@@ -82,6 +82,7 @@ router.get('/api/activationMail', function(req, rest) {
       if (ret === true)
       {
         console.log('token in database')
+        res.redirect('/redirectMail');
         //creer une nouvelle view (votre email est valide)
       }
       else {
