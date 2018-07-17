@@ -7,11 +7,13 @@ import { createStore, applyMiddleware } from 'redux';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import reduxThunk from 'redux-thunk';
 
-import App from './components/App';
+import Header from './layout/Header';
+import Home from './layout/Home';
+import Footer from './layout/Footer';
 import LoginContainer from './containers/LoginContainer';
+
 import reducers from './reducers';
 import setAuthorizationToken from "../library/setAuthorizationToken";
-// import Redirect from "react-router-dom/Redirect";
 
 const createStoreWithMiddleware = applyMiddleware(reduxThunk)(createStore);
 
@@ -20,12 +22,15 @@ setAuthorizationToken(localStorage.jwtToken);
 ReactDOM.render(
     <Provider store={createStoreWithMiddleware(reducers)}>
         <Router>
-            <Switch>
-                <Route exact path="/" component={App} />
-                {/* <Route path="/success" component={App} /> */}
-                {/* <Route path="/signin" component={Signin} /> */}
-                {/* <Route path="/homepage" component={Footer} /> */}
-            </Switch>
+            <div>
+                <Header />
+                <Switch>
+                    <Route exact path="/" component={Home} />
+                    <Route path="/homepage" component={Footer} />
+                    {/* <Route path="/redirectMail" component={RedirectMail} /> */}
+                </Switch>
+                <Footer />
+            </div>
         </Router>
     </Provider>
    , document.querySelector('.root'));

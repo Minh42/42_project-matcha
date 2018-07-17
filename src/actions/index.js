@@ -1,5 +1,5 @@
 import axios from 'axios';
-import setAuthorizationToken from '../../library/setAuthorizationToken';
+// import setAuthorizationToken from '../../library/setAuthorizationToken';
 
 export const AUTHENTICATED = 'authenticated_user';
 export const UNAUTHENTICATED = 'unauthenticated_user';
@@ -14,14 +14,16 @@ export const REGISTERATION_FAILED = 'registeration_failed';
 export function signInAction({username, password}, history) {
 	return async (dispatch) => {
 		try {
+			console.log('IM HERE 2');
 			const res = await axios.post('/api/signin', {username, password}).then (res => {
 			dispatch({ type: AUTHENTICATED });
 			const token = res.data.token;
 			localStorage.setItem('jwtToken', token);
 			setAuthorizationToken(token);
-			// history.push('/homepage');
+			history.push('/homepage');
 			})
 		} catch (error) {
+			console.log(error);
 			dispatch({
 				type: AUTHENTICATION_ERROR,
 				payload: 'Invalid email or password'

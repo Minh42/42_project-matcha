@@ -10,7 +10,7 @@ const contentStyle2 = {
     backgroundColor:'orange'
 }
 
-const Content = () => {
+const Home = () => {
     return (
         <div>
         <section className="hero">
@@ -83,4 +83,4 @@ const Content = () => {
     );
 }
 
-export default Content;
+export default Home;
