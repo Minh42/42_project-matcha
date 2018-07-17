@@ -8,6 +8,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import reduxThunk from 'redux-thunk';
 
 import Header from './layout/Header';
+import Footer from './layout/Footer';
 import LandingPage from './layout/LandingPage';
 import ForgotPassword from './containers/ForgotPasswordContainer';
 // import HomePage from './layout/HomePage';

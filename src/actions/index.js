@@ -1,5 +1,5 @@
 import axios from 'axios';
-// import setAuthorizationToken from '../../library/setAuthorizationToken';
+import setAuthorizationToken from '../../library/setAuthorizationToken';
 
 export const AUTHENTICATED = 'authenticated_user';
 export const UNAUTHENTICATED = 'unauthenticated_user';
@@ -14,21 +14,28 @@ export const REGISTERATION_FAILED = 'registeration_failed';
 export function signInAction({username, password}, history) {
 	return async (dispatch) => {
 		try {
-			const res = await axios.post('/api/signin', {username, password})
-				.then (res => {
-					dispatch({ type: AUTHENTICATED });
-					const token = res.data.token;
-					localStorage.setItem('jwtToken', token);
-					setAuthorizationToken(token);
-					history.push('/homepage');
-					})
+			const res = await axios.post('/api/signin', {username, password}).then (res => {
+			dispatch({ type: AUTHENTICATED });
+			const token = res.data.token;
+			localStorage.setItem('jwtToken', token);
+			setAuthorizationToken(token);
+			document.getElementById('modal_signin').classList.remove("is-active");
+			history.push('/homepage');
+			})
 		} catch (error) {
-			console.log(error);
 			dispatch({
 				type: AUTHENTICATION_ERROR,
 				payload: 'Invalid email or password'
 			});
 		}
+	};
+}
+
+export function signOutAction(history) {
+	console.log('IM HERE DUDE');
+	localStorage.clear();
+	return {
+		type: UNAUTHENTICATED
 	};
 }
 

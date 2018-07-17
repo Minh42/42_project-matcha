@@ -4,34 +4,41 @@ import LoginContainer from '../containers/LoginContainer';
 import Button from "../components/Button";
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { signOutAction } from '../actions/index';
+import { bindActionCreators } from 'redux';
 
 class Header extends Component{
 	constructor(props) {
 		super(props);
 		this.showModal = this.showModal.bind(this);
-		this.closeModal = this.closeModal.bind(this);
+        this.closeModal = this.closeModal.bind(this);
 	  }
 
 	showModal() {
-		document.getElementById('modal').classList.add("is-active");
+		document.getElementById('modal_signin').classList.add("is-active");
 	}
 	
 	closeModal() {
-		document.getElementById('modal').classList.remove("is-active");
-    }	
-    
+		document.getElementById('modal_signin').classList.remove("is-active");
+    }
+
+    handleClick() {
+        console.log('IM HERE DUDESS')
+        // this.props.signOutAction(this.props.history);
+    }
+
     showNavbar() {
         if (this.props.authenticated) {
             return [
-                <p class="control">
+                <p className="control">
                     <Link to="/messages"><Button className="button is-rounded" title="My messages"/></Link>
                 </p>,
-                <p class="control">
+                <p className="control">
                     <Link to="/profile"><Button className="button is-rounded" title="My profile"/></Link>
                 </p>,
-                <p class="control">
-                    <Link to="/signout"><Button className="button is-rounded" title="Signout"/></Link>  
-                </p> 
+                <p className="control">
+                    <Link to="/signout"><Button className="button is-rounded" title="Signout" onClick={this.handleClick.bind(this)}/></Link>  
+                </p>
             ];
         }
         return [
@@ -67,7 +74,7 @@ class Header extends Component{
                             {this.showNavbar()}
                         </div>
                     </div>
-                    <div className="modal" id="modal">
+                    <div className="modal" id="modal_signin">
 			        <div className="modal-background"></div>
                         <div className="modal-card">
                             <header className="modal-card-head">
@@ -91,4 +98,8 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps)(Header);
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators({ signOutAction: signOutAction}, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Header);
