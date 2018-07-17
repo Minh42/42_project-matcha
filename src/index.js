@@ -22,9 +22,9 @@ ReactDOM.render(
         <Router>
             <Switch>
                 <Route exact path="/" component={App} />
+                {/* <Route path="/success" component={App} /> */}
                 {/* <Route path="/signin" component={Signin} /> */}
-                <Route path="/homepage" component={Footer} />
-                {/* <Route path="/redirectMail" component={RedirectMail} /> */}
+                {/* <Route path="/homepage" component={Footer} /> */}
             </Switch>
         </Router>
     </Provider>

@@ -58,6 +58,8 @@ class User {
 
     static async compareToken(login, token) {
         try {    
+            console.log(login);
+            console.log(token);
             let ret = await pool.query("SELECT count(*) as token_exists FROM users WHERE token = ? AND username = ?", [token, login]);
             console.log(ret[0].token_exists);
             if (ret[0].token_exists > '0')

@@ -31,8 +31,10 @@ router.post('/api/signup', checkSignupValidation, function(req, res) {
   let messages = {};
 
   var hashNewPassword = check.isHash(req.body.newPassword);
+  console.log(hashNewPassword);
 
   let token = jwt.sign( {  foo : req.body.login } , config.jwtSecret );
+  console.log(token);
 
   user.addUser(req.body.firstName, req.body.lastName, req.body.login, req.body.email, hashNewPassword, token)
     .then(function(ret) {
@@ -57,7 +59,7 @@ router.post('/api/signup', checkSignupValidation, function(req, res) {
        });
        
         messages.error = null;
-        messages.sucess = true;
+        messages.success = "success";
     
         console.log(messages);
         res.send(messages);
@@ -82,7 +84,7 @@ router.get('/api/activationMail', function(req, res) {
       if (ret === true)
       {
         console.log('token in database')
-        res.redirect('/redirectMail');
+        res.redirect('/');
         //creer une nouvelle view (votre email est valide)
       }
       else {

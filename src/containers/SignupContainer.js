@@ -3,21 +3,6 @@ import ReactDOM from 'react-dom';
 import FormContainer from './FormContainer';
 import Button from "../components/Button";
 
-const buttonStyle = {
-    fontFamily: 'Amatic SC',
-    fontWeight: 'bold',
-    color: 'white',
-    backgroundImage: '-moz-linear-gradient(30deg, #F9BE02, #F53240)',
-    backgroundImage: '-webkit-linear-gradient(30deg, #F9BE02, #F53240)',
-    backgroundImage: ':-o-linear-gradient(30deg, #F9BE02, #F53240)',
-    backgroundImage: 'linear-gradient(60deg, #F9BE02, #F53240)',
-	borderRadius: '30px',
-	border: 'none',
-    paddingLeft: '30px',
-	paddingRight: '30px',
-	fontSize: '18px'
-  };
-
 class SignupContainer extends React.Component{
 	constructor(props) {
 		super(props);
@@ -27,11 +12,11 @@ class SignupContainer extends React.Component{
 	  }
 
 	showModal() {
-		document.getElementById('modal').classList.add("is-active");
+		document.getElementById('modalForm').classList.add("is-active");
 	}
 	
 	closeModal() {
-		document.getElementById('modal').classList.remove("is-active");
+		document.getElementById('modalForm').classList.remove("is-active");
 	}	
 
 	closeModalEmail() {
@@ -51,10 +36,10 @@ class SignupContainer extends React.Component{
 				</h3>
 			</div>
 			<div>
-				<Button className="button is-rounded" title="Create your account" action={this.showModal} style={buttonStyle}/>
+				<Button className="button is-rounded" id="button" title="Create your account" action={this.showModal} />
 			</div>
 			 
-			<div className="modal" id="modal">
+			<div className="modal" id="modalForm">
 			<div className="modal-background"></div>
 			<div className="modal-card">
 				<header className="modal-card-head">

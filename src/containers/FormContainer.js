@@ -3,9 +3,10 @@ import { Field, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
 import { signUpAction } from '../actions/index';
 import { bindActionCreators } from 'redux';
+import { withRouter } from 'react-router-dom'
 
 import Button from '../components/Button';
-// import $ from 'jquery'
+import $ from 'jquery'
 
 class FormContainer extends Component {
 
@@ -34,17 +35,18 @@ class FormContainer extends Component {
 	}
 
 	onSubmit (values){
-		this.props.signUpAction(values);
+		this.props.signUpAction(values, this.props.history);
 	}
 
 	errorMessage() {
 		if (this.props.errorMessage) {
+			console.log(this.props.errorMessage);
             return (
                 <p className="help is-danger">
                     {this.props.errorMessage}
                 </p>
             );
-        }
+		}
 	}
 
 	render() {
@@ -97,7 +99,6 @@ class FormContainer extends Component {
 					placeholder="******"
 				/>
 				<Button type='submit' id="button" className="button is-rounded" title="submit"/>
-				{/* <p className='help is-danger' id='errorSignUp'></p> */}
 				{this.errorMessage()}
 			</form>
 		);
@@ -160,4 +161,4 @@ const reduxFormSignUp = reduxForm({
 	form : 'signup'
 })(FormContainer);
 
-export default connect(mapStateToProps, mapDispatchToProps)(reduxFormSignUp);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(reduxFormSignUp));

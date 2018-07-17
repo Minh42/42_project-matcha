@@ -30,23 +30,24 @@ export function signInAction({username, password}, history) {
 	};
 }
 
-export function signUpAction(values) {
+export function signUpAction(values, history) {
 	return async (dispatch) => {
 		try {
 			const res = await axios.post('/api/signup', values);
 			console.log (res.data.error);
-			if (res.data.sucess === true)
+			console.log (res.data.success);
+			if (res.data.success === "success")
 			{
-				console.log('success');
 				dispatch({ 
-					type: REGISTERATION_SUCCESS
+					type: REGISTERATION_SUCCESS,
+					payload : res.data.error
 				});
-				// localStorage.setItem('user', res.data.token);
-				// history.push('/homepage');
+				document.getElementById('modalForm').classList.remove("is-active");
+				document.getElementById('modalEmail').classList.add("is-active");
+				// history.push('/success');
 			}
 			if (res.data.error !== null)
 			{
-				console.log('error');
 				dispatch({ 
 					type: REGISTERATION_ERROR,
 					payload : res.data.error
