@@ -23,8 +23,15 @@ class Header extends Component{
     showNavbar() {
         if (this.props.authenticated) {
             return [
-                <Link to="/messages"><Button className="button is-rounded" title="My messages"/></Link>,
-                <Link to="/signout"><Button className="button is-rounded" title="Signout"/></Link>   
+                <p class="control">
+                    <Link to="/messages"><Button className="button is-rounded" title="My messages"/></Link>
+                </p>,
+                <p class="control">
+                    <Link to="/profile"><Button className="button is-rounded" title="My profile"/></Link>
+                </p>,
+                <p class="control">
+                    <Link to="/signout"><Button className="button is-rounded" title="Signout"/></Link>  
+                </p> 
             ];
         }
         return [
@@ -56,7 +63,7 @@ class Header extends Component{
 
                 <div className="navbar-end">
                     <div className="navbar-item">
-                        <div class="field is-grouped">
+                        <div className="field is-grouped">
                             {this.showNavbar()}
                         </div>
                     </div>

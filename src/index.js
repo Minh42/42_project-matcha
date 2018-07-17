@@ -26,7 +26,7 @@ ReactDOM.render(
                 <Header />
                 <Switch>
                     <Route exact path="/" component={Home} />
-                    {/* <Route path="/homepage" component={Footer} /> */}
+                    <Route path="/homepage" component={Footer} />
                     {/* <Route path="/redirectMail" component={RedirectMail} /> */}
                 </Switch>
                 <Footer />
