@@ -31,10 +31,7 @@ router.post('/api/signup', checkSignupValidation, function(req, res) {
   let messages = {};
 
   var hashNewPassword = check.isHash(req.body.newPassword);
-  console.log(hashNewPassword);
-
   let token = jwt.sign( {  foo : req.body.login } , config.jwtSecret );
-  console.log(token);
 
   user.addUser(req.body.firstName, req.body.lastName, req.body.login, req.body.email, hashNewPassword, token)
     .then(function(ret) {
@@ -84,8 +81,10 @@ router.get('/api/activationMail', function(req, res) {
       if (ret === true)
       {
         console.log('token in database')
-        res.redirect('/');
-        //creer une nouvelle view (votre email est valide)
+        user.changeStatus(login)
+          .then(function(ret){
+            res.redirect('/');
+        })
       }
       else {
         console.log('error');
@@ -96,17 +95,27 @@ router.get('/api/activationMail', function(req, res) {
 		})
 })
 
-router.put('/auth/forgot', function(req, res) {
+router.post('/api/forgotPassword', function(req, res) {
+  console.log(req.body.email);
   let user = require('../models/user.class');
-  user.forgot
+  user.emailExist(req.body.email)
+        .then(function(ret){
+          if (ret)
+          {
+            //envoyer un email
+          }
+    })
 })
   
 router.post('/api/signin', function(req, res) {
   let user = require('../models/user.class');
   let messages = {};
   let { username, password } = req.body;
-  user.login(username, password).then(function(ret) {
-    if (ret) {
+  user.login(username, password)
+  .then(function(ret) {
+    console.log(ret);
+    if (ret === true) 
+    {
       const token = jwt.sign({ id: username }, config.jwtSecret);
       res.json({token});
     } else {

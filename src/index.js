@@ -9,7 +9,8 @@ import reduxThunk from 'redux-thunk';
 
 import Header from './layout/Header';
 import LandingPage from './layout/LandingPage';
-import HomePage from './layout/HomePage';
+import ForgotPassword from './containers/ForgotPasswordContainer';
+// import HomePage from './layout/HomePage';
  
 import Footer from './layout/Footer';
 
@@ -27,8 +28,8 @@ ReactDOM.render(
                 <Header />
                 <Switch>
                     <Route exact path="/" component={LandingPage} />
-                    <Route path="/homepage" component={HomePage} />
-                    {/* <Route path="/redirectMail" component={RedirectMail} /> */}
+                    {/* <Route path="/homepage" component={HomePage} /> */}
+                    <Route path="/forgotPassword" component={ForgotPassword} />
                 </Switch>
                 <Footer />
             </div>

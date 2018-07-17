@@ -14,14 +14,14 @@ export const REGISTERATION_FAILED = 'registeration_failed';
 export function signInAction({username, password}, history) {
 	return async (dispatch) => {
 		try {
-			console.log('IM HERE 2');
-			const res = await axios.post('/api/signin', {username, password}).then (res => {
-			dispatch({ type: AUTHENTICATED });
-			const token = res.data.token;
-			localStorage.setItem('jwtToken', token);
-			setAuthorizationToken(token);
-			history.push('/homepage');
-			})
+			const res = await axios.post('/api/signin', {username, password})
+				.then (res => {
+					dispatch({ type: AUTHENTICATED });
+					const token = res.data.token;
+					localStorage.setItem('jwtToken', token);
+					setAuthorizationToken(token);
+					history.push('/homepage');
+					})
 		} catch (error) {
 			console.log(error);
 			dispatch({

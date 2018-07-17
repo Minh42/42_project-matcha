@@ -5,6 +5,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from "react-router-dom";
 
+import { Link } from 'react-router-dom';
+
 class LoginContainer extends Component {
     renderField(field) {
         const { meta: { touched, error } } = field;
@@ -65,6 +67,9 @@ class LoginContainer extends Component {
                     component={this.renderField}
                 />
                 <button type="submit" className="button is-rounded">Sign In</button>
+                <div>
+                    <Link to="/forgotPassword">Forgot password ?</Link> 
+                </div>
             </form>
         );
     }
