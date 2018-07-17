@@ -10,7 +10,7 @@ const contentStyle2 = {
     backgroundColor:'orange'
 }
 
-const Home = () => {
+const LandingPage = () => {
     return (
         <div>
         <section className="hero">
@@ -83,4 +83,4 @@ const Home = () => {
     );
 }
 
-export default Home;
+export default LandingPage;

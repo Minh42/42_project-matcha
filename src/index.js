@@ -8,9 +8,10 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import reduxThunk from 'redux-thunk';
 
 import Header from './layout/Header';
-import Home from './layout/Home';
+import LandingPage from './layout/LandingPage';
+import HomePage from './layout/HomePage';
+ 
 import Footer from './layout/Footer';
-import LoginContainer from './containers/LoginContainer';
 
 import reducers from './reducers';
 import setAuthorizationToken from "../library/setAuthorizationToken";
@@ -25,8 +26,8 @@ ReactDOM.render(
             <div>
                 <Header />
                 <Switch>
-                    <Route exact path="/" component={Home} />
-                    <Route path="/homepage" component={Footer} />
+                    <Route exact path="/" component={LandingPage} />
+                    <Route path="/homepage" component={HomePage} />
                     {/* <Route path="/redirectMail" component={RedirectMail} /> */}
                 </Switch>
                 <Footer />
