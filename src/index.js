@@ -8,7 +8,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import reduxThunk from 'redux-thunk';
 
 import App from './components/App';
-import Footer from './layout/Footer';
+import LoginContainer from './containers/LoginContainer';
 import reducers from './reducers';
 import setAuthorizationToken from "../library/setAuthorizationToken";
 
@@ -21,8 +21,8 @@ ReactDOM.render(
         <Router>
             <Switch>
                 <Route exact path="/" component={App} />
-                {/* <Route path="/signin" component={Signin} /> */}
-                <Route path="/homepage" component={Footer} />
+                <ModalRoute path="/signin" component={LoginContainer} />
+                {/* <Route path="/homepage" component={Footer} /> */}
             </Switch>
         </Router>
     </Provider>

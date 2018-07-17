@@ -84,6 +84,7 @@ function validate(values) {
 }
 
 function mapStateToProps(state) {
+    console.log(state);
     return { errorMessage: state.auth.error };
 }
 

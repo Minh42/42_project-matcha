@@ -16,7 +16,7 @@ export function signInAction({username, password}, history) {
 			dispatch({ type: AUTHENTICATED });
 			const token = res.data.token;
 			localStorage.setItem('jwtToken', token);
-			// setAuthorizationToken(token);
+			setAuthorizationToken(token);
 			// history.push('/homepage');
 			})
 		} catch (error) {

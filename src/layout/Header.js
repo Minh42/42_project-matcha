@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import LoginContainer from '../containers/LoginContainer';
 import Button from "../components/Button";
+import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 class Header extends Component{
 	constructor(props) {
@@ -11,11 +13,11 @@ class Header extends Component{
 	  }
 
 	showModal() {
-		document.getElementById('modal1').classList.add("is-active");
+		document.getElementById('modal').classList.add("is-active");
 	}
 	
 	closeModal() {
-		document.getElementById('modal1').classList.remove("is-active");
+		document.getElementById('modal').classList.remove("is-active");
 	}	
 
     render() {
@@ -37,16 +39,16 @@ class Header extends Component{
 
                 <div id="mobile-app" className="navbar-menu">
                     <div className="navbar-start">
-
-
                     </div>
                 </div>
 
                 <div className="navbar-end">
                     <div className="navbar-item">
+                    <Link to='/signin'>
                         <Button class="button is-rounded" id="button" title="Log In" action={this.showModal}/>
+                    </Link>
                     </div>
-                    <div className="modal" id="modal1">
+                    <div className="modal" id="modal">
 			        <div className="modal-background"></div>
                         <div className="modal-card">
                             <header className="modal-card-head">
@@ -64,4 +66,10 @@ class Header extends Component{
     }
 }
 
-export default Header;
+function mapStateToProps(state) {
+    return {
+      authenticated: state.auth.authenticated
+    };
+}
+
+export default connect(mapStateToProps)(Header);
