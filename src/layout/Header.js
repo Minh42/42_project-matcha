@@ -4,7 +4,7 @@ import LoginContainer from '../containers/LoginContainer';
 import Button from "../components/Button";
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { signOutAction } from '../actions/index';
+import { signOutAction } from '../actions/actionUsers';
 import { bindActionCreators } from 'redux';
 
 class Header extends Component{
@@ -22,11 +22,6 @@ class Header extends Component{
 		document.getElementById('modal_signin').classList.remove("is-active");
     }
 
-    handleClick() {
-        console.log('IM HERE DUDESS')
-        // this.props.signOutAction(this.props.history);
-    }
-
     showNavbar() {
         if (this.props.authenticated) {
             return [
@@ -37,7 +32,7 @@ class Header extends Component{
                     <Link to="/profile"><Button className="button is-rounded" title="My profile"/></Link>
                 </p>,
                 <p className="control">
-                    <Link to="/signout"><Button className="button is-rounded" title="Signout" onClick={this.handleClick.bind(this)}/></Link>  
+                    <Link to="/signout"><Button className="button is-rounded" title="Signout"/></Link>  
                 </p>
             ];
         }

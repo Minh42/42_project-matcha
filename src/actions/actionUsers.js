@@ -1,21 +1,21 @@
 import axios from 'axios';
 import setAuthorizationToken from '../../library/setAuthorizationToken';
 
-export const AUTHENTICATED = 'authenticated_user';
-export const UNAUTHENTICATED = 'unauthenticated_user';
-export const AUTHENTICATION_ERROR = 'authentication_error';
+export const AUTHENTICATED = 'AUTHENTICATED_USER';
+export const UNAUTHENTICATED = 'UNAUTHENTICATED_USER';
+export const AUTHENTICATION_ERROR = 'AUTHENTICATION_ERROR';
 
-export const REGISTERATION_SUCCESS = 'registeration_success';
-export const REGISTERATION_ERROR = 'registeration_error';
-export const REGISTERATION_FAILED = 'registeration_failed';
-
-// const URL = 'http://www.sample-website.com';
+export const REGISTERATION_SUCCESS = 'REGISTRATION_SUCCESS';
+export const REGISTERATION_ERROR = 'REGISTRATION_ERROR';
+export const REGISTERATION_FAILED = 'REGISTRATION_FAILED';
 
 export function signInAction({username, password}, history) {
 	return async (dispatch) => {
 		try {
 			const res = await axios.post('/api/signin', {username, password}).then (res => {
-			dispatch({ type: AUTHENTICATED });
+			dispatch({ 
+				type: AUTHENTICATED
+			});
 			const token = res.data.token;
 			localStorage.setItem('jwtToken', token);
 			setAuthorizationToken(token);
@@ -32,7 +32,6 @@ export function signInAction({username, password}, history) {
 }
 
 export function signOutAction(history) {
-	console.log('IM HERE DUDE');
 	localStorage.clear();
 	return {
 		type: UNAUTHENTICATED
