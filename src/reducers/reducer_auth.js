@@ -1,4 +1,4 @@
-import { AUTHENTICATED, UNAUTHENTICATED, AUTHENTICATION_ERROR } from '../actions';
+import { AUTHENTICATED, UNAUTHENTICATED, AUTHENTICATION_ERROR } from '../actions/actionUsers';
 
 export default function(state = {}, action) {
   switch(action.type) {

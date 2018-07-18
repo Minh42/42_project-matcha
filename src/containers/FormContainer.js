@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
-import { signUpAction } from '../actions/index';
+import { signUpAction } from '../actions/actionUsers';
 import { bindActionCreators } from 'redux';
 import { withRouter } from 'react-router-dom'
 

@@ -100,11 +100,8 @@ router.post('/api/signin', function(req, res) {
   let user = require('../models/user.class');
   let messages = {};
   let { username, password } = req.body;
-  user.login(username, password)
-  .then(function(ret) {
-    console.log(ret);
-    if (ret === true) 
-    {
+  user.login(username, password).then(function(ret) {
+    if (ret) {
       const token = jwt.sign({ id: username }, config.jwtSecret);
       res.json({token});
     } else {

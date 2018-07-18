@@ -1,4 +1,4 @@
-import { REGISTERATION_SUCCESS, REGISTERATION_ERROR, REGISTERATION_FAILED } from '../actions/index';
+import { REGISTERATION_SUCCESS, REGISTERATION_ERROR, REGISTERATION_FAILED } from '../actions/actionUsers';
 
 export default function (state = {}, action) {
     switch (action.type) {
