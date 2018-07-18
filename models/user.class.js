@@ -57,12 +57,9 @@ class User {
     }
 
     static async compareToken(login, token) {
-        try {    
-            console.log(login);
-            console.log(token);
-            let ret = await pool.query("SELECT count(*) as token_exists FROM `users` WHERE `token` = ? AND `username` = ?", [token, login]);
-            console.log(ret[0].token_exists);
-            if (ret[0].token_exists > '0')
+        try {
+            let ret = await pool.query("SELECT `token` FROM `users` WHERE `username` = ?", [login]);
+            if (ret[0].token === token)
                 return true;
             else
                 return false;
@@ -70,6 +67,46 @@ class User {
         catch(err) {
             throw new Error(err)
         }  
+    }
+
+    static async compareTokenReset(login, token_reset) {
+        try {
+            let ret = await pool.query("SELECT `token_reset` FROM `users` WHERE `username` = ?", [login]);
+            if (ret[0].token_reset === token_reset)
+                return true;
+            else
+                return false;
+        } 
+        catch(err) {
+            throw new Error(err)
+        }  
+    }
+
+    static async searchByEmail(email) {
+        try {
+            let ret = await pool.query("SELECT `first_name`, `username` FROM `users` WHERE `email` = ?", [email]);
+            return ret;
+        } 
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async addTokenResetBDD(login, token_reset) {
+        try {
+            let ret = await pool.query("UPDATE `users` SET `token_reset` = ? WHERE `username` = ?", [token_reset, login]);
+                if (ret)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
     }
 
     static async changeStatus(login) {
@@ -80,18 +117,6 @@ class User {
             throw new Error(err)
         }  
     }
-
-    // static async forgot(email) {
-        
-        
-    //     try {
-
-
-
-    //     } catch(err) {
-    //         throw new Error(err)
-    //     }        
-    // }
 
     static async login(username, password) {
         try {
@@ -114,6 +139,26 @@ class User {
             throw new Error(err)
         }  
     }
+
+    // static async sendNewPasswordBDD(newPassword, login)
+    // {
+    //     try {
+    //         console.log("HERE");
+    //         console.log(login);
+    //         let ret = await pool.query("UPDATE `users` SET `password` = ? WHERE `username` = ?", [newPassword, login]);
+    //         if (ret)
+    //         {
+    //             return true;
+    //         }
+    //         else
+    //         {
+    //             return false;
+    //         }
+    //     }
+    //     catch(err) {
+    //         throw new Error(err)
+    //     } 
+    // }
 }
 
 module.exports = User

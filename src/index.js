@@ -11,9 +11,9 @@ import Header from './layout/Header';
 import Footer from './layout/Footer';
 import LandingPage from './layout/LandingPage';
 import ForgotPassword from './containers/ForgotPasswordContainer';
+import ResetPassword from './containers/ResetPasswordContainer';
 // import HomePage from './layout/HomePage';
- 
-import Footer from './layout/Footer';
+
 
 import reducers from './reducers';
 import setAuthorizationToken from "../library/setAuthorizationToken";
@@ -31,6 +31,7 @@ ReactDOM.render(
                     <Route exact path="/" component={LandingPage} />
                     {/* <Route path="/homepage" component={HomePage} /> */}
                     <Route path="/forgotPassword" component={ForgotPassword} />
+                    <Route path="/resetPassword/:login" component={ResetPassword} />
                 </Switch>
                 <Footer />
             </div>

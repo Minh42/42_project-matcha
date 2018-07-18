@@ -1,14 +1,12 @@
 import React, {Component} from 'react';
 import { Field, reduxForm } from 'redux-form';
-// import { signInAction } from '../actions/index';
-// import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from "react-router-dom";
 
 import axios from 'axios';
 import $ from 'jquery';
 
-class ForgotPassword extends Component {
+class ResetPassword extends Component {
 
     constructor() {
         super()
@@ -40,21 +38,8 @@ class ForgotPassword extends Component {
     }
 
     async onSubmit(values) {
-        var success;
-        var error;
-        const res = await axios.post('/api/forgotpassword', values)
-        if (res.data.success === true) {
-            success = "You can check your email and reset your password";
-            error = "";
-        }
-        else if (res.data.error === true) {
-            error = "this email doesn't exist";
-            success = "";
-        }
-        this.setState({
-            messagesSuccess: success,
-            messagesError: error
-        })
+        console.log(values);
+        const res = await axios.post('/api/sendNewPassword', values)
     }
 
     render () {
@@ -65,14 +50,20 @@ class ForgotPassword extends Component {
                     <div className="box">
                         <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
                             <Field
-                                label="Please enter your email"
-                                name="email"
-                                type="email"
+                                label="Enter your new password"
+                                name="newPasswordReset"
+                                type="password"
+                                component={this.renderField}
+                            />
+                             <Field
+                                label="Confirm your new password"
+                                name="confirmedNewPassword"
+                                type="password"
                                 component={this.renderField}
                             />
                              <h1 className="messages help is-success">{ this.state.messagesSuccess }</h1>
                              <h1 className="messages help is-danger">{ this.state.messagesError }</h1>
-                            <button type="submit" className="button is-rounded">Send</button>
+                            <button type="submit" className="button is-rounded">Submit</button>
                         </form>
                     </div>
                 </div>
@@ -82,17 +73,27 @@ class ForgotPassword extends Component {
 }
 
 function validate(values) {
+    let check = require('../../library/tools');
     const errors = {};
-    if (!values.email) {
-        errors.email = "Please enter your email"
-        $('.messages').text("");
-    }
+    
+    if (!values.newPasswordReset) 
+        errors.newPasswordReset = "Please enter your new password"
+    else if (!check.isPassword(values.newPasswordReset))
+        errors.newPasswordReset = "Your new password is invalid";
+
+    if (!values.confirmedNewPassword)
+        errors.confirmedNewPassword = "Please confirm your new password"
+    else if (!check.isPassword(values.confirmedNewPassword))
+        errors.confirmedNewPassword = "Your confirmation password is invalid";
+    else if (values.newPasswordReset !== values.confirmedNewPassword)
+		errors.confirmedNewPassword = "Password not match";
+
     return errors;
 }
 
-const reduxFormForgot = reduxForm({
+const reduxResetPassword = reduxForm({
     validate,
-    form: 'forgot'
-})(ForgotPassword);
+    form: 'reset'
+})(ResetPassword);
 
-export default withRouter(connect(null, null)(reduxFormForgot));
+export default withRouter(connect(null, null)(reduxResetPassword));
