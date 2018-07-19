@@ -172,7 +172,6 @@ router.post('/api/forgotPassword', function(req, res) {
 })
 
 //RESET PASSWORD
-
 router.get('/api/resetPassword', function(req, res) {
   let user = require('../models/user.class');
   let messages = {};
@@ -181,8 +180,7 @@ router.get('/api/resetPassword', function(req, res) {
 
   user.compareTokenReset(login, token_reset)
   .then(function(ret) {
-    if (ret === true)
-    {
+    if (ret === true) {
       console.log('token_reset in database')
       res.redirect('/resetPassword/' + login);
     }
