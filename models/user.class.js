@@ -120,8 +120,8 @@ class User {
 
     static async login(username, password) {
         try {
-            let ret = await pool.query('SELECT * FROM `users` WHERE `username` = ? LIMIT 1', [username]);
-            let hash = ret[0]['password'];
+            // let ret = await pool.query('SELECT * FROM `users` WHERE `username` = ? LIMIT 1', [username]);
+            // let hash = ret[0]['password'];
             // if(Object.keys(ret).length > 0 && ret[0]['status'] === 1) {
             //     const res = await bcrypt.compare(password, hash);
             //         if(res) {

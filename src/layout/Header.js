@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import LoginContainer from '../containers/LoginContainer';
 import Button from "../components/Button";
+import LinkButton from "../components/LinkButton"
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { signOutAction } from '../actions/actionUsers';
@@ -12,6 +13,7 @@ class Header extends Component{
 		super(props);
 		this.showModal = this.showModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
+        this.handleLogout = this.handleLogout.bind(this);
 	  }
 
 	showModal() {
@@ -20,6 +22,10 @@ class Header extends Component{
 	
 	closeModal() {
 		document.getElementById('modal_signin').classList.remove("is-active");
+    }
+
+    handleLogout() {
+        this.props.signOutAction();
     }
 
     showNavbar() {
@@ -32,7 +38,8 @@ class Header extends Component{
                     <Link to="/profile"><Button className="button is-rounded" title="My profile"/></Link>
                 </p>,
                 <p className="control">
-                    <Link to="/signout"><Button className="button is-rounded" title="Signout"/></Link>  
+                    {/* <Button onClick={this.handleLogout} className="button is-rounded" title="Signout"/> */}
+                    <LinkButton to='/' onClick={this.handleLogout} className="button is-rounded">Signout</LinkButton>
                 </p>
             ];
         }

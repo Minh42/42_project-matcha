@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 class LoginContainer extends Component {
     renderField(field) {
@@ -74,9 +75,12 @@ class LoginContainer extends Component {
     }
 }
 
+LoginContainer.propTypes = {
+	errorMessage: PropTypes.string,
+	signInAction: PropTypes.func.isRequired
+};
+
 function validate(values) {
-    // let check = require('../../library/tools');
-    // console.log(values);
     const errors = {};
     if (!values.username) {
         errors.username = "Please enter a username"
@@ -93,10 +97,7 @@ function mapStateToProps(state) {
     };
 }
 
-/* Anything returned from this function will show up as props inside of LoginContainer */
 function mapDispatchToProps(dispatch) {
-    /* Whenever signInAction is called, the result should be passed to all our reducers
-        through the dispatch function */
     return bindActionCreators({ signInAction: signInAction}, dispatch);
 }
 

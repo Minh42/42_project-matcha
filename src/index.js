@@ -14,6 +14,8 @@ import ForgotPassword from './containers/ForgotPasswordContainer';
 import ResetPassword from './containers/ResetPasswordContainer';
 import HomePage from './layout/HomePage';
 import MessagesPage from './layout/MessagesPage';
+import ForgotPassword from './containers/ForgotPasswordContainer';
+import ResetPassword from './containers/ResetPasswordContainer';
  
 import rootReducer from './reducers';
 import setAuthorizationToken from '../library/setAuthorizationToken';
