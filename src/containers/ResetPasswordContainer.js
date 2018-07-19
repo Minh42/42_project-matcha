@@ -5,7 +5,6 @@ import { withRouter } from "react-router-dom";
 
 import axios from 'axios';
 import $ from 'jquery';
-console.log(this.props.params.login);
 
 class ResetPassword extends Component {
 
