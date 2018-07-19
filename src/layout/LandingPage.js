@@ -1,6 +1,7 @@
 import React from 'react';
 import Carousel from '../containers/CarouselContainer';
 import SignupContainer from '../containers/SignupContainer';
+import FlashMessagesList from '../components/FlashMessagesList';
 
 const contentStyle1 = {
     height: '80%'
@@ -14,10 +15,10 @@ const LandingPage = () => {
     return (
         <div>
         <section className="hero">
-            {/* <div className="container"> */}
-
+    
                 <div className="hero-body hero-body-hp-main">
                     <div className="container">
+                        <FlashMessagesList />
                         <div className="columns">
                             <div className="column is-4 is-offset-2">
                                 <Carousel />
@@ -38,7 +39,7 @@ const LandingPage = () => {
                             <div className="card medium">
                                 <div className="card-image">
                                     <figure className="image">
-                                        <img src="src/img/portugal.jpg" alt="portugal"/>
+                                        <img src="../img/portugal.jpg" alt="portugal"/>
                                     </figure>
                                 </div>
                                 <div className="card-content">
@@ -52,7 +53,7 @@ const LandingPage = () => {
                             <div className="card medium">
                                 <div className="card-image">
                                     <figure className="image">
-                                        <img src="src/img/australie.jpg" alt="australie"/>
+                                        <img src="../img/australie.jpg" alt="australie"/>
                                     </figure>
                                 </div>
                                 <div className="card-content">
@@ -66,7 +67,7 @@ const LandingPage = () => {
                             <div className="card medium">
                                 <div className="card-image">
                                     <figure className="image">
-                                        <img src="src/img/japon.jpg" alt="japon"/>
+                                        <img src="../src/img/japon.jpg" alt="japon"/>
                                     </figure>
                                 </div>
                                 <div className="card-content">

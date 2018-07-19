@@ -9,16 +9,19 @@ export default function(ComposedComponent) {
 	class Authenticate extends Component {
 		componentWillMount() {
 			if(!this.props.isAuthenticated) {
-				this.props.addFlashMessage('You need to login to access this page', 'is-danger');
+				this.props.addFlashMessage({
+					type: '',
+					text: 'You need to login to access this page'
+				});
 				this.props.history.push('/');
 			}
 		}
 
-		// componentWillUpdate(nextProps) {
-		// 	if (!nextProps.isAuthenticated) {
-		// 		this.context.router.push('/');
-		// 	}
-		// }
+		componentWillUpdate(nextProps) {
+			if (!nextProps.isAuthenticated) {
+				this.context.router.push('/');
+			}
+		}
 
 		render () {
 			return (
@@ -27,14 +30,10 @@ export default function(ComposedComponent) {
 		}
 	}
 
-	// Authenticate.propTypes = {
-	// 	isAuthenticated: React.PropTypes.bool.isRequired,
-	// 	addFlashMessage: React.Proptypes.func.isRequired
-	// }
-
-	// Authenticate.contextTypes = {
-	// 	router: React.PropTypes.object.isRequired
-	// }
+	Authenticate.propTypes = {
+		isAuthenticated: PropTypes.bool,
+		addFlashMessage: PropTypes.func.isRequired
+	}
 
 	function mapStateToProps(state) {
 		return {

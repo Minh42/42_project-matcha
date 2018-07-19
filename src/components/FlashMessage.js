@@ -1,26 +1,36 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 class FlashMessage extends Component {
-	render() {
+	constructor(props) {
+		super(props);
+		this.handleClick = this.handleClick.bind(this);
+	}
 
-		const { message, style } = this.props.flashMessage;
-		if (!message) {
-			return null;
-		}
-		
+	handleClick() {
+		this.props.deleteFlashMessage(this.props.message.id);
+	}
+
+	render() {
+		const { id, type, text } = this.props.message;
 		return (
-			<div className={'notification' + style}>
-				{message}
+			<div className={classnames('notification', {
+				'is-success': type === 'success',
+				'is-danger': type === 'error',
+				'is-info': type === 'info',
+				'is-warning': type === 'warning'
+			})}>
+				<button onClick={this.handleClick} className="delete"></button>
+				{text}
 			</div>
 		);
 	}
 }
 
-function mapStateToProps(state) {
-	return { 
-		flashMessage: state.flashMessage
-	};
+FlashMessage.propTypes = {
+	message: PropTypes.object.isRequired,
+	deleteFlashMessage: PropTypes.func.isRequired
 }
 
-export default connect(mapStateToProps)(FlashMessage);
+export default FlashMessage;
