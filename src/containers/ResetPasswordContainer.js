@@ -5,7 +5,6 @@ import { withRouter } from "react-router-dom";
 
 import axios from 'axios';
 import $ from 'jquery';
-console.log(this.props.params.login);
 
 class ResetPassword extends Component {
 
@@ -39,7 +38,6 @@ class ResetPassword extends Component {
     }
 
     async onSubmit(values) {
-        console.log(values);
         const res = await axios.post('/api/sendNewPassword', values)
     }
 
