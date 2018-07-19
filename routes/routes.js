@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
          pass: 'born2code'
      }
  });
-
+ 
 router.get('/', (req, res) => {
   res.render('index')
 })
