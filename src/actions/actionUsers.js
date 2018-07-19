@@ -31,11 +31,14 @@ export function signInAction({username, password}, history) {
 	};
 }
 
-export function signOutAction(history) {
-	localStorage.clear();
-	return {
-		type: UNAUTHENTICATED
-	};
+export function signOutAction() {
+	return dispatch => {
+		localStorage.removeItem('jwtToken');
+		setAuthorizationToken(false);
+		dispatch({ 
+			type: UNAUTHENTICATED
+		});
+	}
 }
 
 export function signUpAction(values, history) {
