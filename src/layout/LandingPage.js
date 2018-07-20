@@ -67,7 +67,7 @@ const LandingPage = () => {
                             <div className="card medium">
                                 <div className="card-image">
                                     <figure className="image">
-                                        <img src="../src/img/japon.jpg" alt="japon"/>
+                                        <img src="../img/japon.jpg" alt="japon"/>
                                     </figure>
                                 </div>
                                 <div className="card-content">

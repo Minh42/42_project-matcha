@@ -17,7 +17,7 @@ app.set('view engine', 'mustache');
 const middlewares = [
   helmet(),
   // csrf({ cookie: true }),
-  express.static(path.join(__dirname, 'public')),
+  express.static(path.join(__dirname, 'assets')),
   bodyParser.urlencoded({ extended: true }),
   bodyParser.json(),
   // cookieParser(),
