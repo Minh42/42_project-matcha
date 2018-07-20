@@ -182,7 +182,7 @@ router.get('/api/resetPassword', function(req, res) {
   .then(function(ret) {
     if (ret === true) {
       console.log('token_reset in database')
-      res.redirect('/resetPassword/' + login);
+      res.redirect('/resetPassword');
     }
     else {
       console.log('error');
@@ -209,5 +209,4 @@ router.post('/api/sendNewPassword', function(req, res) {
   //     }
   //   });
 })
-
 module.exports = router 
