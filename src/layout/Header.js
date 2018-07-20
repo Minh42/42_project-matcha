@@ -80,7 +80,7 @@ class Header extends Component{
 			        <div className="modal-background"></div>
                         <div className="modal-card">
                             <header className="modal-card-head">
-                                <p className="modal-card-title">Sign In</p>
+                                <p className="modal-card-title">Sign in to Matcha</p>
                                 <button className="delete" aria-label="close" onClick={this.closeModal}></button>
                             </header>
                             <section className="modal-card-body">

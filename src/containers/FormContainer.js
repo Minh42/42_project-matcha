@@ -4,24 +4,23 @@ import { connect } from 'react-redux';
 import { signUpAction } from '../actions/actionUsers';
 import { bindActionCreators } from 'redux';
 import { withRouter } from 'react-router-dom'
-
+import PropTypes from 'prop-types';
 import Button from '../components/Button';
-import $ from 'jquery'
 
 class FormContainer extends Component {
-
 	renderField(field) {
-
 		const { meta: { touched, error } } = field;
 		const className= `input ${touched && error ? 'is-danger' : ''}`;
 
 		return (
 			<div className= "field">
 				<label className="label">{field.label}</label>
-				<div className="control">
+				<div className={field.icon ? "control has-icons-left" : ''}>
+                    <span className={field.icon ? "icon is-small is-left" : ''}>
+                        <i className={field.icon}></i>
+                    </span>
 					<input
 						className={className}
-						value={field.value}
 						type={field.type}
 						placeholder={field.placeholder}
 						{ ...field.input}
@@ -40,7 +39,6 @@ class FormContainer extends Component {
 
 	errorMessage() {
 		if (this.props.errorMessage) {
-			console.log(this.props.errorMessage);
             return (
                 <p className="help is-danger">
                     {this.props.errorMessage}
@@ -57,7 +55,6 @@ class FormContainer extends Component {
 			<form className="signup" onSubmit={handleSubmit(this.onSubmit.bind(this))}>
 				<Field
 					label="Firstname"
-					value=""
 					name="firstName"
 					type="text"
 					component= {this.renderField}
@@ -74,6 +71,7 @@ class FormContainer extends Component {
 				 	label="Username"
 					name="login"
 					type="text"
+					icon="fas fa-user"
 					component= {this.renderField}
 					placeholder="Username"
 				/>
@@ -81,6 +79,7 @@ class FormContainer extends Component {
 				 	label="Email"
 					name="email"
 					type="email"
+					icon="fas fa-envelope"
 					component= {this.renderField}
 					placeholder="Email"
 				/>
@@ -88,43 +87,43 @@ class FormContainer extends Component {
 				 	label="Password"
 					name="newPassword"
 					type="password"
+					icon="fas fa-lock"
 					component= {this.renderField}
-					placeholder="******"
+					placeholder="**********"
 				/>
 				<Field
 				 	label="Confirmed password"
 					name="confirmedPassword"
 					type="password"
+					icon="fas fa-lock"
 					component= {this.renderField}
-					placeholder="******"
+					placeholder="**********"
 				/>
-				<Button type='submit' className="button is-rounded" title="submit"/>
-				{/* <p className='help is-danger' id='errorSignUp'></p> */}
+				<Button type='submit' className="button is-rounded" title="Submit"/>
 				{this.errorMessage()}
 			</form>
 		);
 	}
 }
 
-function validate(values){
-
+function validate(values) {
 	let check = require('../../library/tools');
-	const errors = {};
+	let errors = {};
 
 	if (!values.firstName)
 		errors.firstName = "Please enter your firstname";
 	else if (!check.isFirstname(values.firstName))
-		errors.firstName = "Your firstname is invalid";
+		errors.firstName = "Firstname must contain only alphabetic characters";
 
 	if (!values.lastName)
 		errors.lastName = "Please enter your lastname";
 	else if (!check.isLastname(values.lastName))
-		errors.lastName = "Your lastname is invalid";
+		errors.lastName = "Lastname must contain only alphabetic characters";
 
 	if (!values.login)
-		errors.login = "Please enter your login";
+		errors.login = "Please enter your username";
 	else if (!check.isUsername(values.login))
-		errors.login = "Your login is invalid";
+		errors.login = "Username must contain between 5 and 16 characters";
 
 	if (!values.email)
 		errors.email = "Please enter your email";
@@ -146,14 +145,16 @@ function validate(values){
 	return errors;
 }
 
+FormContainer.propTypes = {
+	errorMessage: PropTypes.string,
+	signUpAction: PropTypes.func.isRequired
+};
+
 function mapStateToProps(state) {
 	return { errorMessage : state.signup.error };
 }
 
-/* Anything returned from this function will end up as props on the FormContainer */
 function mapDispatchToProps(dispatch) { 
-	/* Whenever signUpAction is called, the result should be passed to all our reducers
-	through the dispatch function */
 	return bindActionCreators({ signUpAction : signUpAction}, dispatch);
 } 
 

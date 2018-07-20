@@ -6,8 +6,9 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import Button from '../components/Button';
 
-class LoginContainer extends Component {
+class LoginContainer extends Component {    
     renderField(field) {
         const { meta: { touched, error } } = field;
         const danger = `input ${touched && error ? 'is-danger' : ''}`;
@@ -22,6 +23,7 @@ class LoginContainer extends Component {
                     <input 
                         className={danger}
                         type={field.type}
+                        placeholder={field.placeholder}
                         {...field.input}
                     />
                     <div className="help is-danger">
@@ -47,6 +49,7 @@ class LoginContainer extends Component {
     }
 
     render () {
+        
         const { handleSubmit } = this.props;
 
         return (
@@ -57,6 +60,7 @@ class LoginContainer extends Component {
                     name="username"
                     type="text"
                     icon="fas fa-user"
+                    placeholder="Username"
                     component={this.renderField}
                 />
                 <Field
@@ -64,11 +68,16 @@ class LoginContainer extends Component {
                     name="password"
                     type="password"
                     icon="fas fa-lock"
+                    placeholder="Password"
                     component={this.renderField}
                 />
-                <button type="submit" className="button is-rounded">Sign In</button>
-                <div>
-                    <Link to="/forgotPassword">Forgot password ?</Link> 
+                <div class="field is-grouped">
+                    <p class="control">
+                        <Button type="submit" className="button is-rounded" title="Sign In" />
+                    </p>
+                    <p class="control">
+                        <Link to="/forgotPassword">Forgot password ?</Link>  
+                    </p>
                 </div>
             </form>
         );

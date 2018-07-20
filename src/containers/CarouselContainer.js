@@ -1,11 +1,14 @@
-import React, {Component} from "react";
-import Slider from "react-slick";
+import React, {Component} from 'react';
+import Slider from 'react-slick';
+import step1 from '../../assets/img/step1.jpg'
+import australie from '../../assets/img/australie.jpg'
+import step3 from '../../assets/img/step3.png'
 
-class Carousel extends Component {
+class CarouselContainer extends Component {
   render() {
     var settings = {
       dots: true,
-      infinite: true,
+      infinite: false,
       speed: 500,
       slidesToShow: 1,
       slidesToScroll: 1
@@ -13,17 +16,17 @@ class Carousel extends Component {
     return (
         <Slider {...settings}>
         <div>
-          <img src="src/img/1.jpeg"/>
+          <img src={step3}/>
         </div>
         <div>
-          <img src="src/img/1.jpeg"/>
+          <img src={australie}/>
         </div>
         <div>
-          <img src="src/img/1.jpeg"/>
+          <img src={step3}/>
         </div>
       </Slider>
     );
   }
 }
 
-export default Carousel;
+export default CarouselContainer;
