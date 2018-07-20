@@ -5,7 +5,6 @@ import { withRouter } from "react-router-dom";
 
 import axios from 'axios';
 import $ from 'jquery';
-console.log(this.props.params.login);
 
 class ResetPassword extends Component {
 
@@ -56,7 +55,7 @@ class ResetPassword extends Component {
                                 type="password"
                                 component={this.renderField}
                             />
-                             <Field
+                            <Field
                                 label="Confirm your new password"
                                 name="confirmedNewPassword"
                                 type="password"
