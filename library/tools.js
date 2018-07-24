@@ -6,13 +6,13 @@ function isEmpty(data) {
 }
 
 function isFirstname(firstname) {
-	var regex = /^[a-zA-Z_]{1,30}$/
+	var regex = /^[a-zA-Z_]{1,32}$/
 	if (!regex.test(firstname)) return false;
 	return true;
 }
 
 function isLastname(lastname) {
-	var regex = /^[a-zA-Z_]{1,30}$/
+	var regex = /^[a-zA-Z_]{1,32}$/
 	if (!regex.test(lastname)) return false;
 	return true;
 }
