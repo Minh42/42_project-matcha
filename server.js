@@ -9,6 +9,7 @@ const mustacheExpress = require('mustache-express')
 const helmet = require('helmet')
 // const csrf = require('csurf')
 const app = express()
+const PORT = process.env.PORT || 8080;
 
 app.set('views', path.join(__dirname, 'views'))
 app.engine('mustache', mustacheExpress());
@@ -42,6 +43,6 @@ app.use((err, req, res, next) => {
   res.status(500).send('Something broke!')
 })
 
-app.listen(8080, () => {
-    console.log(`App running at http://localhost:8080`)
+app.listen(PORT, () => {
+    console.log('App running at http://localhost:8080')
 })

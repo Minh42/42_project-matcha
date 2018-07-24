@@ -13,16 +13,17 @@ let config = {
       filename: "bundle.js"
     },
     module: {
-        rules: [{
-          test: /\.js$/,
-          exclude: /node_modules/,
-          loader: "babel-loader",
-          options: {
+        rules: [
+          {
+            test: /\.js$/,
+            exclude: /node_modules/,
+            loader: "babel-loader",
+            options: {
             cacheDirectory: true,
             presets: ['react', 'stage-0', 'es2015'] // Transpiles JSX and ES6
-          }
-        },
-        {
+            }
+          },
+          {
             test: /\.(sa|sc|c)ss$/,
             use: [
               devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
@@ -30,7 +31,17 @@ let config = {
               'postcss-loader',
               'sass-loader',
             ],
-          }]
+          },
+          {
+            test: /\.(png|jpe?g|gif)$/,
+            use: [{
+              loader: 'url-loader',
+              options: {
+                limit: 10 * 1024,
+              }
+            }]
+          }
+        ]
       },
       plugins: [
         new MiniCssExtractPlugin("styles.css"),

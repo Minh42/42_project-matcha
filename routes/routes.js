@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const config = require('../server/config');
-
 const midUser = require('../src/middlewares/midUser'); 
 
 //PARAMETER EMAIL (nodemailer)
@@ -26,7 +25,6 @@ router.post('/api/signup', checkSignupValidation, function(req, res) {
   console.log(req.body);
   let user = require('../models/user.class');
   let check = require('../library/tools');
-
   let messages = {};
 
   var hashNewPassword = check.isHash(req.body.newPassword);
@@ -34,8 +32,7 @@ router.post('/api/signup', checkSignupValidation, function(req, res) {
 
   user.addUser(req.body.firstName, req.body.lastName, req.body.login, req.body.email, hashNewPassword, token)
     .then(function(ret) {
-      if (ret === true)
-      {
+      if (ret) {
         var mail = {
 					from: "matcha.appli@gmail.com",
 					to: req.body.email,
@@ -78,8 +75,7 @@ router.get('/api/activationMail', function(req, res) {
 
   user.compareToken(login, token)
     .then(function(ret) {
-      if (ret === true)
-      {
+      if (ret) {
         console.log('token in database')
         user.changeStatus(login)
           .then(function(ret){
@@ -117,8 +113,7 @@ router.post('/api/forgotPassword', function(req, res) {
   let user = require('../models/user.class');
   user.emailExist(req.body.email)
         .then(function(ret){
-          if (ret)
-          {
+          if (ret) {
             console.log(ret);
 
             user.searchByEmail(req.body.email)
