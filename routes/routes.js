@@ -118,10 +118,10 @@ router.post('/api/forgotPassword', function(req, res) {
 
             user.searchByEmail(req.body.email)
               .then(function(ret){
-                  console.log(ret[0].first_name);
+                  console.log(ret[0].firstname);
                   console.log(ret[0].username);
                   login = ret[0].username;
-                  firstname = ret[0].first_name;
+                  firstname = ret[0].firstname;
 
                   var token_reset = jwt.sign( {  foo : req.body.login } , config.jwtSecret );
                   console.log(token_reset);

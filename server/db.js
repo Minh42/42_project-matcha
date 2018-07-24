@@ -35,7 +35,7 @@ pool.getConnection((err, connection) => {
     else {
         console.log('Connection established');
         importer.importSQL(__dirname + '/db.sql').then( () => {
-            console.log('all statements have been executed')
+            console.log('All statements have been executed')
         }).catch( err => {
             console.log(`error: ${err}`)
         })

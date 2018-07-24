@@ -38,16 +38,14 @@ class User {
 
     static async addUser(firstname, lastname, login, email, password, token) {
         try {
-            const values = {username: login, first_name: firstname, last_name: lastname, password: password, email: email, token: token};
+            const values = {username: login, firstname: firstname, lastname: lastname, password: password, email: email, token: token};
             const requete = 'INSERT INTO `users` SET ?'
        
             let ret = await pool.query(requete, values)
-                if (ret)
-                {
+                if (ret) {
                     return true;
                 }
-                else
-                {
+                else {
                     return false;
                 }
         }
@@ -84,7 +82,7 @@ class User {
 
     static async searchByEmail(email) {
         try {
-            let ret = await pool.query("SELECT `first_name`, `username` FROM `users` WHERE `email` = ?", [email]);
+            let ret = await pool.query("SELECT `firstname`, `username` FROM `users` WHERE `email` = ?", [email]);
             return ret;
         } 
         catch(err) {
