@@ -1,58 +1,49 @@
-// var mysql = require('mysql')
-// var util = require('util')
-// var pool = mysql.createPool({
-//     connectionLimit: 10,
-//     host     : '192.168.99.100',
-//     port     : '3306',
-//     user     : 'root',
-//     password : 'root',
-//     database : 'matcha'
-// })
+'use strict'
 
-// pool.getConnection((err, connection) => {
-//     if (err) {
-//         if (err.code === 'PROTOCOL_CONNECTION_LOST') {
-//             console.error('Database connection was closed.')
-//         }
-//         if (err.code === 'ER_CON_COUNT_ERROR') {
-//             console.error('Database has too many connections.')
-//         }
-//         if (err.code === 'ECONNREFUSED') {
-//             console.error('Database connection was refused.')
-//         }
-//     }
-//     else 
-//       console.log('Connection established');
-//     if (connection) connection.release()
-//     return
-// })
+const mysql = require('mysql')
+const util = require('util')
+const importer = require('node-mysql-importer')
 
-// pool.query = util.promisify(pool.query)
+const pool = mysql.createPool({
+    connectionLimit: 10,
+    host     : '192.168.99.100',
+    port     : '3306',
+    user     : 'root',
+    password : 'root',
+    database : 'matcha'
+})
 
-// module.exports = pool
+importer.config({
+    'host': '192.168.99.100',
+    'user': 'root',
+    'password': 'root',
+    'database': 'matcha'
+})
 
-var spawn = require("child_process").spawn;
-var logFile;
-
-var mysqlimport = spawn('/usr/local/bin/mysql', [
-    '-u' + 'root',
-    '-p' + 'root',
-    '-h' + '192.168.99.100',
-    '--default-character-set=utf8',
-    '--comments'
-]);
-
-mysqlimport.stdin.write(__dirname + '/db.sql');
-mysqlimport.stdin.end();
-mysqlimport
-        .stdout
-        .pipe(logFile)
-        .on('data', function(data) {
-           console.log(data); 
+pool.getConnection((err, connection) => {
+    if (err) {
+        if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+            console.error('Database connection was closed.')
+        }
+        if (err.code === 'ER_CON_COUNT_ERROR') {
+            console.error('Database has too many connections.')
+        }
+        if (err.code === 'ECONNREFUSED') {
+            console.error('Database connection was refused.')
+        }
+    }
+    else {
+        console.log('Connection established');
+        importer.importSQL(__dirname + '/db.sql').then( () => {
+            console.log('all statements have been executed')
+        }).catch( err => {
+            console.log(`error: ${err}`)
         })
-        .on('finish', function() {
-            console.log('finished')
-        })
-        .on('error', function(err) {
-            console.log(err)
-        });
+    }
+    if (connection) connection.release()
+    return
+})
+
+pool.query = util.promisify(pool.query)
+
+module.exports = pool
