@@ -123,15 +123,17 @@ router.post('/api/forgotPassword', function(req, res) {
 
             user.searchByEmail(req.body.email)
               .then(function(ret){
+                  console.log(ret[0].id_user);
                   console.log(ret[0].first_name);
                   console.log(ret[0].username);
+                  id_user = ret[0].id_user;
                   login = ret[0].username;
                   firstname = ret[0].first_name;
 
                   var token_reset = jwt.sign( {  foo : req.body.login } , config.jwtSecret );
                   console.log(token_reset);
 
-                  user.addTokenResetBDD(login, token_reset)
+                  user.addTokenResetBDD(id_user, token_reset)
                     .then(function(ret){
                       if (ret)
                       {
@@ -141,7 +143,7 @@ router.post('/api/forgotPassword', function(req, res) {
                         subject: "Reset your password Matcha",
                         html: '<h3> Hello ' + firstname + '</h3>' +
                         '<p>To reset your password, please click on the link below.</p>' +
-                        '<p>http://localhost:3000/api/resetPassword?login='+ login +'&token_reset=' + token_reset + '</p>' +
+                        '<p>http://localhost:3000/api/resetPassword?id_user='+ id_user +'&token_reset=' + token_reset + '</p>' +
                         '<p> --------------- /p>' +
                         '<p>This is an automatic mail, Please do not reply.</p>'
                         }
@@ -174,15 +176,14 @@ router.post('/api/forgotPassword', function(req, res) {
 //RESET PASSWORD
 router.get('/api/resetPassword', function(req, res) {
   let user = require('../models/user.class');
-  let messages = {};
-  var login = req.param('login');
+  var id_user = req.param('id_user');
   var token_reset = req.param('token_reset');
 
-  user.compareTokenReset(login, token_reset)
+  user.compareTokenReset(id_user, token_reset)
   .then(function(ret) {
     if (ret === true) {
       console.log('token_reset in database')
-      res.redirect('/resetPassword');
+      res.redirect('/resetPassword/' + id_user);
     }
     else {
       console.log('error');
@@ -197,16 +198,20 @@ router.get('/api/resetPassword', function(req, res) {
 
 router.post('/api/sendNewPassword', function(req, res) {
   let user = require('../models/user.class');
+  let check = require('../library/tools');
   let messages= {};
 
   hashNewPassword = check.isHash(req.body.newPasswordReset);
   console.log(hashNewPassword);
 
-  // user.sendNewPasswordBDD()
-  //   .then (function(ret){
-  //     if (ret) {
-
-  //     }
-  //   });
+  user.sendNewPasswordBDD(hashNewPassword, req.body.id_user)
+    .then (function(ret){
+      if (ret) {
+        res.send({redirect: '/'});
+      }
+      else {
+        res.sendStatus(401);
+      }
+    });
 })
 module.exports = router 

@@ -69,9 +69,9 @@ class User {
         }  
     }
 
-    static async compareTokenReset(login, token_reset) {
+    static async compareTokenReset(id_user, token_reset) {
         try {
-            let ret = await pool.query("SELECT `token_reset` FROM `users` WHERE `username` = ?", [login]);
+            let ret = await pool.query("SELECT `token_reset` FROM `users` WHERE `id_user` = ?", [id_user]);
             if (ret[0].token_reset === token_reset)
                 return true;
             else
@@ -84,7 +84,7 @@ class User {
 
     static async searchByEmail(email) {
         try {
-            let ret = await pool.query("SELECT `first_name`, `username` FROM `users` WHERE `email` = ?", [email]);
+            let ret = await pool.query("SELECT `id_user`, `first_name`, `username` FROM `users` WHERE `email` = ?", [email]);
             return ret;
         } 
         catch(err) {
@@ -92,15 +92,13 @@ class User {
         } 
     }
 
-    static async addTokenResetBDD(login, token_reset) {
+    static async addTokenResetBDD(id_user, token_reset) {
         try {
-            let ret = await pool.query("UPDATE `users` SET `token_reset` = ? WHERE `username` = ?", [token_reset, login]);
-                if (ret)
-                {
+            let ret = await pool.query("UPDATE `users` SET `token_reset` = ? WHERE `id_user` = ?", [token_reset, id_user]);
+                if (ret) {
                     return true;
                 }
-                else
-                {
+                else {
                     return false;
                 }
         }
@@ -140,25 +138,24 @@ class User {
         }  
     }
 
-    // static async sendNewPasswordBDD(newPassword, login)
-    // {
-    //     try {
-    //         console.log("HERE");
-    //         console.log(login);
-    //         let ret = await pool.query("UPDATE `users` SET `password` = ? WHERE `username` = ?", [newPassword, login]);
-    //         if (ret)
-    //         {
-    //             return true;
-    //         }
-    //         else
-    //         {
-    //             return false;
-    //         }
-    //     }
-    //     catch(err) {
-    //         throw new Error(err)
-    //     } 
-    // }
+    static async sendNewPasswordBDD(newPassword, id_user)
+    {
+        try {
+            console.log("HERE");
+            console.log(id_user);
+            let ret = await pool.query("UPDATE `users` SET `password` = ? WHERE `id_user` = ?", [newPassword, id_user]);
+            if (ret) {
+                console.log(true)
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
 }
 
 module.exports = User
