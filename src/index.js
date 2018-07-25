@@ -36,7 +36,7 @@ ReactDOM.render(
                 <Header />
                 <Switch>
                     <Route exact path="/" component={LandingPage} />
-                    <Route path="/homepage" component={requireAuth(HomePage)} />
+                    <Route path="/homepage" component={HomePage} />
                     <Route path="/messages" component={requireAuth(MessagesPage)} />
                     <Route path="/forgotPassword" component={ForgotPassword} />
                     <Route exact path="/resetPassword/:login" component={ResetPassword} />

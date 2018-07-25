@@ -1,1 +1,2 @@
-create database matcha;
+use matcha;
+SELECT * FROM users;

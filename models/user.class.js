@@ -118,17 +118,19 @@ class User {
 
     static async login(username, password) {
         try {
+            console.log(password);
             let ret = await pool.query('SELECT * FROM `users` WHERE `username` = ? LIMIT 1', [username]);
             let hash = ret[0]['password'];
+            console.log('IM HERE');
             if(Object.keys(ret).length > 0 && ret[0]['status'] === 1) {
                 const res = await bcrypt.compare(password, hash);
-                    if(res) {
-                        console.log('Passwords match');
-                        return true;
-                    } else {
-                        console.log('Passwords don\'t match');
-                        return false;
-                    } 
+                if(res) {
+                    console.log('Passwords match');
+                    return true;
+                } else {
+                    console.log('Passwords don\'t match');
+                    return false;
+                } 
             }
             else {
                 return false;

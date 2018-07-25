@@ -3,13 +3,15 @@ import { reducer as formReducer } from 'redux-form';
 import authReducer from './reducer_auth';
 import signUpReducer from './reducer_signup';
 import flashMessagesReducer from './reducer_flashMessages';
+import usersReducer from './reducer_users';
 
 // mapping of our state
 const rootReducer = combineReducers({
     signup: signUpReducer,
     auth: authReducer,
     form: formReducer,
-    flashMessages: flashMessagesReducer
+    flashMessages: flashMessagesReducer,
+    users: usersReducer
 });
 
 export default rootReducer;
