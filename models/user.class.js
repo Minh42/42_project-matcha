@@ -61,7 +61,7 @@ class User {
 
     static async searchById(id) {
         try {
-            let ret = await pool.query("SELECT * FROM `users` WHERE `id_user` = ?", [id]);
+            let ret = await pool.query("SELECT * FROM `users` WHERE `user_id` = ?", [id]);
             return ret;
         } 
         catch(err) {
@@ -69,9 +69,9 @@ class User {
         } 
     }
 
-    static async addUser(firstname, lastname, login, email, password, token) {
+    static async addUser(firstname, lastname, login, email, password,  activation_code) {
         try {
-            const values = {username: login, firstname: firstname, lastname: lastname, password: password, email: email, token: token};
+            const values = {username: login, firstname: firstname, lastname: lastname, password: password, email: email,  activation_code:  activation_code};
             const requete = 'INSERT INTO `users` SET ?'
        
             let ret = await pool.query(requete, values)
@@ -89,7 +89,7 @@ class User {
 
     static async addUserGoogle(firstname, lastname, email, google_id) {
         try {
-            const values = {first_name: firstname, last_name: lastname, email : email, google_id : google_id};
+            const values = {firstname: firstname, lastname: lastname, email : email, google_id : google_id};
             const requete = 'INSERT INTO `users` SET ?'
        
             let ret = await pool.query(requete, values)
@@ -105,10 +105,10 @@ class User {
         } 
     }
 
-    static async compareToken(login, token) {
+    static async compareToken(login,  activation_code) {
         try {
-            let ret = await pool.query("SELECT `token` FROM `users` WHERE `username` = ?", [login]);
-            if (ret[0].token === token)
+            let ret = await pool.query("SELECT ` activation_code` FROM `users` WHERE `username` = ?", [login]);
+            if (ret[0]. activation_code ===  activation_code)
                 return true;
             else
                 return false;
@@ -118,9 +118,9 @@ class User {
         }  
     }
 
-    static async compareTokenReset(id_user, token_reset) {
+    static async compareTokenReset(user_id, token_reset) {
         try {
-            let ret = await pool.query("SELECT `token_reset` FROM `users` WHERE `id_user` = ?", [id_user]);
+            let ret = await pool.query("SELECT `token_reset` FROM `users` WHERE `user_id` = ?", [user_id]);
             if (ret[0].token_reset === token_reset)
                 return true;
             else
@@ -133,7 +133,7 @@ class User {
 
     static async searchByEmail(email) {
         try {
-            let ret = await pool.query("SELECT `id_user`, `first_name`, `username` FROM `users` WHERE `email` = ?", [email]);
+            let ret = await pool.query("SELECT `user_id`, `first_name`, `username` FROM `users` WHERE `email` = ?", [email]);
             return ret;
         } 
         catch(err) {
@@ -141,9 +141,9 @@ class User {
         } 
     }
 
-    static async addTokenResetBDD(id_user, token_reset) {
+    static async addTokenResetBDD(user_id, token_reset) {
         try {
-            let ret = await pool.query("UPDATE `users` SET `token_reset` = ? WHERE `id_user` = ?", [token_reset, id_user]);
+            let ret = await pool.query("UPDATE `users` SET `token_reset` = ? WHERE `user_id` = ?", [token_reset, user_id]);
                 if (ret) {
                     return true;
                 }
@@ -189,12 +189,12 @@ class User {
         }  
     }
 
-    static async sendNewPasswordBDD(newPassword, id_user)
+    static async sendNewPasswordBDD(newPassword, user_id)
     {
         try {
             console.log("HERE");
-            console.log(id_user);
-            let ret = await pool.query("UPDATE `users` SET `password` = ? WHERE `id_user` = ?", [newPassword, id_user]);
+            console.log(user_id);
+            let ret = await pool.query("UPDATE `users` SET `password` = ? WHERE `user_id` = ?", [newPassword, user_id]);
             if (ret) {
                 console.log(true)
                 return true;

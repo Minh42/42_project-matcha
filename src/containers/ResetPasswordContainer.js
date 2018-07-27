@@ -10,10 +10,10 @@ class ResetPassword extends Component {
     constructor(props) {
         super(props)
         this.state = {
-           id_user : this.props.match.params.id_user,
+           user_id : this.props.match.params.user_id,
            messagesSuccess : ""
         }
-        console.log(this.props.match.params.id_user);
+        console.log(this.props.match.params.user_id);
     }
 
     renderField(field) {
@@ -40,7 +40,7 @@ class ResetPassword extends Component {
    async onSubmit(values) {
         var dataReset = { newPasswordReset : values.newPasswordReset,
                         confirmedNewPassword : values.confirmedNewPassword,
-                        id_user : this.state.id_user
+                        user_id : this.state.user_id
                         }
         const res = await axios.post('/api/sendNewPassword', dataReset)
         window.location = res.data.redirect;

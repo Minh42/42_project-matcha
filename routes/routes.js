@@ -122,17 +122,17 @@ router.post('/api/forgotPassword', function(req, res) {
 
             user.searchByEmail(req.body.email)
               .then(function(ret){
-                  console.log(ret[0].id_user);
+                  console.log(ret[0].user_id);
                   console.log(ret[0].firstname);
                   console.log(ret[0].username);
-                  id_user = ret[0].id_user;
+                  user_id = ret[0].user_id;
                   login = ret[0].username;
                   firstname = ret[0].firstname;
 
                   var token_reset = jwt.sign( {  foo : req.body.login } , config.jwtSecret );
                   console.log(token_reset);
 
-                  user.addTokenResetBDD(id_user, token_reset)
+                  user.addTokenResetBDD(user_id, token_reset)
                     .then(function(ret){
                       if (ret)
                       {
@@ -142,7 +142,7 @@ router.post('/api/forgotPassword', function(req, res) {
                         subject: "Reset your password Matcha",
                         html: '<h3> Hello ' + firstname + '</h3>' +
                         '<p>To reset your password, please click on the link below.</p>' +
-                        '<p>http://localhost:3000/api/resetPassword?id_user='+ id_user +'&token_reset=' + token_reset + '</p>' +
+                        '<p>http://localhost:3000/api/resetPassword?user_id='+ user_id +'&token_reset=' + token_reset + '</p>' +
                         '<p> --------------- /p>' +
                         '<p>This is an automatic mail, Please do not reply.</p>'
                         }
@@ -175,14 +175,14 @@ router.post('/api/forgotPassword', function(req, res) {
 //RESET PASSWORD
 router.get('/api/resetPassword', function(req, res) {
   let user = require('../models/user.class');
-  var id_user = req.param('id_user');
+  var user_id = req.param('user_id');
   var token_reset = req.param('token_reset');
 
-  user.compareTokenReset(id_user, token_reset)
+  user.compareTokenReset(user_id, token_reset)
   .then(function(ret) {
     if (ret === true) {
       console.log('token_reset in database')
-      res.redirect('/resetPassword/' + id_user);
+      res.redirect('/resetPassword/' + user_id);
     }
     else {
       console.log('error');
@@ -203,7 +203,7 @@ router.post('/api/sendNewPassword', function(req, res) {
   hashNewPassword = check.isHash(req.body.newPasswordReset);
   console.log(hashNewPassword);
 
-  user.sendNewPasswordBDD(hashNewPassword, req.body.id_user)
+  user.sendNewPasswordBDD(hashNewPassword, req.body.user_id)
     .then (function(ret){
       if (ret) {
         res.send({redirect: '/'});
@@ -219,7 +219,8 @@ router.post('/api/sendNewPassword', function(req, res) {
 // router.use(passport.initialize());
 
 passport.serializeUser(function(user, done) {
-  done(null, user[0].id_user);
+  console.log(user)
+  done(null, user[0].user_id);
 });
  
 passport.deserializeUser(function(id, done) {
@@ -265,8 +266,14 @@ passport.use(
               }
               else {
                 user.addUserGoogle(firstname, lastname, email, googleID)
-                .then(function(user) {
-                  done(null, user);
+                .then(function(ret) {
+                  if (ret)
+                  {
+                    user.searchByGoogleId(googleID) 
+                      .then(function(user) {
+                        done(null, user);
+                      })
+                  }
                 })
                 console.log('ajout utilisateur')
               }
