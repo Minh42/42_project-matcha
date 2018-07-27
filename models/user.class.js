@@ -71,16 +71,14 @@ class User {
 
     static async addUser(firstname, lastname, login, email, password, token) {
         try {
-            const values = {username: login, first_name: firstname, last_name: lastname, password: password, email: email, token: token};
+            const values = {username: login, firstname: firstname, lastname: lastname, password: password, email: email, token: token};
             const requete = 'INSERT INTO `users` SET ?'
        
             let ret = await pool.query(requete, values)
-                if (ret)
-                {
+                if (ret) {
                     return true;
                 }
-                else
-                {
+                else {
                     return false;
                 }
         }
@@ -169,17 +167,19 @@ class User {
 
     static async login(username, password) {
         try {
+            console.log(password);
             let ret = await pool.query('SELECT * FROM `users` WHERE `username` = ? LIMIT 1', [username]);
             let hash = ret[0]['password'];
+            console.log('IM HERE');
             if(Object.keys(ret).length > 0 && ret[0]['status'] === 1) {
                 const res = await bcrypt.compare(password, hash);
-                    if(res) {
-                        console.log('Passwords match');
-                        return true;
-                    } else {
-                        console.log('Passwords don\'t match');
-                        return false;
-                    } 
+                if(res) {
+                    console.log('Passwords match');
+                    return true;
+                } else {
+                    console.log('Passwords don\'t match');
+                    return false;
+                } 
             }
             else {
                 return false;

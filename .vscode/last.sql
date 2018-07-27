@@ -1,1 +1,2 @@
-SHOW TABLES;
+use matcha;
+SELECT * FROM users;

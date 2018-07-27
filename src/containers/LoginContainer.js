@@ -71,11 +71,11 @@ class LoginContainer extends Component {
                     placeholder="Password"
                     component={this.renderField}
                 />
-                <div class="field is-grouped">
-                    <p class="control">
+                <div className="field is-grouped">
+                    <p className="control">
                         <Button type="submit" className="button is-rounded" title="Sign In" />
                     </p>
-                    <p class="control">
+                    <p className="control">
                         <Link to="/forgotPassword">Forgot password ?</Link>  
                     </p>
                 </div>
