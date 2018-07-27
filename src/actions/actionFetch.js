@@ -13,12 +13,10 @@ export function fetchUsers() {
             const res = await axios.get('https://randomuser.me/api/?results=10');
             var usersData = res.data.results.map(result => ({
                 id: result.registered,
-                firstname: result.name.first,
-                lastname: result.name.last,
+                username: result.login.username,
                 age: result.dob.age,
-                picture: result.picture.medium
+                picture: result.picture.large
             }))
-            console.log(usersData);
             dispatch({
                 type: FETCH_USERS_SUCCESS,
                 payload: usersData

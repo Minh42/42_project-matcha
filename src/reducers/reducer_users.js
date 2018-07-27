@@ -1,4 +1,5 @@
 import { FETCH_USERS_REQUEST, FETCH_USERS_SUCCESS, FETCH_USERS_FAILURE } from '../actions/actionFetch';
+import shortid from 'shortid';
 
 const initialState = {
     items: [],
@@ -17,14 +18,15 @@ export default function (state = initialState, action) {
         case FETCH_USERS_SUCCESS: 
         return {
             ...state,
+            id: shortid.generate(),
             loading: false,
-            items: action.payload.users
+            items: action.payload
         }
         case FETCH_USERS_FAILURE:
         return {
             ...state,
             loading: false,
-            error: action.payload.error,
+            error: action.payload,
             items: []
         }
         default:

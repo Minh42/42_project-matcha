@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 class UserProfile extends Component {
 
     render() {
-        const { firstname, lastname, age, src } = this.props
+        const { username, age, src } = this.props;
         return (
             <div className="column is-one-quarter-desktop is-half-tablet">
                 <div className="card">
@@ -13,7 +13,7 @@ class UserProfile extends Component {
                         </figure>
                         <div className="card-content is-overlay is-clipped">
                             <span className="tag is-info">
-                                Photo
+                                {username} {age}
                             </span>       
                         </div>
                     </div>
@@ -49,3 +49,5 @@ class UserProfile extends Component {
         )
     }
 }
+
+export default UserProfile;
