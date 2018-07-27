@@ -1,3 +1,4 @@
 module.exports = {
-    jwtSecret: 'mysecretsauce'
+    jwtSecret: 'mysecretsauce',
+    cookiekey: 'dskfhskfhlshflsqfjqomfjsmfjqsmfq'
 }

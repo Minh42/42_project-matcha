@@ -36,6 +36,39 @@ class User {
         }  
     }
 
+    static async googleIdExist(google_id) {   
+        try {    
+            let ret = await pool.query("SELECT count(*) as googleId_exists FROM `users` WHERE `google_id` = ?", [google_id]);
+            if (ret[0].googleId_exists > '0')
+                return true;
+            else
+                return false;
+        } 
+        catch(err) {
+            throw new Error(err)
+        }  
+    }
+
+    static async searchByGoogleId(google_id) {
+        try {
+            let ret = await pool.query("SELECT * FROM `users` WHERE `google_id` = ?", [google_id]);
+            return ret;
+        } 
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async searchById(id) {
+        try {
+            let ret = await pool.query("SELECT * FROM `users` WHERE `id_user` = ?", [id]);
+            return ret;
+        } 
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
     static async addUser(firstname, lastname, login, email, password, token) {
         try {
             const values = {username: login, first_name: firstname, last_name: lastname, password: password, email: email, token: token};
@@ -48,6 +81,24 @@ class User {
                 }
                 else
                 {
+                    return false;
+                }
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async addUserGoogle(firstname, lastname, email, google_id) {
+        try {
+            const values = {first_name: firstname, last_name: lastname, email : email, google_id : google_id};
+            const requete = 'INSERT INTO `users` SET ?'
+       
+            let ret = await pool.query(requete, values)
+                if (ret) {
+                    return true;
+                }
+                else {
                     return false;
                 }
         }
