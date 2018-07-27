@@ -2,6 +2,11 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import FormContainer from './FormContainer';
 import Button from '../components/Button';
+import { Link } from 'react-router-dom';
+
+import axios from 'axios';
+
+import GoogleButton from 'react-google-button'
 
 class SignupContainer extends Component{
 	constructor(props) {
@@ -9,6 +14,7 @@ class SignupContainer extends Component{
 		this.showModal = this.showModal.bind(this);
 		this.closeModal = this.closeModal.bind(this);
 		this.closeModalEmail = this.closeModalEmail.bind(this);
+		this.signInGoogle = this.signInGoogle.bind(this);
 	  }
 
 	showModal() {
@@ -22,6 +28,10 @@ class SignupContainer extends Component{
 	closeModalEmail() {
 		document.getElementById('modalEmail').classList.remove("is-active");
 	}	
+
+	async signInGoogle () {
+		location.href = "api/auth/google";
+	}
 
 	render () {
 	return (
@@ -46,11 +56,15 @@ class SignupContainer extends Component{
 						<button className="delete" aria-label="close" onClick={this.closeModal}></button>
 					</header>
 					<section className="modal-card-body">
-						<FormContainer />
+						<FormContainer /> 
 					</section>
 				</div>
 			</div>
-
+			<div>
+			<GoogleButton
+  				onClick={this.signInGoogle}
+			/>
+			</div>
 			<div className="modal" id="modalEmail">
 				<div className="modal-background"></div>
 				<div className="modal-card">

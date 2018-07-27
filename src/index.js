@@ -39,7 +39,7 @@ ReactDOM.render(
                     <Route path="/homepage" component={HomePage} />
                     <Route path="/messages" component={requireAuth(MessagesPage)} />
                     <Route path="/forgotPassword" component={ForgotPassword} />
-                    <Route exact path="/resetPassword/:login" component={ResetPassword} />
+                    <Route path="/resetPassword/:login" component={ResetPassword} />
                 </Switch>
                 <Footer />
             </div>

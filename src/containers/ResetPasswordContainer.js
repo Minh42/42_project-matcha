@@ -4,16 +4,16 @@ import { connect } from 'react-redux';
 import { withRouter } from "react-router-dom";
 
 import axios from 'axios';
-import $ from 'jquery';
 
 class ResetPassword extends Component {
 
-    constructor() {
-        super()
+    constructor(props) {
+        super(props)
         this.state = {
-            messagesSuccess : "",
-            messagesError : ""
+           user_id : this.props.match.params.user_id,
+           messagesSuccess : ""
         }
+        console.log(this.props.match.params.user_id);
     }
 
     renderField(field) {
@@ -37,8 +37,13 @@ class ResetPassword extends Component {
         );
     }
 
-    async onSubmit(values) {
-        const res = await axios.post('/api/sendNewPassword', values)
+   async onSubmit(values) {
+        var dataReset = { newPasswordReset : values.newPasswordReset,
+                        confirmedNewPassword : values.confirmedNewPassword,
+                        user_id : this.state.user_id
+                        }
+        const res = await axios.post('/api/sendNewPassword', dataReset)
+        window.location = res.data.redirect;
     }
 
     render () {

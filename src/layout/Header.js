@@ -76,7 +76,7 @@ class Header extends Component{
                             {this.showNavbar()}
                         </div>
                     </div>
-                    <div className="modal" id="modal_signin">
+                    <div className="modal" id='modal_signin'>
 			        <div className="modal-background"></div>
                         <div className="modal-card">
                             <header className="modal-card-head">

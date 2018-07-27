@@ -17,6 +17,10 @@ class ForgotPassword extends Component {
             messagesError : ""
         }
     }
+
+    componentDidMount() {
+        document.getElementById('modal_signin').classList.remove("is-active");
+    }
     
     renderField(field) {
         const { meta: { touched, error } } = field;
