@@ -18,14 +18,24 @@ import ResetPassword from './containers/ResetPasswordContainer';
 import rootReducer from './reducers';
 import setAuthorizationToken from '../library/setAuthorizationToken';
 import requireAuth from '../library/requireAuth';
+import { loadState, saveState } from '../library/localStorage';
+import throttle from 'lodash/throttle';
 
+const persistedState = loadState();
 const store = createStore(
     rootReducer,
+    persistedState,
     compose(
         applyMiddleware(reduxThunk),
         window.devToolsExtension ? window.devToolsExtension() : f => f // initialize devToolsExtension
     )
 )
+
+store.subscribe(throttle(() => {
+    saveState({
+        auth: store.getState().auth
+    });
+}, 1000));
 
 setAuthorizationToken(localStorage.jwtToken);
 

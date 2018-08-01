@@ -1,2 +1,1 @@
-use matcha;
-SELECT * FROM users;
+drop tables users;
