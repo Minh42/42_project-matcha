@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS `user_tags` (
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
-CREATE TABLE IF NOT EXISTS `gender` (
+CREATE TABLE IF NOT EXISTS `genders` (
     `gender_id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     `name` VARCHAR(32) UNIQUE NOT NULL
 );
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `interested_in_gender` (
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
-CREATE TABLE IF NOT EXISTS `relationship_type` (
+CREATE TABLE IF NOT EXISTS `relationships_type` (
     `relationship_type_id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     `name` VARCHAR(32)
 );

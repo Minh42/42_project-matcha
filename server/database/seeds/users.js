@@ -21,8 +21,9 @@ let createUser = (knex, id, bio, occupations) => {
   var lastname = arrayName[1];
 	const guessedGender = gender.guess(identity.name).gender == 'male' ? 'man' : 'woman';
 
-  return knex('users').insert({
-    user_id: id,
+  return knex('users')
+  .returning('user_id')
+  .insert({
     firstname: firstname,
     lastname: lastname,
     username: faker.internet.userName(),
@@ -47,10 +48,52 @@ let createUser = (knex, id, bio, occupations) => {
     date_created: new Date(),
     date_updated: new Date()
   })
+  .then(function(id){ 
+    return knex('user_photos')
+    .returning('user_id')
+    .insert({
+      photo_id: id,
+      user_id: id,
+      details: null,
+      image_path: faker.image.imageUrl(640,480,"people"),
+      active: true,
+      date_created: new Date(),
+      date_updated: new Date()
+    })
+  })
+  .then(function(id){
+    return knex('user_tags')
+    .returning('user_id')
+    .insert({
+      id: id,
+      user_id: id,
+      tag_id: Math.random() * (25 - 1 + 1),
+    })
+  })
+  .then(function(id){
+    return knex('interested_in_gender')
+    .returning('user_id')
+    .insert({
+      id: id,
+      user_id: id,
+      gender_id: Math.random() * (2 - 1 + 1),
+    })
+  })
+  .then(function(id){
+    return knex('interested_in_relation')
+    .returning('user_id')
+    .insert({
+      id: id,
+      user_id: id,
+      relationship_type_id: Math.random() * (6 - 1 + 1),
+    })
+  })
 }
 
 exports.seed = function(knex, Promise) {
   // Deletes ALL existing entries
+  return knex('user_photos').del()
+  .then(() => {
   return knex('users').del()
     .then(async function () {
       //Inserts seed entries
@@ -70,10 +113,11 @@ exports.seed = function(knex, Promise) {
     
       var promise = await getData();
       const {bio, occupations } = promise;
-      for (let id = 1; id < 10; id++) {
+      for (let id = 1; id <= 10; id++) {
         users.push(createUser(knex, id, bio, occupations))
       }
 
       return Promise.all(users);
     });
+  })
 };
