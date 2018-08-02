@@ -194,7 +194,6 @@ router.get('/api/resetPassword', function(req, res) {
 })
 
 //SEND NEW PASSWORD
-
 router.post('/api/sendNewPassword', function(req, res) {
   let user = require('../models/user.class');
   let check = require('../library/tools');
@@ -214,9 +213,43 @@ router.post('/api/sendNewPassword', function(req, res) {
     });
 })
 
-//PASSPORT GOOGLE SIGN IN
+//CHANGE BASIC INFO USER
+router.post('/api/modifData', (req, res) => {
+  let user = require('../models/user.class');
+  const user_id = req.body.user_id
+  const login = req.body.login
+  const firstname = req.body.firstName
+  const lastname = req.body.lastName
+  const email = req.body.email
+  user.changeUserInfo(user_id, login, firstname, lastname, email)
+    .then(function(ret) {
+      res.send({redirect: '/ModifProfile'});
+    })
+  console.log(req.body);
+})
 
-// router.use(passport.initialize());
+//CHANGE PASSWORD
+router.post('/api/changePassword', function(req, res) {
+  let user = require('../models/user.class');
+  console.log(req.body)
+  let check = require('../library/tools');
+  let messages= {};
+
+  hashNewPassword = check.isHash(req.body.newPassword);
+  console.log(hashNewPassword);
+
+  user.sendNewPasswordBDD(hashNewPassword, req.body.user_id)
+    .then (function(ret){
+      if (ret) {
+        res.send({redirect: '/ModifProfile'});
+      }
+      else {
+        res.sendStatus(401);
+      }
+    });
+})
+
+//PASSPORT GOOGLE SIGN IN
 
 passport.serializeUser(function(user, done) {
   console.log(user)
@@ -242,7 +275,8 @@ passport.use(
     var googleID = profile.id;
     var email = profile.emails[0].value;
     var name = profile.displayName;
-    var token = accessToken;
+    var username = user.makeid();
+    console.log(username)
 
     //separate firstname & lastname
     var arrayName = (name).split(' ');
@@ -265,7 +299,7 @@ passport.use(
                 console.log('utilisateur existe')
               }
               else {
-                user.addUserGoogle(firstname, lastname, email, googleID)
+                user.addUserGoogle(username, firstname, lastname, email, googleID)
                 .then(function(ret) {
                   if (ret)
                   {
@@ -297,7 +331,9 @@ router.get(
 router.get(
   '/api/auth/google/callback',
   passport.authenticate('google'), (req, res) => {
-    res.redirect('/api/current_user');
+    // res.send(req.user);
+    // res.redirect('/homepage/user?user_id=' + req.user[0].user_id);
+    res.redirect('/homepage');
   });
 
 router.get(
@@ -313,5 +349,11 @@ router.get(
     // console.log(req.user)
     res.send(req.user);
   });
+
+router.get('/api/infoUser', (req, res) => {
+  // console.log(req.user);
+  console.log('helloyou')
+  res.send(req.user);
+});
 
 module.exports = router 

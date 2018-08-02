@@ -8,12 +8,20 @@ import { connect } from 'react-redux';
 import { signOutAction } from '../actions/actionUsers';
 import { bindActionCreators } from 'redux';
 
+import axios from 'axios';
+
 class Header extends Component{
 	constructor(props) {
 		super(props);
 		this.showModal = this.showModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
         this.handleLogout = this.handleLogout.bind(this);
+
+        this.state = {
+            firstname : "",
+            lastname : ""
+        }
+        console.log(this.state.firstname);
 	  }
 
 	showModal() {
@@ -28,9 +36,28 @@ class Header extends Component{
         this.props.signOutAction();
     }
 
+    async componentDidMount() {
+        var first;
+        var last;
+        var res = await axios.get(`/api/infoUser`)
+        console.log(res);
+        first = res.data[0].firstname;
+        last = res.data[0].lastname;
+        console.log(first);
+        console.log(last);
+        this.setState({
+            firstname: first,
+            lastname: last
+        })
+      }
+
     showNavbar() {
-        if (this.props.authenticated) {
+        if (this.props.authenticated || this.state.firstname !== "") {
             return [
+                <h3>hello {this.state.firstname} </h3>,
+                <p className="control">
+                    <Link to="/homepage"><Button className="button is-rounded" title=" homepage"/></Link>
+                </p>,
                 <p className="control">
                     <Link to="/messages"><Button className="button is-rounded" title="My messages"/></Link>
                 </p>,
@@ -51,7 +78,6 @@ class Header extends Component{
     render() {
         return (
             <nav className="navbar">
-
                 <div className="navbar-brand">
 
                     <a className="navbar-item" id="logo">

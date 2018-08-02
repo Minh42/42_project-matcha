@@ -14,6 +14,8 @@ import HomePage from './layout/HomePage';
 import MessagesPage from './layout/MessagesPage';
 import ForgotPassword from './containers/ForgotPasswordContainer';
 import ResetPassword from './containers/ResetPasswordContainer';
+import PublicProfile from './layout/ProfileUser';
+import ModifProfile from './layout/ModifProfile';
  
 import rootReducer from './reducers';
 import setAuthorizationToken from '../library/setAuthorizationToken';
@@ -40,6 +42,8 @@ ReactDOM.render(
                     <Route path="/messages" component={requireAuth(MessagesPage)} />
                     <Route path="/forgotPassword" component={ForgotPassword} />
                     <Route path="/resetPassword/:login" component={ResetPassword} />
+                    <Route path="/profile" component={PublicProfile} />
+                    <Route path="/ModifProfile" component={ModifProfile} />
                 </Switch>
                 <Footer />
             </div>

@@ -87,9 +87,9 @@ class User {
         } 
     }
 
-    static async addUserGoogle(firstname, lastname, email, google_id) {
+    static async addUserGoogle(username, firstname, lastname, email, google_id) {
         try {
-            const values = {firstname: firstname, lastname: lastname, email : email, google_id : google_id};
+            const values = {username: username, firstname: firstname, lastname: lastname, email : email, google_id : google_id};
             const requete = 'INSERT INTO `users` SET ?'
        
             let ret = await pool.query(requete, values)
@@ -107,8 +107,8 @@ class User {
 
     static async compareToken(login,  activation_code) {
         try {
-            let ret = await pool.query("SELECT ` activation_code` FROM `users` WHERE `username` = ?", [login]);
-            if (ret[0]. activation_code ===  activation_code)
+            let ret = await pool.query("SELECT `activation_code` FROM `users` WHERE `username` = ?", [login]);
+            if (ret[0].activation_code ===  activation_code)
                 return true;
             else
                 return false;
@@ -207,6 +207,32 @@ class User {
             throw new Error(err)
         } 
     }
+
+    static async changeUserInfo(user_id, login, firstname, lastname, email) {
+        try {
+            let ret = await pool.query("UPDATE `users` SET `username` = ?, `firstname` = ?, `lastname` = ?, `email`= ? WHERE `user_id` = ?", [login, firstname, lastname, email, user_id]);
+            if (ret) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static makeid() {
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      
+        for (var i = 0; i < 5; i++)
+          text += possible.charAt(Math.floor(Math.random() * possible.length));
+      
+        return text;
+      }
 }
+
 
 module.exports = User
