@@ -1,1 +1,1 @@
-drop tables users;
+select * from genders;

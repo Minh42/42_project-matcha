@@ -1,5 +1,5 @@
 const gendersData = [
-	'man', 'woman'
+	'man', 'woman', 'man and woman'
 ];
 
 let createGenders = (knex, gender) => {

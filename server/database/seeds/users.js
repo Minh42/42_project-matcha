@@ -10,6 +10,12 @@ function pickRand(arr) {
 	return arr[Math.floor(Math.random() * arr.length)];
 }
 
+function getRandomIntInclusive(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive 
+}
+
 let createUser = (knex, id, bio, occupations) => {
 
   const P = { latitude: 48.861014, longitude: 2.341155 }; // Paris center
@@ -48,54 +54,68 @@ let createUser = (knex, id, bio, occupations) => {
     date_created: new Date(),
     date_updated: new Date()
   })
-  .then(function(id){ 
-    return knex('user_photos')
-    .returning('user_id')
-    .insert({
-      photo_id: id,
-      user_id: id,
-      details: null,
-      image_path: faker.image.imageUrl(640,480,"people"),
-      active: true,
-      date_created: new Date(),
-      date_updated: new Date()
-    })
+  .then(function(id) { 
+    for (var i = 0; i < 5; i++) {
+      knex.transaction(trx => {
+        return trx('user_photos')
+        .returning('user_id')
+        .insert({
+          user_id: id,
+          details: null,
+          image_path: faker.image.imageUrl(640, 480, "people"),
+          active: true,
+          date_created: new Date(),
+          date_updated: new Date()
+        })
+      })
+    }
   })
-  .then(function(id){
-    return knex('user_tags')
-    .returning('user_id')
-    .insert({
-      id: id,
-      user_id: id,
-      tag_id: Math.random() * (25 - 1 + 1),
-    })
+  .then(function(id) {
+    for (var i = 0; i < 5; i++) {
+      knex.transaction(trx => {
+        return trx('user_tags')
+          .returning('user_id')
+          .insert({
+            user_id: id,
+            tag_id: getRandomIntInclusive(1, 25)
+        })
+      })
+    }
   })
-  .then(function(id){
+  .then(function(id) {
     return knex('interested_in_gender')
     .returning('user_id')
     .insert({
-      id: id,
       user_id: id,
-      gender_id: Math.random() * (2 - 1 + 1),
+      gender_id: getRandomIntInclusive(1, 3),
     })
   })
-  .then(function(id){
+  .then(function(id) {
     return knex('interested_in_relation')
     .returning('user_id')
     .insert({
-      id: id,
       user_id: id,
-      relationship_type_id: Math.random() * (6 - 1 + 1),
+      relationship_type_id: getRandomIntInclusive(1, 6),
     })
   })
 }
 
 exports.seed = function(knex, Promise) {
   // Deletes ALL existing entries
-  return knex('user_photos').del()
-  .then(() => {
-  return knex('users').del()
-    .then(async function () {
+  return knex('interested_in_relation').del()
+    .then(() => {
+      return knex('interested_in_gender').del()
+    })
+    .then(() => {
+      return knex('user_tags').del()
+    })
+    .then(() => {
+      return knex('user_photos').del()
+    })
+    .then(() => {
+      return knex('users')
+      .del()
+      .then(async function () {
       //Inserts seed entries
       let users = [];
 
