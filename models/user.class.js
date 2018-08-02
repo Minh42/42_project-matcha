@@ -7,20 +7,30 @@ class User {
         this.conn = conn;
     }
 
-    static async loginExist(login) {   
-        try { 
-            console.log(login);
-            let ret = await pool.query("SELECT count(*) as username_exists FROM `users` WHERE `username` = ?", [login]);
-            console.log(ret[0].username_exists);
-            if (ret[0].username_exists > '0')
+    static async findOne(colName, value) {
+        try {
+            let ret = await pool.query("SELECT count(*) as value_exists FROM `users` WHERE "+ colName +" = ?", [value]);
+            if (ret[0].value_exists > '0')
                 return true;
             else
                 return false;
-        } 
+        }
         catch(err) {
             throw new Error(err)
-        }  
+        } 
     }
+
+    static async searchByColName(colName, value) {
+        try {
+            let ret = await pool.query("SELECT * FROM `users` WHERE "+ colName +" = ?", [value]);
+            return ret;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    
 
     static async emailExist(email) {   
         try {    
@@ -34,39 +44,6 @@ class User {
         catch(err) {
             throw new Error(err)
         }  
-    }
-
-    static async googleIdExist(google_id) {   
-        try {    
-            let ret = await pool.query("SELECT count(*) as googleId_exists FROM `users` WHERE `google_id` = ?", [google_id]);
-            if (ret[0].googleId_exists > '0')
-                return true;
-            else
-                return false;
-        } 
-        catch(err) {
-            throw new Error(err)
-        }  
-    }
-
-    static async searchByGoogleId(google_id) {
-        try {
-            let ret = await pool.query("SELECT * FROM `users` WHERE `google_id` = ?", [google_id]);
-            return ret;
-        } 
-        catch(err) {
-            throw new Error(err)
-        } 
-    }
-
-    static async searchById(id) {
-        try {
-            let ret = await pool.query("SELECT * FROM `users` WHERE `user_id` = ?", [id]);
-            return ret;
-        } 
-        catch(err) {
-            throw new Error(err)
-        } 
     }
 
     static async addUser(firstname, lastname, login, email, password,  activation_code) {
@@ -87,9 +64,27 @@ class User {
         } 
     }
 
-    static async addUserGoogle(username, firstname, lastname, email, google_id) {
+    static async addUserFacebook(firstname, lastname, email, facebookID) {
+    try {
+        const values = {firstname: firstname, lastname: lastname, email : email, fb_id : facebookID};
+        const requete = 'INSERT INTO `users` SET ?'
+       
+        let ret = await pool.query(requete, values)
+            if (ret) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+    
+    static async addUserGoogle(firstname, lastname, email, googleID) {
         try {
-            const values = {username: username, firstname: firstname, lastname: lastname, email : email, google_id : google_id};
+            const values = {firstname: firstname, lastname: lastname, email : email, google_id : googleID};
             const requete = 'INSERT INTO `users` SET ?'
        
             let ret = await pool.query(requete, values)
@@ -131,16 +126,6 @@ class User {
         }  
     }
 
-    static async searchByEmail(email) {
-        try {
-            let ret = await pool.query("SELECT `user_id`, `first_name`, `username` FROM `users` WHERE `email` = ?", [email]);
-            return ret;
-        } 
-        catch(err) {
-            throw new Error(err)
-        } 
-    }
-
     static async addTokenResetBDD(user_id, token_reset) {
         try {
             let ret = await pool.query("UPDATE `users` SET `token_reset` = ? WHERE `user_id` = ?", [token_reset, user_id]);
@@ -167,10 +152,9 @@ class User {
 
     static async login(username, password) {
         try {
-            console.log(password);
             let ret = await pool.query('SELECT * FROM `users` WHERE `username` = ? LIMIT 1', [username]);
             let hash = ret[0]['password'];
-            console.log('IM HERE');
+            console.log(ret);
             if(Object.keys(ret).length > 0 && ret[0]['status'] === 1) {
                 const res = await bcrypt.compare(password, hash);
                 if(res) {

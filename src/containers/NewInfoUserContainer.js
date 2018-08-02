@@ -11,7 +11,7 @@ const KeyCodes = {
 	enter: 13,
   };
    
-  const delimiters = [KeyCodes.comma, KeyCodes.enter];
+const delimiters = [KeyCodes.comma, KeyCodes.enter];
 
 class NewInfoUserContainer extends React.Component{
 	constructor(props) {
@@ -43,17 +43,12 @@ class NewInfoUserContainer extends React.Component{
 		return (
 			<div className= "field">
 				<label className="label">{field.label}</label>
-				<div className={field.icon ? "control has-icons-left" : ''}>
-                    <span className={field.icon ? "icon is-small is-left" : ''}>
-                        <i className={field.icon}></i>
-                    </span>
 					<input
 						className={className}
 						type={field.type}
 						placeholder={field.placeholder}
 						{ ...field.input}
 					/>
-				</div>
 				<div className= "help is-danger">
 					{touched ? error : ''}
 				</div>
@@ -68,17 +63,12 @@ class NewInfoUserContainer extends React.Component{
 		return (
 			<div className= "field">
 				<label className="label">{field.label}</label>
-				<div className={field.icon ? "control has-icons-left" : ''}>
-                    <span className={field.icon ? "icon is-small is-left" : ''}>
-                        <i className={field.icon}></i>
-                    </span>
 					<textarea
 						className={className}
 						type={field.type}
 						placeholder={field.placeholder}
-						{ ...field.textarea}
+						{ ...field.input}
 					/>
-				</div>
 				<div className= "help is-danger">
 					{touched ? error : ''}
 				</div>
@@ -112,7 +102,13 @@ class NewInfoUserContainer extends React.Component{
 	render () {
 		const { handleSubmit } = this.props;
 		const { tags } = this.state;
-		let placeholder = "Add new Tag"
+		const placeholder = "Add new Tag"
+
+		const renderErrorRadio = ({ meta: { touched, error } }) =>
+		touched && error ? <span className= "help is-danger">{error}</span> : false
+		  
+		const renderErrorInterest = ({ meta: { touched, error } }) =>
+  		touched && error ? <span className= "help is-danger">{error}</span> : false
 
 	return (
 		<form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
@@ -124,59 +120,58 @@ class NewInfoUserContainer extends React.Component{
                 placeholder="birthdate"
                 />
 				<label className="label">Sex</label>
-				<div className="field">
-				<label className="radio">
-					<Field
-					name="sex"
-					component="input"
-					type="radio"
-					value="male"
-					checked
-					/>{' '}
-					M
-				</label>
-				<label className="radio">
-					<Field
-					name="sex"
-					component="input"
-					type="radio"
-					value="female"
-					/>{' '}
-					F
-				</label>
-				</div>
+					<label className="radio">
+						<Field
+						name="sex"
+						component="input"
+						type="radio"
+						value="male"
+						/>{' '}
+						M
+					</label>
+					<label className="radio">
+						<Field
+						name="sex"
+						component="input"
+						type="radio"
+						value="female"
+						/>{' '}
+						F
+					</label>
+					<div>
+						<Field name="sex" component={renderErrorRadio} />
+					</div>
 				<label className="label">Interesting in</label>
-				<div className="field">
-				<label className="radio">
-					<Field
-					name="sex"
-					component="input"
-					type="radio"
-					value="male"
-					defaultChecked={true}
-					/>{' '}
-					Male
-				</label>
-				<label className="radio">
-					<Field
-					name="sex"
-					component="input"
-					type="radio"
-					value="women"
-					/>{' '}
-					women
-				</label>
-				<label className="radio">
-					<Field
-					name="sex"
-					component="input"
-					type="radio"
-					value="both"
-					checked
-					/>{' '}
-					Both
-				</label>
-				</div>
+					<label className="radio">
+						<Field
+						name="interest"
+						component="input"
+						type="radio"
+						value="maleInterest"
+						/>{' '}
+						Male
+					</label>
+					<label className="radio">
+						<Field
+						name="interest"
+						component="input"
+						type="radio"
+						value="women"
+						/>{' '}
+						Women
+					</label>
+					<label className="radio">
+						<Field
+						name="interest"
+						component="input"
+						type="radio"
+						value="both"
+						/>{' '}
+						Both
+					</label>
+					<div>
+						<Field name="interest" component={renderErrorInterest} />
+					</div>
 				<div>
 					<label className="label">Relationship</label>
 					<div className="field">
@@ -195,7 +190,7 @@ class NewInfoUserContainer extends React.Component{
 					<Field
 					label="Enter your bio"
 					name="bio"
-					component={this.renderField}
+					component={this.renderFieldArea}
 					type="text"
 					/>
 				<div class="field">
@@ -223,6 +218,12 @@ function validate(values) {
 
 	if (!values.bio)
 		errors.bio = "Please enter your bio";
+
+	if (!values.sex)
+		errors.sex = "Required";
+
+	if (!values.interest)
+		errors.interest = "Required"
 
 	return errors;
 }

@@ -10,26 +10,35 @@ class UsersContainer extends Component {
         this.props.fetchUsers();
     }
        
-    // renderList() {
-        // console.log(this.props.users);
-        // return this.props.users.map((user) => {
-        //     return (
-        //         <UserProfile 
-        //             key={user.id} 
-        //             firstname={user.firstname}
-        //             lastname={user.lastname}
-        //             age={user.age}
-        //             src={user.img}
-        //         />
-        //     );
-        // });
-    // }
+    renderList() {
+        return this.props.users.map((user) => {
+            return (
+                <UserProfile 
+                    user={user.username}
+                    age={user.age}
+                    src={user.picture}
+                />
+            );
+        });
+    }
 
     render() {
-        const { items, loading, error } = this.props;
+        const { loading, error } = this.props;
+        if (error) {
+            return (
+                <div>{error.message}</div>
+            )
+        }
+        if(loading) {
+            return (
+                <div class="pageloader">
+                    <span class="title">Pageloader</span>
+                </div>
+            )
+        }
         return (
             <div className="columns is-multiline">
-               {/* { this.renderList() } */}
+               { this.renderList() }
             </div>
         )
     }
@@ -41,11 +50,11 @@ UsersContainer.propTypes = {
 
 
 function mapStateToProps(state) {
-   return {
+    return {
         users: state.users.items,
         loading: state.users.loading,
         error: state.users.error
-   }
+    }
 }
 
 function mapDispatchToProps(dispatch) {

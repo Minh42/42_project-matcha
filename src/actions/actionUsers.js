@@ -9,6 +9,36 @@ export const REGISTERATION_SUCCESS = 'REGISTRATION_SUCCESS';
 export const REGISTERATION_ERROR = 'REGISTRATION_ERROR';
 export const REGISTERATION_FAILED = 'REGISTRATION_FAILED';
 
+export function signInFacebookAction() {
+	return async (dispatch) => {
+		try {
+			dispatch({ 
+				type: AUTHENTICATED
+			});
+		} catch (error) {
+			dispatch({
+				type: AUTHENTICATION_ERROR,
+				payload: 'Invalid email or password'
+			});
+		}
+	}
+}
+
+export function signInGoogleAction() {
+	return async (dispatch) => {
+		try {
+			dispatch({ 
+				type: AUTHENTICATED
+			});
+		} catch (error) {
+			dispatch({
+				type: AUTHENTICATION_ERROR,
+				payload: 'Invalid email or password'
+			});
+		}
+	}
+}
+
 export function signInAction({username, password}, history) {
 	return async (dispatch) => {
 		try {

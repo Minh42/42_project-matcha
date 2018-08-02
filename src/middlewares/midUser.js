@@ -4,49 +4,35 @@ let user = require('../../models/user.class');
 function findLogin(req, res, next) {
 
 	let messages = {};
-
-	user.loginExist(req.body.login)
-		.then(function(ret) {
-       		console.log(ret);
-			if (ret === false)
-			{
-				next();
-			}
-			else
-			{
+	try { 
+		user.findOne("username", req.body.login).then(function(ret) {
+			if (ret) {
 				messages.error = "login already exist";
-				console.log(messages);
 				res.send(messages);
 			}
+			else
+				next();
 		})
-		.catch(err => {
-			console.error('loginExists error: ', err);
-		})
-
+	} catch(err) {
+		throw new Error(err)
+	}  
 }
 
 function findEmail(req, res, next) {
 
 	let messages = {};
-
-    console.log("hello");
-	user.emailExist(req.body.email)
-		.then(function(ret) {
-			console.log(ret);
-			if (ret === false)
-			{
-				next();
-			}
-			else
-			{
+	try {
+		user.findOne("email", req.body.email).then(function(ret) {
+			if (ret) {
 				messages.error = "email already exist";
-				console.log(messages);
 				res.send(messages);
 			}
+			else
+				next();	
 		})
-		.catch(err => {
-			console.error('loginExists error: ', err);
-		})
+	} catch(err) {
+		throw new Error(err)
+	}
 }
 
 function comparePassword(req, res, next) {
@@ -57,7 +43,6 @@ function comparePassword(req, res, next) {
 	}
 	else {
 		messages.error = "password not match";
-		console.log(messages);
 		res.send(messages);
 	}
 }

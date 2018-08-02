@@ -1,12 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const config = require('../server/config');
+const config = require('../server/config/keys');
 const midUser = require('../src/middlewares/midUser'); 
 
 const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-const keys = require('../server/keys');
+const passportConfig = require('../server/services/passport');
 
 //PARAMETER EMAIL (nodemailer)
 const nodemailer = require("nodemailer");
@@ -77,22 +76,18 @@ router.get('/api/activationMail', function(req, res) {
 
   let user = require('../models/user.class');
 
-  user.compareToken(login, token)
-    .then(function(ret) {
+  try {
+    user.compareToken(login, token).then(function(ret) {
       if (ret) {
         console.log('token in database')
-        user.changeStatus(login)
-          .then(function(ret){
-            res.redirect('/');
+        user.changeStatus(login).then(function(ret){
+          res.redirect('/');
         })
       }
-      else {
-        console.log('error');
-      }
     })
-    .catch(err => {
-			console.error('loginExists error: ', err);
-		})
+  } catch(err) {
+    throw new Error(err)
+  } 
 })
 
 //SIGNIN
@@ -101,6 +96,7 @@ router.post('/api/signin', function(req, res) {
   let messages = {};
   let { username, password } = req.body;
   user.login(username, password).then(function(ret) {
+    console.log('IM FUCKING HERE');
     if (ret) {
       const token = jwt.sign({ id: username }, config.jwtSecret);
       res.json({token});
@@ -113,63 +109,52 @@ router.post('/api/signin', function(req, res) {
 //FORGOT PASSWORD
 router.post('/api/forgotPassword', function(req, res) {
   var messages = {}
-  console.log(req.body.email);
   let user = require('../models/user.class');
-  user.emailExist(req.body.email)
-        .then(function(ret){
+  user.findOne("email", req.body.email).then(function(ret){
+    if (ret) {
+      user.searchByColName("email",req.body.email).then(function(ret){   
+        user_id = ret[0].user_id;
+        login = ret[0].username;
+        firstname = ret[0].firstname;
+
+        var token_reset = jwt.sign( {  foo : req.body.login } , config.jwtSecret );
+          
+        user.addTokenResetBDD(user_id, token_reset).then(function(ret){
           if (ret) {
-            console.log(ret);
-
-            user.searchByEmail(req.body.email)
-              .then(function(ret){
-                  console.log(ret[0].user_id);
-                  console.log(ret[0].firstname);
-                  console.log(ret[0].username);
-                  user_id = ret[0].user_id;
-                  login = ret[0].username;
-                  firstname = ret[0].firstname;
-
-                  var token_reset = jwt.sign( {  foo : req.body.login } , config.jwtSecret );
-                  console.log(token_reset);
-
-                  user.addTokenResetBDD(user_id, token_reset)
-                    .then(function(ret){
-                      if (ret)
-                      {
-                        var mail = {
-                        from: "matcha.appli@gmail.com",
-                        to: req.body.email,
-                        subject: "Reset your password Matcha",
-                        html: '<h3> Hello ' + firstname + '</h3>' +
-                        '<p>To reset your password, please click on the link below.</p>' +
-                        '<p>http://localhost:3000/api/resetPassword?user_id='+ user_id +'&token_reset=' + token_reset + '</p>' +
-                        '<p> --------------- /p>' +
-                        '<p>This is an automatic mail, Please do not reply.</p>'
-                        }
+            var mail = {
+              from: "matcha.appli@gmail.com",
+              to: req.body.email,
+              subject: "Reset your password Matcha",
+              html: '<h3> Hello ' + firstname + '</h3>' +
+              '<p>To reset your password, please click on the link below.</p>' +
+              '<p>http://localhost:3000/api/resetPassword?user_id='+ user_id +'&token_reset=' + token_reset + '</p>' +
+              '<p> --------------- /p>' +
+              '<p>This is an automatic mail, Please do not reply.</p>'
+            }
                                   
-                        transporter.sendMail(mail, function (err, info) {
-                        if(err)
-                          console.log(err)
-                        else
-                          console.log(info);
-                        });
-                        messages.success = true;
-                        messages.error = false;
-                        console.log(messages);
-                        res.send(messages);
-                      }
-                      else {
-                        res.sendStatus(401);
-                      }
-                    })
-              })
-          }
-          else {
-            messages.error = true;
-            messages.success = false;
+            transporter.sendMail(mail, function (err, info) {
+              if(err)
+                console.log(err)
+              else
+                console.log(info);
+            });
+            messages.success = true;
+            messages.error = false;
+                      
             res.send(messages);
           }
-    })
+          else {
+            res.sendStatus(401);
+          }
+        })
+      })
+    }
+    else {
+      messages.error = true;
+      messages.success = false;
+      res.send(messages);
+    }
+  })
 })
 
 //RESET PASSWORD
@@ -178,9 +163,8 @@ router.get('/api/resetPassword', function(req, res) {
   var user_id = req.param('user_id');
   var token_reset = req.param('token_reset');
 
-  user.compareTokenReset(user_id, token_reset)
-  .then(function(ret) {
-    if (ret === true) {
+  user.compareTokenReset(user_id, token_reset).then(function(ret) {
+    if (ret) {
       console.log('token_reset in database')
       res.redirect('/resetPassword/' + user_id);
     }
@@ -202,15 +186,14 @@ router.post('/api/sendNewPassword', function(req, res) {
   hashNewPassword = check.isHash(req.body.newPasswordReset);
   console.log(hashNewPassword);
 
-  user.sendNewPasswordBDD(hashNewPassword, req.body.user_id)
-    .then (function(ret){
-      if (ret) {
-        res.send({redirect: '/'});
-      }
-      else {
-        res.sendStatus(401);
-      }
-    });
+  user.sendNewPasswordBDD(hashNewPassword, req.body.user_id).then (function(ret){
+    if (ret) {
+      res.send({redirect: '/'});
+    }
+    else {
+      res.sendStatus(401);
+    }
+  });
 })
 
 //CHANGE BASIC INFO USER
@@ -249,110 +232,40 @@ router.post('/api/changePassword', function(req, res) {
     });
 })
 
-//PASSPORT GOOGLE SIGN IN
-
-passport.serializeUser(function(user, done) {
-  console.log(user)
-  done(null, user[0].user_id);
-});
- 
-passport.deserializeUser(function(id, done) {
-  let user = require('../models/user.class');
-  user.searchById(id)
-    .then(function(user) {
-      console.log(user);
-      done(null, user);
-    })
-});
-
-passport.use(
-  new GoogleStrategy({
-    clientID : keys.googleClientID,
-    clientSecret : keys.googleClientSecret,
-    callbackURL : '/api/auth/google/callback'
-  }, (accessToken, refreshToken, profile, done) => {
-    let user = require('../models/user.class');
-    var googleID = profile.id;
-    var email = profile.emails[0].value;
-    var name = profile.displayName;
-    var username = user.makeid();
-    console.log(username)
-
-    //separate firstname & lastname
-    var arrayName = (name).split(' ');
-    var firstname = arrayName[0];
-    var lastname = arrayName[1];
-
-    user.googleIdExist(googleID)
-      .then(function(ret) {
-        if (ret) {
-          console.log('googleID existe')
-          user.searchByGoogleId(googleID) 
-            .then(function(user) {
-              done(null, user);
-            })
-        }
-        else {
-          user.emailExist(email)
-            .then(function(ret) {
-              if (ret) {
-                console.log('utilisateur existe')
-              }
-              else {
-                user.addUserGoogle(username, firstname, lastname, email, googleID)
-                .then(function(ret) {
-                  if (ret)
-                  {
-                    user.searchByGoogleId(googleID) 
-                      .then(function(user) {
-                        done(null, user);
-                      })
-                  }
-                })
-                console.log('ajout utilisateur')
-              }
-            })
-            .catch(err => {
-              console.error('emailExists error: ', err);
-            })
-        }
-      })
-      .catch(err => {
-        console.error('googleIDExists error: ', err);
-      })
-  })
+router.get('/api/auth/facebook',
+  passport.authenticate('facebook', { display: 'popup' }, { scope: ['public_profile', 'email'] })
 );
 
-router.get(
-  '/api/auth/google',
+router.get('/api/auth/facebook/callback',
+	passport.authenticate('facebook', {
+		successRedirect : '/homepage',
+		failureRedirect : '/'
+	})
+);
+
+router.get('/api/auth/google',
   passport.authenticate('google', { scope: ['profile', 'email'] })
 );
 
-router.get(
-  '/api/auth/google/callback',
-  passport.authenticate('google'), (req, res) => {
-    // res.send(req.user);
-    // res.redirect('/homepage/user?user_id=' + req.user[0].user_id);
-    res.redirect('/homepage');
-  });
+router.get('/api/auth/google/callback',
+  passport.authenticate('google', {
+    successRedirect : '/homepage',
+    failureRedirect : '/'
+  })
+);
 
-router.get(
-  '/api/logout/',
-  (req, res) => {
+router.get('/api/logout', (req, res) => {
     req.logout();
     res.send(req.user);
-  });
+});
 
-router.get(
-  '/api/current_user/',
-  (req, res) => {
-    // console.log(req.user)
-    res.send(req.user);
-  });
+router.get('/api/profile', (req, res) => {
+  res.send(req.user);
+});
 
 router.get('/api/infoUser', (req, res) => {
   // console.log(req.user);
-  console.log('helloyou')
+  // console.log('helloyou')
   res.send(req.user);
 });
 

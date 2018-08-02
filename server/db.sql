@@ -6,17 +6,20 @@ CREATE TABLE IF NOT EXISTS `users` (
     `lastname` VARCHAR(32) NOT NULL,
     `username` VARCHAR(32),
     `email` VARCHAR(64) NOT NULL,
-    `password` VARCHAR(64),
+    `password` VARCHAR(128),
     `activation_code` VARCHAR(255) DEFAULT 0,
     `status` INT DEFAULT 0 NOT NULL,
     `birth_date` DATE,
-    `gender` enum('male', 'female'),
-    `location` VARCHAR (255),
+    `gender` enum('man', 'woman'),
+    `latitude` FLOAT,
+    `longitude` FLOAT,
     `bio` TEXT,
-    `ip_address` VARCHAR(15),
+    `occupation` VARCHAR(64),
     `popularity` DECIMAL(5,2),
-    `fb_id` INT,
-    `twitter_id` INT,
+    `ip_address` VARCHAR(15),
+    `geolocalisationAllowed` BOOLEAN DEFAULT FALSE,
+    `onboardingDone` BOOLEAN DEFAULT FALSE,
+    `fb_id` VARCHAR(255),
     `google_id` VARCHAR(255),
     `token_reset` VARCHAR(255),
     `alert_notification` BOOLEAN DEFAULT TRUE NOT NULL,
@@ -54,7 +57,7 @@ CREATE TABLE IF NOT EXISTS `user_tags` (
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
-CREATE TABLE IF NOT EXISTS `gender` (
+CREATE TABLE IF NOT EXISTS `genders` (
     `gender_id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     `name` VARCHAR(32) UNIQUE NOT NULL
 );
@@ -66,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `interested_in_gender` (
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
-CREATE TABLE IF NOT EXISTS `relationship_type` (
+CREATE TABLE IF NOT EXISTS `relationships_type` (
     `relationship_type_id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     `name` VARCHAR(32)
 );

@@ -1,12 +1,17 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import FormContainer from './FormContainer';
 import Button from '../components/Button';
 import { Link } from 'react-router-dom';
 
-import axios from 'axios';
+import { signInGoogleAction } from '../actions/actionUsers';
+import { signInFacebookAction } from '../actions/actionUsers';
+import { bindActionCreators } from 'redux';
 
-import GoogleButton from 'react-google-button'
+import GoogleLoginButton from "react-social-login-buttons/lib/buttons/GoogleLoginButton";
+import FacebookLoginButton from "react-social-login-buttons/lib/buttons/FacebookLoginButton";
 
 class SignupContainer extends Component{
 	constructor(props) {
@@ -14,7 +19,8 @@ class SignupContainer extends Component{
 		this.showModal = this.showModal.bind(this);
 		this.closeModal = this.closeModal.bind(this);
 		this.closeModalEmail = this.closeModalEmail.bind(this);
-		this.signInGoogle = this.signInGoogle.bind(this);
+		this.onSubmitGoogle = this.onSubmitGoogle.bind(this);
+		this.onSubmitFacebook = this.onSubmitFacebook.bind(this);
 	  }
 
 	showModal() {
@@ -29,10 +35,16 @@ class SignupContainer extends Component{
 		document.getElementById('modalEmail').classList.remove("is-active");
 	}	
 
-	async signInGoogle () {
+	onSubmitGoogle() {
 		location.href = "api/auth/google";
+		this.props.signInGoogleAction();
 	}
-
+	
+	onSubmitFacebook() {
+		location.href = "api/auth/facebook";
+		this.props.signInFacebookAction();
+	}
+	
 	render () {
 	return (
 		<div className="column is-8 is-offset-3">
@@ -61,9 +73,8 @@ class SignupContainer extends Component{
 				</div>
 			</div>
 			<div>
-			<GoogleButton
-  				onClick={this.signInGoogle}
-			/>
+				<GoogleLoginButton onClick={this.onSubmitGoogle} />
+				<FacebookLoginButton onClick={this.onSubmitFacebook} />
 			</div>
 			<div className="modal" id="modalEmail">
 				<div className="modal-background"></div>
@@ -79,4 +90,16 @@ class SignupContainer extends Component{
 	)}
 }
 
-export default SignupContainer;
+SignupContainer.propTypes = {
+	signInGoogleAction: PropTypes.func.isRequired,
+	signInFacebookAction: PropTypes.func.isRequired
+};
+
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators({ 
+		signInGoogleAction: signInGoogleAction,
+		signInFacebookAction: signInFacebookAction
+	}, dispatch);
+}
+
+export default connect(null, mapDispatchToProps)(SignupContainer);

@@ -2,6 +2,7 @@ const path = require('path')
 const express = require('express')
 const routes = require('./routes/routes.js')
 const bodyParser = require('body-parser')
+const cors = require('cors')
 // const cookieParser = require('cookie-parser')
 const session = require('express-session')
 // const flash = require('express-flash');
@@ -11,24 +12,19 @@ const helmet = require('helmet')
 
 const passport = require('passport')
 const cookieSession = require('cookie-session')
-const keys = require('./server/config')
+const keys = require('./server/config/keys')
 
 const app = express()
 const PORT = process.env.PORT || 8080;
 
-//COOKIE + PASSPORT INITIALIZE
-app.use(
-  cookieSession({
-    maxAge: 30 * 24 * 60 * 60 * 1000,
-    keys: [keys.cookiekey]
-})
-);
-app.use(passport.initialize());
-app.use(passport.session());
-
 app.set('views', path.join(__dirname, 'views'))
 app.engine('mustache', mustacheExpress());
 app.set('view engine', 'mustache');
+
+// var corsOptions = {
+//   origin: '*',
+//   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204 
+// }
 
 const middlewares = [
   helmet(),
@@ -36,15 +32,29 @@ const middlewares = [
   express.static(path.join(__dirname, 'assets')),
   bodyParser.urlencoded({ extended: true }),
   bodyParser.json(),
-  // cookieParser(),
-  session({
-    secret: 'abcdef',
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false }
+  cookieSession({
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+    keys: [keys.cookieKey]
   }),
-  require('./src/middlewares/flash')
+  passport.initialize(),
+  passport.session(),
+  // cookieParser(),
+  // session({
+  //   secret: 'abcdef',
+  //   resave: false,
+  //   saveUninitialized: true,
+  //   cookie: { secure: false }
+  // }),
+  // require('./src/middlewares/flash')
 ]
+
+// app.use(cors(corsOptions))
+
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
 
 app.use(middlewares)
 app.use('/', routes)
