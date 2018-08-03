@@ -61,13 +61,15 @@ export function signInAction({username, password}, history) {
 	};
 }
 
-export function signOutAction() {
-	return dispatch => {
+export function signOutAction(history) {
+	return async (dispatch) => {
 		localStorage.removeItem('jwtToken');
 		setAuthorizationToken(false);
 		dispatch({ 
 			type: UNAUTHENTICATED
 		});
+		await axios.get('/api/signout')
+		history.push('/');
 	}
 }
 

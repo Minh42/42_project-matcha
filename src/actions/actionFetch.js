@@ -1,8 +1,19 @@
 import axios from 'axios';
 
+export const FETCH_CURRENT_USER = 'FETCH_CURRENT_USER'
 export const FETCH_USERS_REQUEST = 'FETCH_USERS_REQUEST';
 export const FETCH_USERS_SUCCESS = 'FETCH_USERS_SUCCESS';
 export const FETCH_USERS_FAILURE = 'FETCH_USERS_FAILURE';
+
+export function fetchCurrentUser() {
+    return async (dispatch) => {
+        const res = await axios.get('/api/current_user');
+        dispatch({
+            type: FETCH_CURRENT_USER,
+            payload: res
+        })
+    }
+}
 
 export function fetchUsers() {
 	return async (dispatch) => {

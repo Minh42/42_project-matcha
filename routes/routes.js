@@ -96,7 +96,6 @@ router.post('/api/signin', function(req, res) {
   let messages = {};
   let { username, password } = req.body;
   user.login(username, password).then(function(ret) {
-    console.log('IM FUCKING HERE');
     if (ret) {
       const token = jwt.sign({ id: username }, config.jwtSecret);
       res.json({token});
@@ -254,9 +253,8 @@ router.get('/api/auth/google/callback',
   })
 );
 
-router.get('/api/logout', (req, res) => {
+router.get('/api/signout', (req, res) => {
     req.logout();
-    res.send(req.user);
 });
 
 router.get('/api/profile', (req, res) => {
@@ -266,6 +264,10 @@ router.get('/api/profile', (req, res) => {
 router.get('/api/infoUser', (req, res) => {
   // console.log(req.user);
   // console.log('helloyou')
+  res.send(req.user);
+});
+
+router.get('/api/current_user', (req, res) => {
   res.send(req.user);
 });
 

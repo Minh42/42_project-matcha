@@ -33,7 +33,7 @@ class Header extends Component{
     }
 
     handleLogout() {
-        this.props.signOutAction();
+        this.props.signOutAction(this.props.history);
     }
 
     async componentDidMount() {
@@ -49,10 +49,10 @@ class Header extends Component{
             firstname: first,
             lastname: last
         })
-      }
+    }
 
     showNavbar() {
-        if (this.props.authenticated || this.state.firstname !== "") {
+        if (this.props.authenticated) {
             return [
                 <h3>hello {this.state.firstname} </h3>,
                 <p className="control">
@@ -65,7 +65,6 @@ class Header extends Component{
                     <Link to="/profile"><Button className="button is-rounded" title="My profile"/></Link>
                 </p>,
                 <p className="control">
-                    {/* <Button onClick={this.handleLogout} className="button is-rounded" title="Signout"/> */}
                     <LinkButton to='/' onClick={this.handleLogout} className="button is-rounded">Signout</LinkButton>
                 </p>
             ];

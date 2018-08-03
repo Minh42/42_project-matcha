@@ -2,24 +2,12 @@ require("../assets/stylesheets/styles.scss");
 
 import React from 'react';
 import ReactDOM from 'react-dom';
+import reduxThunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware, compose } from 'redux';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import reduxThunk from 'redux-thunk';
-
-import Header from './layout/Header';
-import Footer from './layout/Footer';
-import LandingPage from './layout/LandingPage';
-import HomePage from './layout/HomePage';
-import MessagesPage from './layout/MessagesPage';
-import ForgotPassword from './containers/ForgotPasswordContainer';
-import ResetPassword from './containers/ResetPasswordContainer';
-import PublicProfile from './layout/ProfileUser';
-import ModifProfile from './layout/ModifProfile';
+import App from './App';
  
 import rootReducer from './reducers';
-import setAuthorizationToken from '../library/setAuthorizationToken';
-import requireAuth from '../library/requireAuth';
 import { loadState, saveState } from '../library/localStorage';
 import throttle from 'lodash/throttle';
 
@@ -39,25 +27,9 @@ store.subscribe(throttle(() => {
     });
 }, 1000));
 
-setAuthorizationToken(localStorage.jwtToken);
-
 ReactDOM.render(
     <Provider store={store}>
-        <Router>
-            <div>
-                <Header />
-                <Switch>
-                    <Route exact path="/" component={LandingPage} />
-                    <Route path="/homepage" component={HomePage} />
-                    <Route path="/messages" component={requireAuth(MessagesPage)} />
-                    <Route path="/forgotPassword" component={ForgotPassword} />
-                    <Route path="/resetPassword/:login" component={ResetPassword} />
-                    <Route path="/profile" component={PublicProfile} />
-                    <Route path="/ModifProfile" component={ModifProfile} />
-                </Switch>
-                <Footer />
-            </div>
-        </Router>
+        <App />
     </Provider>
    , document.querySelector('.root'));
 
