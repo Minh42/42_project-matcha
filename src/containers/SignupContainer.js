@@ -47,17 +47,17 @@ class SignupContainer extends Component{
 	
 	render () {
 	return (
-		<div className="column is-8 is-offset-3">
+		<div className="column ">
 
 			<div className="column">
-				<h1 className="column is-12 title is-4">
+				<h1 className="column is-12 is-size-4 has-text-centered teaserText">
 					Discover another way to travel<br />
 					Choose a destination<br />
 					Meet new peoples<br />
 					Share your passion<br />
 					And Enjoy your trip!
 				</h1>
-				<Button className="button is-rounded" id="button" title="Create your account" action={this.showModal} />
+				<Button className="button is-medium is-fullwidth is-rounded" id="button" title="Create your account" action={this.showModal} />
 			</div>
 			
 			<div className="modal" id="modalForm">
@@ -80,7 +80,9 @@ class SignupContainer extends Component{
 				<div className="modal-background"></div>
 				<div className="modal-card">
 					<section className="modal-card-body">
-						Veuillez confirmer votre compte :)
+						<p className="is-primary">
+							Veuillez confirmer votre compte :)
+						</p>
 					<button className="modal-close is-large" aria-label="close" onClick={this.closeModalEmail}></button>
 					</section>
 				</div>

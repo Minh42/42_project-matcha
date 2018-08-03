@@ -9,9 +9,10 @@ import axios from 'axios';
 const KeyCodes = {
 	comma: 188,
 	enter: 13,
+	space: 32,
   };
    
-const delimiters = [KeyCodes.comma, KeyCodes.enter];
+const delimiters = [KeyCodes.comma, KeyCodes.enter, KeyCodes.space];
 
 class NewInfoUserContainer extends React.Component{
 	constructor(props) {
@@ -94,9 +95,14 @@ class NewInfoUserContainer extends React.Component{
 	  }
 
 	async onSubmit (values){
-		console.log(values)
-		const res = await axios.post(`/api/modifData`, values)
-        console.log(res)
+		console.log('HERE')
+		const data = {
+			values :values,
+			tags: this.state.tags
+		}
+		console.log(data)
+		const res = await axios.post(`/api/changeNewInfo`, data)
+        // console.log(res)
 	}
 
 	render () {
@@ -138,18 +144,16 @@ class NewInfoUserContainer extends React.Component{
 						/>{' '}
 						F
 					</label>
-					<div>
-						<Field name="sex" component={renderErrorRadio} />
-					</div>
+					<Field name="sex" component={renderErrorRadio} />
 				<label className="label">Interesting in</label>
 					<label className="radio">
 						<Field
 						name="interest"
 						component="input"
 						type="radio"
-						value="maleInterest"
+						value="men"
 						/>{' '}
-						Male
+						Men
 					</label>
 					<label className="radio">
 						<Field
@@ -169,20 +173,18 @@ class NewInfoUserContainer extends React.Component{
 						/>{' '}
 						Both
 					</label>
-					<div>
-						<Field name="interest" component={renderErrorInterest} />
-					</div>
+					<Field name="interest" component={renderErrorInterest} />
 				<div>
 					<label className="label">Relationship</label>
 					<div className="field">
 						<div className="select">
 						<Field name="relationship" component="select">
-							<option >Marriage</option>
+							<option>Marriage</option>
 							<option>Casual sex</option>
 							<option>friends</option>
 							<option>One night stand</option>
 							<option>Long term relationship</option>
-							<option>Short term relationship'</option>
+							<option>Short term relationship</option>
 						</Field>
 						</div>
 					</div>

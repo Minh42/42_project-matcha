@@ -1,18 +1,28 @@
+.background{
+    background-image:linear-gradient(60deg, #E52A6F, #67AECA);
+}
+
 #logo {
-    font-family: Amatic SC;
+    font-family: 'Lato', sans-serif;
     font-weight: bold;
     color: #F9BE02;
     font-size: 50px;
 }
 
+.buttonsignIn{
+    margin-top: 5%;
+}
+
 .button {
-    font-family: Amatic SC;
+    font-family: 'Lato', sans-serif;
     font-weight: bold;
-    color: #FFFFFF;
-    background-image: linear-gradient(60deg, #F9BE02, #F53240);
+    color: black;
+    background-color: white;
+    opacity: 0.3;
     border: none;
     padding-left: 30px;
     padding-right: 30px;
+    border: white;
 }
 
 .round-button {
@@ -33,6 +43,11 @@
 
 .round-button:hover {
     background: #262626;
+}
+
+.teaserText {
+    font-family: 'Lato', sans-serif;
+    color: white;
 }
 
 //REACT TAGS CUSTOMIZE

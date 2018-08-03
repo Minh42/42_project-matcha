@@ -73,6 +73,8 @@ router.post('/api/signup', checkSignupValidation, function(req, res) {
 router.get('/api/activationMail', function(req, res) {
   var login = req.param('login');
   var token = req.param('token');
+  console.log(login)
+  console.log(token)
 
   let user = require('../models/user.class');
 
@@ -211,6 +213,43 @@ router.post('/api/modifData', (req, res) => {
   console.log(req.body);
 })
 
+//CHANGE NEW INFO USER
+router.post('/api/changeNewInfo', (req, res) => {
+  let user = require('../models/user.class');
+  console.log(req.body)
+  const tags = req.body.tags;
+
+  const birthdate = req.body.values.birthdate
+  const sex = req.body.values.sex
+  const interest = req.body.values.interest
+  const bio = req.body.values.bio
+  const relationship = req.body.values.relationship
+  console.log(birthdate)
+})
+
+//CHANGE 
+router.post('/api/changeNewInfo', (req, res) => {
+  let user = require('../models/user.class');
+  console.log(req.body)
+  const user_id = req.body.values.user_id
+  const tags = req.body.tags;
+  const birthdate = req.body.values.birthdate
+  const sex = req.body.values.sex
+  const interest = req.body.values.interest
+  const bio = req.body.values.bio
+  const relationship = req.body.values.relationship
+  user.changeBirthdateGender(user_id, birthdate, sex)
+    .then(function(ret){
+  if (ret) {
+    user.changeInterest(user_id, interest)
+  .then(function(ret){
+  
+        });
+      }
+    }); 
+  });
+
+
 //CHANGE PASSWORD
 router.post('/api/changePassword', function(req, res) {
   let user = require('../models/user.class');
@@ -265,7 +304,7 @@ router.get('/api/profile', (req, res) => {
 
 router.get('/api/infoUser', (req, res) => {
   // console.log(req.user);
-  // console.log('helloyou')
+  console.log('helloyou')
   res.send(req.user);
 });
 

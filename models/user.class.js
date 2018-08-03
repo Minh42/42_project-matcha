@@ -82,9 +82,9 @@ class User {
         } 
     }
     
-    static async addUserGoogle(firstname, lastname, email, googleID) {
+    static async addUserGoogle(username, firstname, lastname, email, googleID) {
         try {
-            const values = {firstname: firstname, lastname: lastname, email : email, google_id : googleID};
+            const values = {username: username, firstname: firstname, lastname: lastname, email : email, google_id : googleID};
             const requete = 'INSERT INTO `users` SET ?'
        
             let ret = await pool.query(requete, values)
@@ -197,6 +197,36 @@ class User {
             let ret = await pool.query("UPDATE `users` SET `username` = ?, `firstname` = ?, `lastname` = ?, `email`= ? WHERE `user_id` = ?", [login, firstname, lastname, email, user_id]);
             if (ret) {
                 return true;
+            }
+            else {
+                return false;
+            }
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async changeBirthdateGender(user_id, birthdate, sex) {
+        try {
+            let ret = await pool.query("UPDATE `users` SET `birth_date` = ?, `gender` = ? WHERE `user_id` = ?", [birthdate, sex, user_id]);
+            if (ret) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async findIdGender(user_id, interest) {
+        try {
+            let ret = await pool.query("SELECT `gender_id` FROM `interested_in_gender` INNER JOIN `genders` ON genders.gender_id = interested_in_gender.gender_id INNER JOIN `users` ON interested_in_gender.user_id = users.user_id  WHERE `users.user_id` = ? AND `genders.name = ?", [user_id, interest]);
+            if (ret) {
+                return ret;
             }
             else {
                 return false;
