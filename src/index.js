@@ -16,6 +16,7 @@ import ForgotPassword from './containers/ForgotPasswordContainer';
 import ResetPassword from './containers/ResetPasswordContainer';
 import PublicProfile from './layout/ProfileUser';
 import ModifProfile from './layout/ModifProfile';
+import Onboarding from './components/Onboarding/wizardForm';
  
 import rootReducer from './reducers';
 import setAuthorizationToken from '../library/setAuthorizationToken';
@@ -54,6 +55,7 @@ ReactDOM.render(
                     <Route path="/resetPassword/:login" component={ResetPassword} />
                     <Route path="/profile" component={PublicProfile} />
                     <Route path="/ModifProfile" component={ModifProfile} />
+                    <Route path="/Onboarding" component={Onboarding} />
                 </Switch>
                 <Footer />
             </div>

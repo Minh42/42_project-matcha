@@ -1,10 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import CarouselContainer from '../containers/CarouselContainer';
+// import CarouselContainer from '../containers/CarouselContainer';
 import SignupContainer from '../containers/SignupContainer';
 import FlashMessagesList from '../components/FlashMessagesList';
 import ReviewsContainer from '../containers/ReviewsContainer';
 import LoginContainer from '../containers/LoginContainer';
+import step3 from '../../assets/img/step3.png' 
 
 import Button from "../components/Button";
 
@@ -36,7 +37,7 @@ class LandingPage extends React.Component  {
                         <FlashMessagesList />
                         <div className="columns">
                             <div className="column is-4 is-offset-1">
-                                <CarouselContainer />
+                                <img src={step3} alt="step3" />
                             </div>
                             <div className="column is-offset-2 is-4">
                                 <SignupContainer />

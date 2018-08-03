@@ -54,28 +54,6 @@ class Header extends Component{
     showNavbar() {
         if (this.props.authenticated) {
             return [
-                <nav className="navbar">
-                <div className="navbar-brand">
-
-                    <a className="navbar-item" id="logo">
-                       <span> MATCHA </span>
-                    </a>
-
-                    <div className="navbar-burger burger" data-target="mobile-app">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
-                </div>
-
-                <div id="mobile-app" className="navbar-menu">
-                    <div className="navbar-start">
-                    </div>
-                </div>
-
-                <div className="navbar-end">
-                    <div className="navbar-item">
-                        <div className="field is-grouped">
                 <h3>hello {this.state.firstname} </h3>,
                 <p className="control">
                     <Link to="/homepage"><Button className="button is-rounded" title=" homepage"/></Link>
@@ -90,22 +68,6 @@ class Header extends Component{
                     {/* <Button onClick={this.handleLogout} className="button is-rounded" title="Signout"/> */}
                     <LinkButton to='/' onClick={this.handleLogout} className="button is-rounded">Signout</LinkButton>
                 </p>
-                </div>
-                    </div>
-                    <div className="modal" id='modal_signin'>
-			        <div className="modal-background"></div>
-                        <div className="modal-card">
-                            <header className="modal-card-head">
-                                <p className="modal-card-title">Sign in to Matcha</p>
-                                <button className="delete" aria-label="close" onClick={this.closeModal}></button>
-                            </header>
-                            <section className="modal-card-body">
-                                <LoginContainer /> 
-                            </section>
-                        </div>
-			        </div>
-                </div>
-            </nav>
         
             ];
         }
