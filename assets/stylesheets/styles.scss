@@ -5,24 +5,60 @@
 #logo {
     font-family: 'Lato', sans-serif;
     font-weight: bold;
-    color: #F9BE02;
+    color: #E52A6F;
     font-size: 50px;
+}
+
+//ONBOARDING CSS
+.columnWizard{
+    background-color: white;
+}
+
+.titleOnboarding{
+    font-family: 'Lato', sans-serif;
+    font-size: 1.5em;
+}
+
+.labelOnboarding {
+    font-family: 'Lato', sans-serif;
+    border-bottom: solid 2px #E52A6F;
+    margin-top: 8%;
+    font-size: 1em;
+    letter-spacing: 3px;
 }
 
 .buttonsignIn{
     margin-top: 5%;
+    background-color: white;
+    opacity: 0.3;
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+.buttonregister {
+    background-color: white;
+    opacity: 0.3;
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+.buttonOnboarding {
+    background-color: #E52A6F;
+    opacity: 0.8;
+    padding-left: 25px;
+    padding-right: 25px;
+}
+
+.progressOnboarding {
+    height: 5px;
+    margin-top: 8%;
 }
 
 .button {
     font-family: 'Lato', sans-serif;
     font-weight: bold;
     color: black;
-    background-color: white;
-    opacity: 0.3;
     border: none;
-    padding-left: 30px;
-    padding-right: 30px;
-    border: white;
 }
 
 .round-button {

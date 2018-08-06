@@ -10,10 +10,10 @@ class ResetPassword extends Component {
     constructor(props) {
         super(props)
         this.state = {
-           user_id : this.props.match.params.user_id,
+           user_id : this.props.match.params.id,
            messagesSuccess : ""
         }
-        console.log(this.props.match.params.user_id);
+        console.log(this.props.match.params.id);
     }
 
     renderField(field) {
