@@ -57,7 +57,7 @@ class SignupContainer extends Component{
 					Share your passion<br />
 					And Enjoy your trip!
 				</h1>
-				<Button className="button is-medium is-fullwidth is-rounded" id="button" title="Create your account" action={this.showModal} />
+				<Button className="button is-medium is-fullwidth is-rounded buttonregister" id="button" title="Create your account" action={this.showModal} />
 			</div>
 			
 			<div className="modal" id="modalForm">

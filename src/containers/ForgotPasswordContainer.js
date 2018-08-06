@@ -18,9 +18,9 @@ class ForgotPassword extends Component {
         }
     }
 
-    componentDidMount() {
-        document.getElementById('modal_signin').classList.remove("is-active");
-    }
+    // componentDidMount() {
+    //     document.getElementById('modal_signin').classList.remove("is-active");
+    // }
     
     renderField(field) {
         const { meta: { touched, error } } = field;

@@ -97,15 +97,16 @@ router.post('/api/signin', function(req, res) {
   let user = require('../models/user.class');
   let messages = {};
   let { username, password } = req.body;
-  user.login(username, password).then(function(ret) {
+  user.login(username, password)
+    .then(function(ret) {
     console.log('IM FUCKING HERE');
-    if (ret) {
-      const token = jwt.sign({ id: username }, config.jwtSecret);
-      res.json({token});
-    } else {
-      res.sendStatus(401);
-    }
-  })   
+      if (ret) {
+        const token = jwt.sign({ id: username }, config.jwtSecret);
+        res.json({token});
+      } else {
+        res.sendStatus(401);
+      }
+    })   
 })
 
 //FORGOT PASSWORD

@@ -1,28 +1,65 @@
 import React from 'react'
-import { Field, reduxForm } from 'redux-form'
+import { connect } from 'react-redux'
+import { Field, reduxForm, formValueSelector } from 'redux-form'
 import validate from './validate'
+
 import renderField from './renderField'
 
-const WizardFormFirstPage = props => {
+const renderError = ({ meta: { touched, error } }) =>
+  touched && error ? <span className="help is-danger">{error}</span> : false
+
+let WizardFormFirstPage = props => {
   const { handleSubmit } = props
+
   return (
     <form onSubmit={handleSubmit}>
+    <p className="has-text-centered titleOnboarding">Tell us more about you</p>
+      <progress className="progress progressOnboarding" value="20" max="100">20%</progress>
       <Field
         name="birthdate"
         type="date"
         component={renderField}
         label="Birthdate"
+        className="input"
       />
+      <div>
+        <label className="label labelOnboarding">Sex</label>
+        <div>
+          <label className="radio">
+            <Field
+              name="sex"
+              component="input"
+              type="radio"
+              value="male"
+            />{' '}
+            Male
+          </label>
+          <label className="radio">
+            <Field
+              name="sex"
+              component="input"
+              type="radio"
+              value="female"
+            />{' '}
+            Female
+          </label>
+          <Field name="sex" component={renderError} />
+        </div>
+      </div>
       <Field
         name="occupation"
         type="text"
         component={renderField}
         label="Occupation"
+        className="input"
       />
-      <div>
-        <button type="submit" className="next">
-          Next
-        </button>
+      <br></br>
+      <div className="columns">
+        <div className="column is-2 is-offset-10">
+          <button type="submit" className="next button buttonOnboarding">
+            Next
+          </button>
+        </div>
       </div>
     </form>
   )

@@ -222,13 +222,30 @@ class User {
         } 
     }
 
-    static async findIdGender(user_id, interest) {
+    // static async findIdGender(user_id, interest) {
+    //     try {
+    //         let ret = await pool.query("SELECT `gender_id` FROM `interested_in_gender` INNER JOIN `genders` ON genders.gender_id = interested_in_gender.gender_id INNER JOIN `users` ON interested_in_gender.user_id = users.user_id  WHERE `users.user_id` = ? AND `genders.name = ?", [user_id, interest]);
+    //         if (ret) {
+    //             return ret;
+    //         }
+    //         else {
+    //             return false;
+    //         }
+    //     }
+    //     catch(err) {
+    //         throw new Error(err)
+    //     } 
+    // }
+
+    static async onboardingState(username) {
         try {
-            let ret = await pool.query("SELECT `gender_id` FROM `interested_in_gender` INNER JOIN `genders` ON genders.gender_id = interested_in_gender.gender_id INNER JOIN `users` ON interested_in_gender.user_id = users.user_id  WHERE `users.user_id` = ? AND `genders.name = ?", [user_id, interest]);
-            if (ret) {
-                return ret;
+            let ret = await pool.query("SELECT `onboardingDone` FROM `users` WHERE `username` = ?", [username]);
+            console.log('onboardingState')
+            console.log(ret)
+            if (ret === 1) {
+                return true;
             }
-            else {
+            else if (ret === 0) {
                 return false;
             }
         }

@@ -52,10 +52,10 @@ ReactDOM.render(
                     <Route path="/homepage" component={HomePage} />
                     <Route path="/messages" component={requireAuth(MessagesPage)} />
                     <Route path="/forgotPassword" component={ForgotPassword} />
-                    <Route path="/resetPassword/:login" component={ResetPassword} />
+                    <Route path="/resetPassword/:id" component={ResetPassword} />
                     <Route path="/profile" component={PublicProfile} />
                     <Route path="/ModifProfile" component={ModifProfile} />
-                    <Route path="/Onboarding" component={Onboarding} />
+                    <Route path="/Onboarding/:id" component={Onboarding} />
                 </Switch>
                 <Footer />
             </div>
