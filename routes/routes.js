@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const config = require('../server/config/keys');
+const authenticate = require('../src/middlewares/midToken');
 const midUser = require('../src/middlewares/midUser'); 
 
 const passport = require('passport');
@@ -25,7 +26,6 @@ router.get('/', (req, res) => {
 const checkSignupValidation = [midUser.findLogin,
                               midUser.findEmail]; 
 router.post('/api/signup', checkSignupValidation, function(req, res) {
-  console.log(req.body);
   let user = require('../models/user.class');
   let check = require('../library/tools');
   let messages = {};
@@ -73,6 +73,8 @@ router.post('/api/signup', checkSignupValidation, function(req, res) {
 router.get('/api/activationMail', function(req, res) {
   var login = req.param('login');
   var token = req.param('token');
+  console.log(login)
+  console.log(token)
 
   let user = require('../models/user.class');
 
@@ -97,9 +99,12 @@ router.post('/api/signin', function(req, res) {
   let { username, password } = req.body;
   user.login(username, password).then(function(ret) {
     if (ret) {
-      const token = jwt.sign({ id: username }, config.jwtSecret);
-      res.json({token});
+      user.searchByColName("username", username).then(function(ret) {
+        const token = jwt.sign({ user: ret }, config.jwtSecret);
+        res.json({token})
+      })
     } else {
+      console.log('DAMN ERROR')
       res.sendStatus(401);
     }
   })   
@@ -111,7 +116,7 @@ router.post('/api/forgotPassword', function(req, res) {
   let user = require('../models/user.class');
   user.findOne("email", req.body.email).then(function(ret){
     if (ret) {
-      user.searchByColName("email",req.body.email).then(function(ret){   
+      user.searchByColName("email",req.body.email).then(function(ret) {   
         user_id = ret[0].user_id;
         login = ret[0].username;
         firstname = ret[0].firstname;
@@ -207,18 +212,49 @@ router.post('/api/modifData', (req, res) => {
     .then(function(ret) {
       res.send({redirect: '/ModifProfile'});
     })
-  console.log(req.body);
 })
+
+//CHANGE NEW INFO USER
+router.post('/api/changeNewInfo', (req, res) => {
+  let user = require('../models/user.class');
+  const tags = req.body.tags;
+
+  const birthdate = req.body.values.birthdate
+  const sex = req.body.values.sex
+  const interest = req.body.values.interest
+  const bio = req.body.values.bio
+  const relationship = req.body.values.relationship
+})
+
+//CHANGE 
+router.post('/api/changeNewInfo', (req, res) => {
+  let user = require('../models/user.class');
+  const user_id = req.body.values.user_id
+  const tags = req.body.tags;
+  const birthdate = req.body.values.birthdate
+  const sex = req.body.values.sex
+  const interest = req.body.values.interest
+  const bio = req.body.values.bio
+  const relationship = req.body.values.relationship
+  user.changeBirthdateGender(user_id, birthdate, sex)
+    .then(function(ret){
+  if (ret) {
+    user.changeInterest(user_id, interest)
+  .then(function(ret){
+  
+        });
+      }
+    }); 
+  });
+
 
 //CHANGE PASSWORD
 router.post('/api/changePassword', function(req, res) {
   let user = require('../models/user.class');
-  console.log(req.body)
   let check = require('../library/tools');
   let messages= {};
 
   hashNewPassword = check.isHash(req.body.newPassword);
-  console.log(hashNewPassword);
 
   user.sendNewPasswordBDD(hashNewPassword, req.body.user_id)
     .then (function(ret){
@@ -254,7 +290,8 @@ router.get('/api/auth/google/callback',
 );
 
 router.get('/api/signout', (req, res) => {
-    req.logout();
+  req.logout();
+  res.redirect('/');
 });
 
 router.get('/api/profile', (req, res) => {
@@ -262,13 +299,31 @@ router.get('/api/profile', (req, res) => {
 });
 
 router.get('/api/infoUser', (req, res) => {
-  // console.log(req.user);
-  // console.log('helloyou')
   res.send(req.user);
 });
 
-router.get('/api/current_user', (req, res) => {
-  res.send(req.user);
+router.get('/api/current_user', authenticate, (req, res) => {
+  res.send(req.currentUser);
+});
+
+router.get('/api/homepage', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  user.selectAll().then(function(ret) {
+    if (ret) {
+      res.json(ret);
+    } else {
+    res.sendStatus(404);
+  }
+  })
+});
+
+
+router.get('/api/onboarding', authenticate, (req, res) => {
+  // res.json({ success: true });
+  console.log('im here')
+  console.log(req.currentUser);
+  console.log('im here')
+  // res.send(req.currentUser);
 });
 
 module.exports = router 

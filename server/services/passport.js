@@ -62,6 +62,7 @@ passport.use(new GoogleStrategy({
         var firstname = arrayName[0];
         var lastname = arrayName[1];
         var email = profile.emails[0].value;
+        var username = user.makeid();
 
         try {
             user.findOne("google_id", googleID).then(function(ret) {
@@ -71,7 +72,7 @@ passport.use(new GoogleStrategy({
                     })
                 }
                 else {
-                    user.addUserGoogle(firstname, lastname, email, googleID).then(function(ret) {
+                    user.addUserGoogle(username, firstname, lastname, email, googleID).then(function(ret) {
                         if (ret) {
                             user.searchByColName("google_id", googleID).then(function(user) {
                                 done(null, user);

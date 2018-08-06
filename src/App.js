@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { fetchCurrentUser } from './actions/actionFetch';
+import { fetchCurrentUser } from './actions/actionUsers';
 import { bindActionCreators } from 'redux';
 import requireAuth from '../library/requireAuth';
 import setAuthorizationToken from '../library/setAuthorizationToken';
@@ -26,7 +26,6 @@ class App extends Component {
 
     render() {
         return (
-        <div className="container">
             <Router>
                 <div>
                     <Header />
@@ -42,7 +41,6 @@ class App extends Component {
                     <Footer />
                 </div>
             </Router>
-        </div>
         )
     }
 }

@@ -7,7 +7,7 @@ import { addFlashMessage } from '../src/actions/actionMessages';
 
 export default function(ComposedComponent) {
 	class Authenticate extends Component {
-		componentWillMount() {
+		componentDidMount() {
 			if(!this.props.isAuthenticated) {
 				this.props.addFlashMessage({
 					type: '',
@@ -17,9 +17,10 @@ export default function(ComposedComponent) {
 			}
 		}
 
-		componentWillUpdate(nextProps) {
+		componentDidUpdate(nextProps) {
 			if (!nextProps.isAuthenticated) {
-				this.context.router.push('/');
+				console.log('IM HERERZREZ')
+				this.props.history.push('/');
 			}
 		}
 

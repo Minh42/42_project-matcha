@@ -42,7 +42,6 @@ class ResetPassword extends Component {
 		const initData = {
 			"user_id": res.data[0].user_id,
 		};
-		console.log(initData)
 		this.props.initialize(initData);
 	  }
 

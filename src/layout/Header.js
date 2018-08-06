@@ -21,7 +21,6 @@ class Header extends Component{
             firstname : "",
             lastname : ""
         }
-        console.log(this.state.firstname);
 	  }
 
 	showModal() {
@@ -33,50 +32,53 @@ class Header extends Component{
     }
 
     handleLogout() {
-        this.props.signOutAction(this.props.history);
+        this.props.signOutAction();
     }
 
-    async componentDidMount() {
-        var first;
-        var last;
-        var res = await axios.get(`/api/infoUser`)
-        console.log(res);
-        first = res.data[0].firstname;
-        last = res.data[0].lastname;
-        console.log(first);
-        console.log(last);
-        this.setState({
-            firstname: first,
-            lastname: last
-        })
-    }
+    // async componentDidMount() {
+        // var first;
+        // var last;
+        // var res = await axios.get(`/api/infoUser`)
+        // first = res.data[0].firstname;
+        // last = res.data[0].lastname;
+        // this.setState({
+        //     firstname: first,
+        //     lastname: last
+        // })
+    //   }
 
     showNavbar() {
-        if (this.props.authenticated) {
-            return [
-                <h3>hello {this.state.firstname} </h3>,
-                <p className="control">
-                    <Link to="/homepage"><Button className="button is-rounded" title=" homepage"/></Link>
-                </p>,
-                <p className="control">
-                    <Link to="/messages"><Button className="button is-rounded" title="My messages"/></Link>
-                </p>,
-                <p className="control">
-                    <Link to="/profile"><Button className="button is-rounded" title="My profile"/></Link>
-                </p>,
-                <p className="control">
-                    <LinkButton to='/' onClick={this.handleLogout} className="button is-rounded">Signout</LinkButton>
-                </p>
-            ];
+        console.log(this.props.authenticated)
+        switch (this.props.authenticated) {
+            case null:
+                return;
+            case false:
+                return [
+                    <Button className="button is-rounded" title="Sign In" action={this.showModal}/>
+                ];
+            default:
+                return [
+                    // <h3>hello {this.state.firstname} </h3>,
+                    <p className="control">
+                        <Link to="/homepage"><Button className="button is-rounded" title=" homepage"/></Link>
+                    </p>,
+                    <p className="control">
+                        <Link to="/messages"><Button className="button is-rounded" title="My messages"/></Link>
+                    </p>,
+                    <p className="control">
+                        <Link to="/profile"><Button className="button is-rounded" title="My profile"/></Link>
+                    </p>,
+                    <p className="control">
+                        <LinkButton to='/' onClick={this.handleLogout} className="button is-rounded">Signout</LinkButton>
+                    </p>
+            
+                ];
         }
-        return [
-            <Button className="button is-rounded" title="Sign In" action={this.showModal}/>
-        ];
     }
 
     render() {
         return (
-            <nav className="navbar">
+			<nav className="navbar">
                 <div className="navbar-brand">
 
                     <a className="navbar-item" id="logo">
@@ -98,8 +100,8 @@ class Header extends Component{
                 <div className="navbar-end">
                     <div className="navbar-item">
                         <div className="field is-grouped">
-                            {this.showNavbar()}
-                        </div>
+							{this.showNavbar()}
+					</div>
                     </div>
                     <div className="modal" id='modal_signin'>
 			        <div className="modal-background"></div>
@@ -115,13 +117,13 @@ class Header extends Component{
 			        </div>
                 </div>
             </nav>
-        );
+        );                 
     }
 }
 
 function mapStateToProps(state) {
     return { 
-        authenticated: state.auth.authenticated 
+        authenticated: state.auth.authenticated
     };
 }
 

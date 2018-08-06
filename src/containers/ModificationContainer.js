@@ -45,14 +45,11 @@ class ModificationContainer extends React.Component{
 			"lastName": res.data[0].lastname,
 			"email": res.data[0].email
 		};
-		console.log(initData)
 		this.props.initialize(initData);
 	  }
 
 	async onSubmit (values){
-		console.log(values)
 		const res = await axios.post(`/api/modifData`, values)
-        console.log(res)
 	}
 
 	render () {

@@ -21,6 +21,7 @@ const store = createStore(
     )
 )
 
+// persist auth state on refresh
 store.subscribe(throttle(() => {
     saveState({
         auth: store.getState().auth

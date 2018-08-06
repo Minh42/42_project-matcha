@@ -31,8 +31,8 @@ class UsersContainer extends Component {
         }
         if(loading) {
             return (
-                <div class="pageloader">
-                    <span class="title">Pageloader</span>
+                <div className="pageloader">
+                    <span className="title">Pageloader</span>
                 </div>
             )
         }

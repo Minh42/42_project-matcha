@@ -1,6 +1,7 @@
 import axios from 'axios';
 import setAuthorizationToken from '../../library/setAuthorizationToken';
 
+export const FETCH_CURRENT_USER = 'FETCH_CURRENT_USER'
 export const AUTHENTICATED = 'AUTHENTICATED_USER';
 export const UNAUTHENTICATED = 'UNAUTHENTICATED_USER';
 export const AUTHENTICATION_ERROR = 'AUTHENTICATION_ERROR';
@@ -8,6 +9,23 @@ export const AUTHENTICATION_ERROR = 'AUTHENTICATION_ERROR';
 export const REGISTERATION_SUCCESS = 'REGISTRATION_SUCCESS';
 export const REGISTERATION_ERROR = 'REGISTRATION_ERROR';
 export const REGISTERATION_FAILED = 'REGISTRATION_FAILED';
+
+export function fetchCurrentUser() {
+	return async (dispatch) => {
+		const res = await axios.get('/api/current_user');
+		console.log(res.data)
+		if (res.data === 'undefined' || res.data === null || res.data === '' || res.data.length <= 0) {
+			dispatch({ 
+				type: UNAUTHENTICATED
+			});
+		}
+		else {
+			dispatch({ 
+				type: AUTHENTICATED
+			});
+		}
+	}
+}
 
 export function signInFacebookAction() {
 	return async (dispatch) => {
@@ -77,8 +95,6 @@ export function signUpAction(values, history) {
 	return async (dispatch) => {
 		try {
 			const res = await axios.post('/api/signup', values);
-			console.log (res.data.error);
-			console.log (res.data.success);
 			if (res.data.success === "success")
 			{
 				dispatch({ 
