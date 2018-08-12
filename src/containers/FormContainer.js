@@ -52,7 +52,7 @@ class FormContainer extends Component {
 		const { handleSubmit } = this.props;
 
 		return (
-			<form className="signup" onSubmit={handleSubmit(this.onSubmit.bind(this))}>
+			<form name="signup" className="signup" onSubmit={handleSubmit(this.onSubmit.bind(this))}>
 				<Field
 					label="Firstname"
 					name="firstName"

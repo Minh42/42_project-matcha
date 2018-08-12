@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import LoginContainer from '../containers/LoginContainer';
 import Button from "../components/Button";
-import LinkButton from "../components/LinkButton"
+import LinkButton from "../components/LinkButton";
+import { withRouter } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { signOutAction } from '../actions/actionUsers';
+import { selectUser } from '../actions/actionUsers';
 import { bindActionCreators } from 'redux';
 
 import axios from 'axios';
@@ -16,6 +18,7 @@ class Header extends Component{
 		this.showModal = this.showModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
         this.handleLogout = this.handleLogout.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
 
         this.state = {
             firstname : "",
@@ -32,43 +35,35 @@ class Header extends Component{
     }
 
     handleLogout() {
-        this.props.signOutAction();
+        this.props.signOutAction(this.props.history);
     }
 
-    // async componentDidMount() {
-        // var first;
-        // var last;
-        // var res = await axios.get(`/api/infoUser`)
-        // first = res.data[0].firstname;
-        // last = res.data[0].lastname;
-        // this.setState({
-        //     firstname: first,
-        //     lastname: last
-        // })
-    //   }
+    async handleSubmit() {
+        const res = await axios.get('/api/profile');
+        console.log(res.data);
+        this.props.selectUser(res);
+    }
 
     showNavbar() {
-        console.log(this.props.authenticated)
         switch (this.props.authenticated) {
             case null:
                 return;
             case false:
                 return [
-                    <Button className="button is-rounded" title="Sign In" action={this.showModal}/>
+                    <Button key="login" className="button is-rounded" title="Sign In" action={this.showModal}/>
                 ];
             default:
                 return [
-                    // <h3>hello {this.state.firstname} </h3>,
-                    <p className="control">
+                    <p key="homepage" className="control">
                         <Link to="/homepage"><Button className="button is-rounded" title=" homepage"/></Link>
                     </p>,
-                    <p className="control">
+                    <p key = "messages" className="control">
                         <Link to="/messages"><Button className="button is-rounded" title="My messages"/></Link>
                     </p>,
-                    <p className="control">
-                        <Link to="/profile"><Button className="button is-rounded" title="My profile"/></Link>
+                    <p key = "profile" className="control">
+                        <LinkButton to='/profile' onClick={this.handleSubmit} className="button is-rounded">My profile</LinkButton>
                     </p>,
-                    <p className="control">
+                    <p key = "logout" className="control">
                         <LinkButton to='/' onClick={this.handleLogout} className="button is-rounded">Signout</LinkButton>
                     </p>
             
@@ -128,7 +123,10 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({ signOutAction: signOutAction}, dispatch);
+    return bindActionCreators({ 
+        signOutAction: signOutAction,
+        selectUser: selectUser
+    }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Header);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Header));

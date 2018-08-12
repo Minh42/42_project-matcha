@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {reset} from 'redux-form';
 import setAuthorizationToken from '../../library/setAuthorizationToken';
 
 export const FETCH_CURRENT_USER = 'FETCH_CURRENT_USER'
@@ -10,10 +11,11 @@ export const REGISTERATION_SUCCESS = 'REGISTRATION_SUCCESS';
 export const REGISTERATION_ERROR = 'REGISTRATION_ERROR';
 export const REGISTERATION_FAILED = 'REGISTRATION_FAILED';
 
+export const USER_SELECTED = 'USER_SELECTED';
+
 export function fetchCurrentUser() {
 	return async (dispatch) => {
 		const res = await axios.get('/api/current_user');
-		console.log(res.data)
 		if (res.data === 'undefined' || res.data === null || res.data === '' || res.data.length <= 0) {
 			dispatch({ 
 				type: UNAUTHENTICATED
@@ -64,6 +66,7 @@ export function signInAction({username, password}, history) {
 			dispatch({ 
 				type: AUTHENTICATED
 			});
+			dispatch(reset('signin'));
 			const token = res.data.token;
 			localStorage.setItem('jwtToken', token);
 			setAuthorizationToken(token);
@@ -101,6 +104,7 @@ export function signUpAction(values, history) {
 					type: REGISTERATION_SUCCESS,
 					payload : res.data.error
 				});
+				dispatch(reset('signup'));
 				document.getElementById('modalForm').classList.remove("is-active");
 				document.getElementById('modalEmail').classList.add("is-active");
 				// history.push('/success');
@@ -121,4 +125,11 @@ export function signUpAction(values, history) {
 			});
 		}
 	}
+}
+
+export function selectUser(user) {
+	return {
+		type: USER_SELECTED,
+		payload: user
+	};
 }

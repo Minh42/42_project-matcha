@@ -27,14 +27,12 @@ let createUser = (knex, id, bio, occupations) => {
   var lastname = arrayName[1];
 	const guessedGender = gender.guess(identity.name).gender == 'male' ? 'man' : 'woman';
 
-  return knex('users')
-  .returning('user_id')
-  .insert({
+  return {
     firstname: firstname,
     lastname: lastname,
     username: faker.internet.userName(),
     email: faker.internet.email(),
-    password: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmb28iOiJhbGFteSIsImlhdCI6MTUzMzEzMjIzMn0.sVESCLkaJT0ivaT4DKFDbrQC6jUu1tV9rvRrH0ACZ4o',
+    password: '$2a$10$OePpGWRH/wbUg9oIaW860Oi1dBLcZIUjUZUivQ0iBfV2YMizy2k0q',
     activation_code: null,
     status: 1,
     birth_date: faker.date.between('1977-01-01', '2000-01-01'),
@@ -53,91 +51,110 @@ let createUser = (knex, id, bio, occupations) => {
     alert_notification: true,
     date_created: new Date(),
     date_updated: new Date()
-  })
-  .then(function(id) { 
-    for (var i = 0; i < 5; i++) {
-      knex.transaction(trx => {
-        return trx('user_photos')
-        .returning('user_id')
-        .insert({
-          user_id: id,
-          details: null,
-          image_path: faker.image.imageUrl(640, 480, "people"),
-          active: true,
-          date_created: new Date(),
-          date_updated: new Date()
-        })
-      })
-    }
-  })
-  .then(function(id) {
-    for (var i = 0; i < 5; i++) {
-      knex.transaction(trx => {
-        return trx('user_tags')
-          .returning('user_id')
-          .insert({
-            user_id: id,
-            tag_id: getRandomIntInclusive(1, 25)
-        })
-      })
-    }
-  })
-  .then(function(id) {
-    return knex('interested_in_gender')
-    .returning('user_id')
-    .insert({
-      user_id: id,
-      gender_id: getRandomIntInclusive(1, 3),
-    })
-  })
-  .then(function(id) {
-    return knex('interested_in_relation')
-    .returning('user_id')
-    .insert({
-      user_id: id,
-      relationship_type_id: getRandomIntInclusive(1, 6),
-    })
-  })
+  }
 }
+
+let createUserPhoto = (knex, id) => {
+    return {
+        user_id: id,
+        details: null,
+        image_path: faker.image.imageUrl(640, 480, "people"),
+        active: true,
+        date_created: new Date(),
+        date_updated: new Date()
+    }
+}
+
+let createUserTag = (knex, id) => {
+    return {
+        user_id: id,
+        tag_id: getRandomIntInclusive(1, 25)
+    }
+}
+
+let createUserGenderInterest = (knex, id) => {
+    return {
+        user_id: id,
+        gender_id: getRandomIntInclusive(1, 3),
+    }
+}
+
+let createUserRelationshipInterest = (knex, id) => {
+    return {
+        user_id: id,
+        relationship_type_id: getRandomIntInclusive(1, 6),
+    }
+}
+
 
 exports.seed = function(knex, Promise) {
   // Deletes ALL existing entries
-  return knex('interested_in_relation').del()
-    .then(() => {
-      return knex('interested_in_gender').del()
-    })
-    .then(() => {
-      return knex('user_tags').del()
-    })
-    .then(() => {
-      return knex('user_photos').del()
-    })
-    .then(() => {
-      return knex('users')
-      .del()
-      .then(async function () {
-      //Inserts seed entries
-      let users = [];
+    return knex('interested_in_relation').del()
+        .then(() => {
+            return knex('interested_in_gender').del()
+        })
+        .then(() => {
+            return knex('user_tags').del();
+        })
+        .then(() => {
+            return knex('user_photos').del();
+        })
+        .then(() => {
+            return knex('users').del();
+        })
+        .then(async function () {
+        //Inserts seed entries
+            let users = [];
 
-      async function getData() {
-        const bioPromise = readFile('./seeds/bio', 'ascii');
-        const occupationsPromise = readFile('./seeds/occupations', 'ascii');
+            async function getData() {
+                const bioPromise = readFile('./seeds/bio', 'ascii');
+                const occupationsPromise = readFile('./seeds/occupations', 'ascii');
       
-        const [bioJSON, occupationsJSON] = await Promise.all([bioPromise, occupationsPromise]);
-        const customData = {
-          bio: JSON.parse(bioJSON),
-          occupations: JSON.parse(occupationsJSON)
-        };
-        return customData;
-      }
+                const [bioJSON, occupationsJSON] = await Promise.all([bioPromise, occupationsPromise]);
+                const customData = {
+                    bio: JSON.parse(bioJSON),
+                    occupations: JSON.parse(occupationsJSON)
+                };
+                return customData;
+            }
     
-      var promise = await getData();
-      const {bio, occupations } = promise;
-      for (let id = 1; id <= 10; id++) {
-        users.push(createUser(knex, id, bio, occupations))
-      }
-
-      return Promise.all(users);
-    });
-  })
+            var promise = await getData();
+            const { bio, occupations } = promise;
+            for (let id = 1; id <= 10; id++) {
+                users.push(createUser(knex, id, bio, occupations))
+            }
+            return knex("users").insert(users);
+        })
+        .then(function () {
+            let usersPhotos = [];
+            for (let id = 1; id <= 10; id++) {
+                for (var i = 0; i < 5; i++) {
+                    usersPhotos.push(createUserPhoto(knex, id))
+                }
+            }
+            return knex("user_photos").insert(usersPhotos);
+        })
+        .then(() => {
+            let usersTags = [];
+            for (let id = 1; id <= 10; id++) {
+                for (var i = 0; i < 5; i++) {
+                    usersTags.push(createUserTag(knex, id))
+                }
+            }
+            return knex("user_tags").insert(usersTags);
+        })
+        .then(() => {
+            let usersGenderInterest = [];
+            for (let id = 1; id <= 10; id++) {
+                usersGenderInterest.push(createUserGenderInterest(knex, id))
+            }
+            return knex("interested_in_gender").insert(usersGenderInterest);
+        })
+        .then(() => {
+            let usersRelationshipInterest = [];
+            for (let id = 1; id <= 10; id++) {
+                usersRelationshipInterest.push(createUserRelationshipInterest(knex, id))
+            }
+            return knex("interested_in_relation").insert(usersRelationshipInterest);
+        })
 };

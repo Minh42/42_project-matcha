@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const config = require('../server/config/keys');
-const authenticate = require('../src/middlewares/midToken');
+
+const authenticate = require('../src/middlewares/midAuth');
 const midUser = require('../src/middlewares/midUser'); 
 
 const passport = require('passport');
@@ -104,7 +105,6 @@ router.post('/api/signin', function(req, res) {
         res.json({token})
       })
     } else {
-      console.log('DAMN ERROR')
       res.sendStatus(401);
     }
   })   
@@ -294,26 +294,18 @@ router.get('/api/signout', (req, res) => {
   res.redirect('/');
 });
 
-router.get('/api/profile', (req, res) => {
-  res.send(req.user);
-});
-
-router.get('/api/infoUser', (req, res) => {
-  res.send(req.user);
-});
-
 router.get('/api/current_user', authenticate, (req, res) => {
   res.send(req.currentUser);
 });
 
 router.get('/api/homepage', authenticate, (req, res) => {
   let user = require('../models/user.class');
-  user.selectAll().then(function(ret) {
+  user.selectAllUsers().then(function(ret) {
     if (ret) {
       res.json(ret);
     } else {
     res.sendStatus(404);
-  }
+    }
   })
 });
 
@@ -324,6 +316,25 @@ router.get('/api/onboarding', authenticate, (req, res) => {
   console.log(req.currentUser);
   console.log('im here')
   // res.send(req.currentUser);
+});
+
+router.get('/api/profile', authenticate, async (req, res) => {
+  let user = require('../models/user.class');
+  async function getData() {
+    const infos = req.currentUser[0];
+    const photos = await user.selectAllUserPhotos(req.currentUser[0].user_id);
+    const tags = await user.selectAllUserTags(req.currentUser[0].user_id);
+  
+    const customData = {
+      infos: infos,
+      photos: photos,
+      tags: tags
+    };
+    return customData;
+  }
+
+  var promise = await getData();
+  res.json(promise);
 });
 
 module.exports = router 
