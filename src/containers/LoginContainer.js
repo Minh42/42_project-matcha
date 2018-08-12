@@ -15,7 +15,7 @@ class LoginContainer extends Component {
 
         return (
             <div className="field">
-                <label className="label">{field.label}</label>
+                <label className="label labelSign">{field.label}</label>
                 <div className="control has-icons-left">
                     <span className="icon is-small is-left">
                         <i className={field.icon}></i>
@@ -71,13 +71,17 @@ class LoginContainer extends Component {
                     placeholder="Password"
                     component={this.renderField}
                 />
-                <div className="field is-grouped">
-                    <p className="control">
-                        <Button type="submit" className="button is-rounded" title="Sign In" />
-                    </p>
-                    <p className="control">
-                        <Link to="/forgotPassword">Forgot password ?</Link>  
-                    </p>
+                <div className="field">
+                    <div>
+                        <p className="control">
+                            <Button type="submit" className="button is-rounded buttonOnboarding" title="Sign In" />
+                        </p>
+                    </div>
+                    <div>
+                        <p className="control">
+                            <Link to="/forgotPassword">Forgot password ?</Link>  
+                        </p>
+                    </div>
                 </div>
             </form>
         );

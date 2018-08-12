@@ -4,6 +4,8 @@ import validate from './validate'
 import { WithContext as ReactTags } from 'react-tag-input';
 import { connect } from 'react-redux'
 
+import axios from 'axios';
+
 const KeyCodes = {
 	comma: 188,
 	enter: 13,
@@ -17,20 +19,57 @@ class WizardFormThirdPage extends React.Component{
         super(props);
  
         this.state = {
-            tags: [
-             ],
+          tags: [
+           ],
+          suggestions: [
+              { id: 'USA', text: 'USA' },
+              { id: 'Germany', text: 'Germany' },
+              { id: 'Austria', text: 'Austria' },
+              { id: 'Costa Rica', text: 'Costa Rica' },
+              { id: 'Sri Lanka', text: 'Sri Lanka' },
+              { id: 'Thailand', text: 'Thailand' }
+           ]
         };
         this.handleDelete = this.handleDelete.bind(this);
         this.handleAddition = this.handleAddition.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
-	}
+  }
+  
+  async componentDidMount(){
+    //recuperer les tags de la BDD de l'utilisateur et les afficher
+    const res = await axios.post('/api/findTags');
+    const tags = res.data
+    const i = 0
+    this.setState({
+      tags: addTag(i, tags)
+     });
+
+     function addTag(i, tags) {
+       var array = []
+      //  console.log(tags)
+      //  console.log(tags.length)
+       while (i < tags.length) {
+        // console.log(i)
+        array[i] = { id: tags[i], text: tags[i] }
+        // console.log(array[i])
+        i++
+       }
+      //  console.log(array)
+       return array
+     }
+   
+  }
 	
-	handleDelete(i) {
-        const { tags } = this.state;
+	async handleDelete(i) {
+        const { tags } = this.state
+        const currentTag = this.state.tags[i]
+        console.log(currentTag)
+        const res = await axios.post('/api/deleteTags', currentTag)
+
         this.setState({
          tags: tags.filter((tag, index) => index !== i),
         });
-    }
+  }
  
   handleAddition(tag) {
         this.setState(state => ({ tags: [...state.tags, tag] }));
@@ -55,32 +94,23 @@ class WizardFormThirdPage extends React.Component{
 			</div>
 		);
   }
-  
-  componentDidMount(){
-    //recuperer les tags de la BDD de l'utilisateur et les afficher
-  }
 
-	async onSubmit (values){
-    console.log('HERE')
-    console.log(this.state.tags)
-		// const data = {
-		// 	values :values,
-		// 	tags: this.state.tags
-		// }
-		// console.log(data)
-		// const res = await axios.post(`/api/changeNewInfo`, data)
+	async onSubmit (){
+    // console.log('HERE')
+    // console.log(this.state.tags)
+		const res = await axios.post(`/api/addTags`, this.state.tags)
         // console.log(res)
 	}
 
 	render () {
 		const { key, handleSubmit, previousPage } = this.props;
-		const { tags } = this.state;
+		const { tags, suggestions } = this.state;
     const placeholder = "Add new Tag"
 
 	return (
 		<form onSubmit={handleSubmit} onClick={this.onSubmit}>
       <h2 className="has-text-centered titleOnboarding">We are so curious...</h2>
-      <progress class="progress progressOnboarding" value="60" max="100">60%</progress>
+      <progress className="progress progressOnboarding" value="60" max="100">60%</progress>
 					<Field
 					label="Enter your bio (max 300)"
 					name="bio"
@@ -89,13 +119,12 @@ class WizardFormThirdPage extends React.Component{
 					/>
 				<div className="field">
 					<label className="label">Tags</label>
-					<ReactTags
-						tags={tags}
-						handleDelete={this.handleDelete}
-						handleAddition={this.handleAddition}
-						delimiters={delimiters} 
-						placeholder={placeholder}
-					/>
+					<ReactTags tags={tags}
+                    suggestions={suggestions}
+                    handleDelete={this.handleDelete}
+                    handleAddition={this.handleAddition}
+                    handleDrag={this.handleDrag}
+                    delimiters={delimiters} />
 				</div>
         <br></br>
         <div className="columns">

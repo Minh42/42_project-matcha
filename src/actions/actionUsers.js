@@ -60,16 +60,18 @@ export function signInGoogleAction() {
 export function signInAction({username, password}, history) {
 	return async (dispatch) => {
 		try {
-			const res = await axios.post('/api/signin', {username, password}).then (res => {
-			dispatch({ 
-				type: AUTHENTICATED
-			});
-			const token = res.data.token;
-			localStorage.setItem('jwtToken', token);
-			setAuthorizationToken(token);
-			document.getElementById('modal_signin').classList.remove("is-active");
-			history.push('/homepage');
-			})
+			await axios.post('/api/signin', {username, password})
+				.then (async(res) => {
+						dispatch({ 
+							type: AUTHENTICATED
+						});
+						const token = res.data.token;
+						console.log(token)
+						localStorage.setItem('jwtToken', token);
+						setAuthorizationToken(token);
+						document.getElementById('modal_signin').classList.remove("is-active");
+						history.push('/onboarding')
+				})
 		} catch (error) {
 			dispatch({
 				type: AUTHENTICATION_ERROR,
@@ -87,7 +89,7 @@ export function signOutAction(history) {
 			type: UNAUTHENTICATED
 		});
 		await axios.get('/api/signout')
-		history.push('/');
+		// history.push('/');
 	}
 }
 

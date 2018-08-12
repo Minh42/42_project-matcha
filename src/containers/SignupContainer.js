@@ -13,6 +13,12 @@ import { bindActionCreators } from 'redux';
 import GoogleLoginButton from "react-social-login-buttons/lib/buttons/GoogleLoginButton";
 import FacebookLoginButton from "react-social-login-buttons/lib/buttons/FacebookLoginButton";
 
+const buttonStyle = {
+	fontFamily: 'Lato',
+	borderRadius: '30px',
+	opacity:'0.9'
+  };
+
 class SignupContainer extends Component{
 	constructor(props) {
 		super(props);
@@ -44,6 +50,7 @@ class SignupContainer extends Component{
 		location.href = "api/auth/facebook";
 		this.props.signInFacebookAction();
 	}
+
 	
 	render () {
 	return (
@@ -63,8 +70,8 @@ class SignupContainer extends Component{
 			<div className="modal" id="modalForm">
 				<div className="modal-background"></div>
 				<div className="modal-card">
-					<header className="modal-card-head">
-						<p className="modal-card-title">Sign Up</p>
+					<header className="modal-card-head modalHeader">
+						<p className="modal-card-title titleSign" >Sign Up</p>
 						<button className="delete" aria-label="close" onClick={this.closeModal}></button>
 					</header>
 					<section className="modal-card-body">
@@ -73,8 +80,8 @@ class SignupContainer extends Component{
 				</div>
 			</div>
 			<div>
-				<GoogleLoginButton onClick={this.onSubmitGoogle} />
-				<FacebookLoginButton onClick={this.onSubmitFacebook} />
+				<GoogleLoginButton onClick={this.onSubmitGoogle} style={buttonStyle} iconSize={"23px"}/>
+				<FacebookLoginButton onClick={this.onSubmitFacebook} style={buttonStyle} iconSize={"23px"}/>
 			</div>
 			<div className="modal" id="modalEmail">
 				<div className="modal-background"></div>

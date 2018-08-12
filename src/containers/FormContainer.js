@@ -14,7 +14,7 @@ class FormContainer extends Component {
 
 		return (
 			<div className= "field">
-				<label className="label">{field.label}</label>
+				<label className="label labelSign">{field.label}</label>
 				<div className={field.icon ? "control has-icons-left" : ''}>
                     <span className={field.icon ? "icon is-small is-left" : ''}>
                         <i className={field.icon}></i>
@@ -99,7 +99,7 @@ class FormContainer extends Component {
 					component= {this.renderField}
 					placeholder="**********"
 				/>
-				<Button type='submit' className="button is-rounded" title="Submit"/>
+				<Button type='submit' className="button is-rounded buttonOnboarding" title="Submit"/>
 				{this.errorMessage()}
 			</form>
 		);

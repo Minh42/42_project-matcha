@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { Field, reduxForm } from 'redux-form'
 import WizardFormFirstPage from './WizardFormFirstPage'
 import WizardFormSecondPage from './WizardFormSecondPage'
 import WizardFormThirdPage from './WizardFormThirdPage'
 import WizardFormFourPage from './WizardFormFourPage'
 import WizardFormFivePage from './WizardFormFivePage'
+import axios from 'axios';
 
 class WizardForm extends Component {
   constructor(props) {
@@ -13,23 +13,19 @@ class WizardForm extends Component {
     this.nextPage = this.nextPage.bind(this)
     this.previousPage = this.previousPage.bind(this)
     this.state = {
-      user_id: this.props.match.params.id,
       page: 1
     }
     console.log(this.state.page)
-    console.log(this.state.user_id) // recuperation de l'ID via l'URL
   }
 
-  componentDidMount() {
-		this.handleInitialize();
-  }
-  
-  async handleInitialize() {
-    const user_id = this.state.user_id
-		console.log(user_id)
-		this.props.initialize(user_id);
+  async componentDidMount() {
+    const res = await axios.get('/api/onboarding');
+    console.log(res.data)
+    if (res.data === false) {
+      this.props.history.push('/homepage');
     }
-    
+  }
+
   nextPage() {
     this.setState({ 
       page: this.state.page + 1
@@ -92,11 +88,4 @@ WizardForm.propTypes = {
   onSubmit: PropTypes.func.isRequired
 }
 
-export default reduxForm({
-  form: 'wizard', // <------ same form name
-  destroyOnUnmount: false, // <------ preserve form data
-  forceUnregisterOnUnmount: true,
-  initialValues : {
-		user_id: null
-	  } // <------ unregister fields on unmount
-})(WizardForm)
+export default WizardForm

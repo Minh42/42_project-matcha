@@ -6,7 +6,23 @@
     font-family: 'Lato', sans-serif;
     font-weight: bold;
     color: #E52A6F;
-    font-size: 50px;
+    font-size: 30px;
+}
+
+.labelSign {
+    font-family: 'Lato', sans-serif;
+    border-bottom: solid 2px #E52A6F;
+    font-size: 1em;
+    letter-spacing: 3px;
+}
+
+.modalHeader {
+    background-image:linear-gradient(60deg, #E52A6F, #67AECA);
+}
+
+.titleSign {
+    font-family: 'Lato', sans-serif;
+    color: white;
 }
 
 //ONBOARDING CSS
@@ -147,4 +163,15 @@ div.ReactTags__suggestions li mark {
 div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
     background: #b7cfe0;
     cursor: pointer;
+}
+
+//style NPM profile component
+
+.iu-container * {
+    font-family: 'lato';
+}
+
+.iu-label {
+	font-size: 14px;
+    color: #E52A6F;
 }

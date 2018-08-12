@@ -21,7 +21,6 @@ class Header extends Component{
             firstname : "",
             lastname : ""
         }
-        console.log(this.state.firstname);
 	  }
 
 	showModal() {
@@ -36,44 +35,45 @@ class Header extends Component{
         this.props.signOutAction();
     }
 
-    async componentDidMount() {
-        var first;
-        var last;
-        var res = await axios.get(`/api/infoUser`)
-        console.log(res);
-        first = res.data[0].firstname;
-        last = res.data[0].lastname;
-        console.log(first);
-        console.log(last);
-        this.setState({
-            firstname: first,
-            lastname: last
-        })
-      }
+    // async componentDidMount() {
+        // var first;
+        // var last;
+        // var res = await axios.get(`/api/infoUser`)
+        // first = res.data[0].firstname;
+        // last = res.data[0].lastname;
+        // this.setState({
+        //     firstname: first,
+        //     lastname: last
+        // })
+    //   }
 
     showNavbar() {
-        if (this.props.authenticated) {
-            return [
-                <h3>hello {this.state.firstname} </h3>,
-                <p className="control">
-                    <Link to="/homepage"><Button className="button is-rounded" title=" homepage"/></Link>
-                </p>,
-                <p className="control">
-                    <Link to="/messages"><Button className="button is-rounded" title="My messages"/></Link>
-                </p>,
-                <p className="control">
-                    <Link to="/profile"><Button className="button is-rounded" title="My profile"/></Link>
-                </p>,
-                <p className="control">
-                    {/* <Button onClick={this.handleLogout} className="button is-rounded" title="Signout"/> */}
-                    <LinkButton to='/' onClick={this.handleLogout} className="button is-rounded">Signout</LinkButton>
-                </p>
-        
-            ];
+        console.log(this.props.authenticated)
+        switch (this.props.authenticated) {
+            case null:
+                return;
+            case false:
+                return [
+                    <Button className="button is-rounded" title="Sign In" action={this.showModal}/>
+                ];
+            default:
+                return [
+                    // <h3>hello {this.state.firstname} </h3>,
+                    <p className="control">
+                        <Link to="/homepage"><Button className="button is-rounded" title=" homepage"/></Link>
+                    </p>,
+                    <p className="control">
+                        <Link to="/messages"><Button className="button is-rounded" title="My messages"/></Link>
+                    </p>,
+                    <p className="control">
+                        <Link to="/profile"><Button className="button is-rounded" title="My profile"/></Link>
+                    </p>,
+                    <p className="control">
+                        <LinkButton to='/' onClick={this.handleLogout} className="button is-rounded">Signout</LinkButton>
+                    </p>
+            
+                ];
         }
-        return [
-            <Button className="button is-rounded" title="Sign In" action={this.showModal}/>
-        ];
     }
 
     render() {
@@ -106,8 +106,8 @@ class Header extends Component{
                     <div className="modal" id='modal_signin'>
 			        <div className="modal-background"></div>
                         <div className="modal-card">
-                            <header className="modal-card-head">
-                                <p className="modal-card-title">Sign in to Matcha</p>
+                            <header className="modal-card-head modalHeader">
+                                <p className="modal-card-title titleSign">Sign in to Matcha</p>
                                 <button className="delete" aria-label="close" onClick={this.closeModal}></button>
                             </header>
                             <section className="modal-card-body">
@@ -123,7 +123,7 @@ class Header extends Component{
 
 function mapStateToProps(state) {
     return { 
-        authenticated: state.auth.authenticated 
+        authenticated: state.auth.authenticated
     };
 }
 
