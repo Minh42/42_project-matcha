@@ -15,6 +15,7 @@ import ForgotPassword from './containers/ForgotPasswordContainer';
 import ResetPassword from './containers/ResetPasswordContainer';
 import UserProfile from './layout/UserProfile';
 import ModifProfile from './layout/ModifProfile';
+import Onboarding from './components/Onboarding/wizardForm';
 
 setAuthorizationToken(localStorage.jwtToken);
 
@@ -37,6 +38,7 @@ class App extends Component {
                         <Route path="/resetPassword/:login" component={ResetPassword} />
                         <Route path="/profile" component={UserProfile} />
                         <Route path="/ModifProfile" component={ModifProfile} />
+                        <Route path="/onboarding" component={Onboarding} />
                     </Switch>
                     <Footer />
                 </div>

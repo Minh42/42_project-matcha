@@ -71,7 +71,7 @@ export function signInAction({username, password}, history) {
 			localStorage.setItem('jwtToken', token);
 			setAuthorizationToken(token);
 			document.getElementById('modal_signin').classList.remove("is-active");
-			history.push('/homepage');
+			history.push('/onboarding');
 			})
 		} catch (error) {
 			dispatch({
@@ -90,7 +90,7 @@ export function signOutAction(history) {
 			type: UNAUTHENTICATED
 		});
 		await axios.get('/api/signout')
-		history.push('/');
+		// history.push('/');
 	}
 }
 

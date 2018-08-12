@@ -1,4 +1,5 @@
 const express = require('express');
+const fs = require('fs');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const config = require('../server/config/keys');
@@ -8,6 +9,16 @@ const midUser = require('../src/middlewares/midUser');
 
 const passport = require('passport');
 const passportConfig = require('../server/services/passport');
+
+//MULTER + IMAGE
+const multer  = require('multer')
+const readChunk = require('read-chunk'); //find buffer
+const isJpg = require('is-jpg');
+const isPng = require('is-png');
+const isGif = require('is-gif');
+const sizeOf = require('image-size');
+
+const path = require('path');
 
 //PARAMETER EMAIL (nodemailer)
 const nodemailer = require("nodemailer");
@@ -102,6 +113,8 @@ router.post('/api/signin', function(req, res) {
     if (ret) {
       user.searchByColName("username", username).then(function(ret) {
         const token = jwt.sign({ user: ret }, config.jwtSecret);
+        console.log("inside api/signin")
+        console.log(token)
         res.json({token})
       })
     } else {
@@ -226,7 +239,7 @@ router.post('/api/changeNewInfo', (req, res) => {
   const relationship = req.body.values.relationship
 })
 
-//CHANGE 
+//CHANGE NEW INFO USER
 router.post('/api/changeNewInfo', (req, res) => {
   let user = require('../models/user.class');
   const user_id = req.body.values.user_id
@@ -273,7 +286,7 @@ router.get('/api/auth/facebook',
 
 router.get('/api/auth/facebook/callback',
 	passport.authenticate('facebook', {
-		successRedirect : '/homepage',
+		successRedirect : '/onboarding',
 		failureRedirect : '/'
 	})
 );
@@ -284,7 +297,7 @@ router.get('/api/auth/google',
 
 router.get('/api/auth/google/callback',
   passport.authenticate('google', {
-    successRedirect : '/homepage',
+    successRedirect : '/onboarding',
     failureRedirect : '/'
   })
 );
@@ -309,13 +322,170 @@ router.get('/api/homepage', authenticate, (req, res) => {
   })
 });
 
-
+//ONBOARDING
 router.get('/api/onboarding', authenticate, (req, res) => {
-  // res.json({ success: true });
-  console.log('im here')
-  console.log(req.currentUser);
-  console.log('im here')
-  // res.send(req.currentUser);
+  console.log(req.currentUser[0])
+  let user = require('../models/user.class');
+  if (req.currentUser[0].onboardingDone === 0) {
+    res.send(true);
+  } else {
+    res.send(false);
+  }
+});
+
+router.post('/api/addTags', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  const user_id = req.currentUser[0].user_id
+  // console.log(user_id)
+
+  function processArray(tags, user_id) 
+  {
+    tags.forEach((element) => { 
+      var tag = element.text
+      // console.log(tag)
+      user.findOneTag("name", tag)
+        .then((ret) => {
+          console.log("tag exist")
+          if (ret) { // TAG EXIST
+            user.searchByColNameTag("name", tag)
+              .then((ret) => {
+                tag_id = ret[0].tag_id // id_tag
+                // console.log(tag_id)
+                user.findOneUserTags(tag_id, user_id)
+                  .then((ret) => {
+                    // console.log(ret)
+                    if (ret === false) {
+                      user.addInsideUserTag(tag_id, user_id)
+                        .then((ret) => {
+                      })
+                    }
+
+                  })
+                
+              })
+          }
+          else { // TAG NOT EXIST
+            console.log("tag not exist")
+            user.addTagBDD(tag) //add new tag BDD
+              .then((ret) => {
+                if (ret) {
+                  user.searchByColNameTag("name", tag)
+                    .then((ret) => {
+                      // console.log(ret)
+                      tag_id = ret[0].tag_id
+                      // console.log(tag_id) // tag_id
+                      user.addInsideUserTag(tag_id, user_id)
+                        .then((ret) => {
+                        // console.log(ret)
+                        })
+                    })
+                }   
+              })
+          }
+        })
+    })
+  }
+  processArray(req.body, user_id);
+  res.send("success")
+})
+
+// FIND TAGS USER BDD
+router.post('/api/findTags', authenticate, (req, res) => {
+  // console.log("here")
+  let user = require('../models/user.class');
+  const user_id = req.currentUser[0].user_id
+  // console.log(user_id)
+
+  var array = [];
+  var i = 0;
+
+  user.findIdTagUser(user_id)
+    .then((ret) => {
+      ret.forEach(element => {
+        tag_id = element.tag_id
+        user.findTagName(tag_id)
+          .then((ret1) => {
+            name = ret1[0].name
+            array.push(name)
+            i++;
+            if (i === ret.length) {
+              // console.log("array", array)
+              res.json(array)
+            }
+          })
+      });
+    })
+})
+
+//DELETE TAG user BDD
+router.post('/api/deleteTags', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  const user_id = req.currentUser[0].user_id
+  const tag_name = req.body.text
+
+  user.searchByColNameTag("name", tag_name)
+    .then((ret) => {
+      const tag_id = ret[0].tag_id
+      user.deleteTagInsideUserTags(user_id, tag_id)
+        .then((ret) => {
+          if (ret) {
+            res.send("success")
+          }
+        })
+  }) 
+})
+
+//PROFILE PICTURE
+var upload = multer({ dest: 'assets/img/' })
+
+router.post('/api/uploadProfilePicture', upload.single('file'), authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  console.log(req.file)
+  const buffer = readChunk.sync(req.file.path, 0, 4200)
+  const type = req.file.mimetype
+  const typeSplit = type.split('/')
+  const ext = typeSplit[1]
+  const size = req.file.size
+
+  // const name = new Date();
+  const name = user.makeid()
+
+  const newPath = 'assets/img/profile/'
+  if (!fs.existsSync(newPath)) {
+    fs.mkdirSync('assets/img/profile/')
+  }
+
+  const fileName = name + '.' + ext
+  console.log('fileName', fileName)
+  //verifier si dossier existe ou non
+  const targetFile = newPath + fileName
+  console.log(targetFile)
+
+  if (isJpg(buffer) || isPng(buffer) || isGif(buffer)) {
+    if (typeSplit[1] === 'jpeg' || typeSplit[1] === 'png' || typeSplit[1] === 'gif') {
+      if (size < 10000000) {
+        fs.readFile(req.file.path , function(err, data) {
+          fs.writeFile(targetFile, data, function(err) {
+              fs.unlink(req.file.path, function(){
+                  if(err) throw err;
+                  // const dataFile = "../../../" + targetFile 
+                  res.send(targetFile);
+              });
+          }); 
+      }); 
+      }
+      else {
+        console.log("too big")
+      }
+    } 
+    else {
+      console.log("not working")
+    }
+  } 
+  else {
+    console.log("not working")
+  }
+  // res.send(req.file)
 });
 
 router.get('/api/profile', authenticate, async (req, res) => {

@@ -101,8 +101,8 @@ class Header extends Component{
                     <div className="modal" id='modal_signin'>
 			        <div className="modal-background"></div>
                         <div className="modal-card">
-                            <header className="modal-card-head">
-                                <p className="modal-card-title">Sign in to Matcha</p>
+                            <header className="modal-card-head modalHeader">
+                                <p className="modal-card-title titleSign">Sign in to Matcha</p>
                                 <button className="delete" aria-label="close" onClick={this.closeModal}></button>
                             </header>
                             <section className="modal-card-body">

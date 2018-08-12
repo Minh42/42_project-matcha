@@ -1,32 +1,40 @@
 import React from 'react'
 import { Field, reduxForm } from 'redux-form'
 import validate from './validate'
+// import step3 from '../../../assets/img/step3.png'
+
+import axios from 'axios'
 
 class WizardFormFourPage extends React.Component{
 	constructor(props) {
         super(props);
  
 		this.state = {
-			selectedFile: null
+			selectedFile: null,
+			UrlPicture: require('../../../assets/img/profile/Sat Aug 11 2018 18:14:37 GMT+0200 (CEST).jpeg')
 		}
         this.fileChangedHandler = this.fileChangedHandler.bind(this);
         this.uploadHandler = this.uploadHandler.bind(this);
 	}
 
 fileChangedHandler(event) {
-	console.log(event.target.files[0].name)
-  this.setState({
-	  selectedFile: event.target.files[0].name
+ 	this.setState({
+	  selectedFile: event.target.files[0]
 	})
 }
 
-fileChangedHandler(event) {
-	const file = event.target.files[0]
-}
-	  
-uploadHandler() {
-	console.log(this.state.selectedFile)
-	console.log('here upload') 
+async uploadHandler() {
+	const data = new FormData();
+	data.append('file', this.state.selectedFile)
+
+	const res = await axios.post('/api/uploadProfilePicture', data) 
+	const filename = res.data
+	console.log(filename)
+	const path = "../../../" + filename
+	console.log(path)
+	this.setState({
+		UrlPicture: require(path)
+	  })
 }
 
   render() {
@@ -39,13 +47,14 @@ uploadHandler() {
 			<div className="columns">
 				<div className="column">
 					<figure className="image is-128x128">
-						<img src="https://bulma.io/images/placeholders/256x256.png"/>
+					{this.state.UrlPicture}
+						<img src={this.state.UrlPicture}/>
 					</figure>
 				</div>
 			</div>
 			<div>
-				<input type="file" onChange={this.fileChangedHandler}/>
-				<button onClick={this.uploadHandler}>Upload!</button>
+				<input type="file" onChange={this.fileChangedHandler} name="file"/>
+				<div onClick={this.uploadHandler}>Upload!</div>
 			</div>
 			<br></br>
 			<div className="columns">

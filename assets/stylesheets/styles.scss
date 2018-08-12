@@ -6,7 +6,23 @@
     font-family: 'Lato', sans-serif;
     font-weight: bold;
     color: #E52A6F;
-    font-size: 50px;
+    font-size: 30px;
+}
+
+.labelSign {
+    font-family: 'Lato', sans-serif;
+    border-bottom: solid 2px #E52A6F;
+    font-size: 1em;
+    letter-spacing: 3px;
+}
+
+.modalHeader {
+    background-image:linear-gradient(60deg, #E52A6F, #67AECA);
+}
+
+.titleSign {
+    font-family: 'Lato', sans-serif;
+    color: white;
 }
 
 //ONBOARDING CSS

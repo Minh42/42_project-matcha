@@ -232,38 +232,7 @@ class User {
         } 
     }
 
-    // static async findIdGender(user_id, interest) {
-    //     try {
-    //         let ret = await pool.query("SELECT `gender_id` FROM `interested_in_gender` INNER JOIN `genders` ON genders.gender_id = interested_in_gender.gender_id INNER JOIN `users` ON interested_in_gender.user_id = users.user_id  WHERE `users.user_id` = ? AND `genders.name = ?", [user_id, interest]);
-    //         if (ret) {
-    //             return ret;
-    //         }
-    //         else {
-    //             return false;
-    //         }
-    //     }
-    //     catch(err) {
-    //         throw new Error(err)
-    //     } 
-    // }
-
-    static async onboardingState(username) {
-        try {
-            let ret = await pool.query("SELECT `onboardingDone` FROM `users` WHERE `username` = ?", [username]);
-            console.log('onboardingState')
-            console.log(ret)
-            if (ret === 1) {
-                return true;
-            }
-            else if (ret === 0) {
-                return false;
-            }
-        }
-        catch(err) {
-            throw new Error(err)
-        } 
-    }
-
+    //RANDOM USERNAME
     static makeid() {
         var text = "";
         var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -273,6 +242,131 @@ class User {
       
         return text;
       }
+
+    // ONBOARDING
+    static async onboardingState(user_id) {
+        try {
+            let ret = await pool.query("SELECT `onboardingDone` FROM `users` WHERE `user_id` = ?", [user_id]);
+            console.log('onboardingState')
+            console.log(ret[0].onboardingDone)
+            return ret[0].onboardingDone
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+
+
+    // TABLE TAGS
+    static async findOneTag(colName, value) {
+        try {
+            let ret = await pool.query("SELECT count(*) as value_exists FROM `tags` WHERE "+ colName +" = ?", [value]);
+            if (ret[0].value_exists > '0')
+                return true;
+            else
+                return false;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async findOneUserTags(tag_id, user_id) {
+        try {
+            let ret = await pool.query("SELECT count(*) as value_exists FROM `user_tags` WHERE `tag_id` = ? AND `user_id` = ?", [tag_id , user_id]);
+            if (ret[0].value_exists > '0')
+                return true;
+            else
+                return false;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async searchByColNameTag(colName, value) {
+        try {
+            let ret = await pool.query("SELECT * FROM `tags` WHERE "+ colName +" = ?", [value]);
+            return ret;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async addTagBDD(tag) {
+        try {
+            const values = {name: tag};
+            const requete = 'INSERT INTO `tags` SET ?'
+       
+            let ret = await pool.query(requete, values)
+                if (ret) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async addInsideUserTag(tag_id, user_id) {
+        try {
+            console.log(tag_id)
+            console.log(user_id)
+            const values = {user_id: user_id, tag_id: tag_id};
+            const requete = 'INSERT INTO `user_tags` SET ?'
+       
+            let ret = await pool.query(requete, values)
+                if (ret) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async findIdTagUser(user_id) {
+        try {
+            let ret = await pool.query("SELECT `tag_id` FROM `user_tags` WHERE `user_id` = ?", [user_id]);
+            return ret;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async findTagName(tag_id) {
+        try {
+            let ret = await pool.query("SELECT `name` FROM `tags` WHERE `tag_id` = ?", [tag_id]);
+            return ret;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async deleteTagInsideUserTags(user_id, tag_id) {
+        try {
+            let ret = await pool.query("DELETE FROM `user_tags` WHERE `user_id` = ? AND `tag_id` = ?", [user_id, tag_id])
+            if (ret) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
 }
 
 

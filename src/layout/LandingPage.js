@@ -10,15 +10,15 @@ import step3 from '../../assets/img/step3.png'
 const LandingPage = () => {
     return (
         <div>
-            <section className="hero is-info is-medium">
-                <div className="hero-body hero-body-hp-main">
+            <section className="hero is-fullheight background">
+                <div className="hero-body">
                     <div className="container">
                         <FlashMessagesList />
                         <div className="columns">
                             <div className="column is-4 is-offset-1">
                                 <img src={step3} alt="step3" />
                             </div>
-                            <div className="column is-6">
+                            <div className="column is-5 is-offset-1">
                                 <SignupContainer />
                             </div>
                         </div>

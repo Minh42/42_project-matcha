@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS `users` (
     `latitude` FLOAT,
     `longitude` FLOAT,
     `bio` TEXT,
+    `imageProfile_path` VARCHAR(255),
     `occupation` VARCHAR(64),
     `popularity` DECIMAL(5,2),
     `ip_address` VARCHAR(15),
@@ -53,8 +54,7 @@ CREATE TABLE IF NOT EXISTS `tags` (
 CREATE TABLE IF NOT EXISTS `user_tags` (
     `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     `user_id`BIGINT UNSIGNED,
-    `tag_id` BIGINT UNSIGNED,
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    `tag_id` BIGINT UNSIGNED
 );
 
 CREATE TABLE IF NOT EXISTS `genders` (
