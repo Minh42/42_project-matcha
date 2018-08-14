@@ -3,7 +3,8 @@ const fs = require('fs');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const config = require('../server/config/keys');
-const authenticate = require('../src/middlewares/midToken');
+
+const authenticate = require('../src/middlewares/midAuth');
 const midUser = require('../src/middlewares/midUser'); 
 
 const passport = require('passport');
@@ -120,7 +121,6 @@ router.post('/api/signin', function(req, res) {
         res.json({token})
       })
     } else {
-      console.log('DAMN ERROR')
       res.sendStatus(401);
     }
   })   
@@ -310,22 +310,18 @@ router.get('/api/signout', (req, res) => {
   res.redirect('/');
 });
 
-router.get('/api/profile', (req, res) => {
-  res.send(req.user);
-});
-
 router.get('/api/current_user', authenticate, (req, res) => {
   res.send(req.currentUser);
 });
 
 router.get('/api/homepage', authenticate, (req, res) => {
   let user = require('../models/user.class');
-  user.selectAll().then(function(ret) {
+  user.selectAllUsers().then(function(ret) {
     if (ret) {
       res.json(ret);
     } else {
     res.sendStatus(404);
-  }
+    }
   })
 });
 
@@ -445,58 +441,41 @@ router.post('/api/deleteTags', authenticate, (req, res) => {
 //PROFILE PICTURE
 var upload = multer({ dest: 'assets/img/' })
 
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, '/tmp/my-uploads')
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now())
+  }
+})
+
+var upload = multer({ storage: storage })
+
+
 router.post('/api/uploadProfilePicture', upload.single('file'), authenticate, (req, res) => {
+
+
+
+});
+
+router.get('/api/profile', authenticate, async (req, res) => {
   let user = require('../models/user.class');
-  console.log(req.file.path)
-  const firstPath = req.file.path
-  const firstPathSplit = firstPath.split('/')
-  console.log(firstPathSplit[2])
-  const buffer = readChunk.sync(req.file.path, 0, 4200)
-  const type = req.file.mimetype
-  const typeSplit = type.split('/')
-  const ext = typeSplit[1]
-  const size = req.file.size
-
-  // const name = new Date();
-  // const name = user.makeid()
-  const name = firstPathSplit[2]
-
-  const newPath = 'assets/img/profile/'
-  if (!fs.existsSync(newPath)) {
-    fs.mkdirSync('assets/img/profile/')
+  async function getData() {
+    const infos = req.currentUser[0];
+    const photos = await user.selectAllUserPhotos(req.currentUser[0].user_id);
+    const tags = await user.selectAllUserTags(req.currentUser[0].user_id);
+  
+    const customData = {
+      infos: infos,
+      photos: photos,
+      tags: tags
+    };
+    return customData;
   }
 
-  const fileName = name + '.' + ext
-  console.log('fileName', fileName)
-  //verifier si dossier existe ou non
-  const targetFile = newPath + fileName
-  console.log(targetFile)
-
-  if (isJpg(buffer) || isPng(buffer) || isGif(buffer)) {
-    if (typeSplit[1] === 'jpeg' || typeSplit[1] === 'png' || typeSplit[1] === 'gif') {
-      if (size < 10000000) {
-        fs.readFile(req.file.path , function(err, data) {
-          fs.writeFile(targetFile, data, function(err) {
-              fs.unlink(req.file.path, function(){
-                  // if(err) throw err;
-                  // const dataFile = "../../../" + targetFile 
-                  res.json(fileName);
-              });
-          }); 
-      }); 
-      }
-      else {
-        console.log("too big")
-      }
-    } 
-    else {
-      console.log("not working")
-    }
-  } 
-  else {
-    console.log("not working")
-  }
-  // res.send(req.file)
+  var promise = await getData();
+  res.json(promise);
 });
 
 router.get('/api/geocoder/', authenticate, (req, res) => {

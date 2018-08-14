@@ -1,6 +1,6 @@
-import { AUTHENTICATED, UNAUTHENTICATED, AUTHENTICATION_ERROR } from '../actions/actionUsers';
+import { FETCH_CURRENT_USER, AUTHENTICATED, UNAUTHENTICATED, AUTHENTICATION_ERROR } from '../actions/actionUsers';
 
-export default function(state = {}, action) {
+export default function(state = null, action) {
   switch(action.type) {
     case AUTHENTICATED:
       return { ...state, authenticated: true };

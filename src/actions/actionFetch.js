@@ -10,15 +10,13 @@ export function fetchUsers() {
             dispatch({
                 type: FETCH_USERS_REQUEST
             })
-            console.log('fetching users')
-            // const res = await axios.get('/api/homepage');
-            // console.log(res.data)
-            // var usersData = res.data.map(result => ({
-            //     id: data.user_id,
-            //     username: data.username,
-            //     age: data.birth_date,
-            //     picture: result.picture.large
-            // }))
+            const res = await axios.get('/api/homepage');
+            var usersData = res.data.map(result => ({
+                id: result.user_id,
+                username: result.username,
+                age: result.birth_date,
+                picture: result.image_path
+            }))
             dispatch({
                 type: FETCH_USERS_SUCCESS,
                 payload: usersData

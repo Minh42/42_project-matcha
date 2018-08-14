@@ -30,9 +30,30 @@ class User {
         } 
     }
 
-    static async selectAll() {
+    static async selectAllUsers() {
         try {
-            let ret = await pool.query("SELECT * FROM `users`")
+            let requete = "SELECT users.user_id, username, birth_date, image_path FROM `users` JOIN (SELECT user_id, image_path from `user_photos` WHERE `photo_id` in (SELECT max(photo_id) from user_photos GROUP BY user_id)) as most_recent_user_photo ON users.user_id = most_recent_user_photo.user_id";
+            let ret = await pool.query(requete);
+            return ret;
+        } catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async selectAllUserPhotos(userId) {
+        try {
+            let requete = "SELECT image_path from `users` INNER JOIN `user_photos` ON user_photos.user_id = users.user_id WHERE users.user_id = ?";
+            let ret = await pool.query(requete, [userId]);
+            return ret;
+        } catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async selectAllUserTags(userId) {
+        try {
+            let requete = "SELECT name FROM `user_tags` INNER JOIN `tags` ON tags.tag_id = user_tags.tag_id WHERE user_tags.user_id = ?";
+            let ret = await pool.query(requete, [userId]);
             return ret;
         } catch(err) {
             throw new Error(err)

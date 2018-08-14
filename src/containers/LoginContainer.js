@@ -53,7 +53,7 @@ class LoginContainer extends Component {
         const { handleSubmit } = this.props;
 
         return (
-            <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
+            <form name="signing" className="signin" onSubmit={handleSubmit(this.onSubmit.bind(this))}>
                 {this.errorMessage()}
                 <Field
                     label="Username"

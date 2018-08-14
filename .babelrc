@@ -1,15 +1,21 @@
 {
-    "presets": [
-     ["env", {
-      "targets": {
-       "browsers": ["last 2 versions", "safari >= 7"]
+  "presets": [
+   ["env", {
+    "targets": {
+      "browsers": ["last 2 versions", "safari >= 7"]
+    },
+    "env": {
+      "development": {
+        "presets": ["react-hmre"]
       }
-     }]
-    ],
-    "plugins": [
-      ["transform-runtime", "transform-object-rest-spread", {
-       "polyfill": false,
-       "regenerator": true
-      }]
-     ]
+    },
+    "modules": false
+   }]
+  ],
+  "plugins": [
+    ["transform-runtime", "transform-object-rest-spread", {
+     "polyfill": false,
+     "regenerator": true
+    }]
+   ]
 }

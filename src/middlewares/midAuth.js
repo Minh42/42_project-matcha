@@ -6,7 +6,6 @@ module.exports = function verifyToken(req, res, next) {
         req.currentUser = [req.user[0]];
         next();
     } else {
-        console.log('but went here')
         const authorizationHeader = req.headers.authorization;
         let token;
         if (authorizationHeader) {

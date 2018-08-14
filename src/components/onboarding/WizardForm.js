@@ -15,7 +15,6 @@ class WizardForm extends Component {
     this.state = {
       page: 1
     }
-    console.log(this.state.page)
   }
 
   async componentDidMount() {

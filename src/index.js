@@ -2,24 +2,13 @@ require("../assets/stylesheets/styles.scss");
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import reduxThunk from 'redux-thunk';
 import { Provider } from 'react-redux';
-import { createStore, applyMiddleware, compose } from 'redux';
 import App from './App';
- 
-import rootReducer from './reducers';
-import { loadState, saveState } from '../library/localStorage';
 import throttle from 'lodash/throttle';
+import { saveState } from '../library/localStorage';
+import configureStore from './store/configureStore';
 
-const persistedState = loadState();
-const store = createStore(
-    rootReducer,
-    persistedState,
-    compose(
-        applyMiddleware(reduxThunk),
-        window.devToolsExtension ? window.devToolsExtension() : f => f // initialize devToolsExtension
-    )
-)
+const store = configureStore();
 
 // persist auth state on refresh
 store.subscribe(throttle(() => {
@@ -34,3 +23,13 @@ ReactDOM.render(
     </Provider>
    , document.querySelector('.root'));
 
+if (process.env.NODE_ENV !== 'production' && module.hot) {
+    module.hot.accept('./App', function () {
+      ReactDOM.render(
+        <Provider store={store}>
+            <App />
+        </Provider>
+       , document.querySelector('.root'));
+    })
+}
+  

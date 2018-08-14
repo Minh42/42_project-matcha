@@ -3,6 +3,7 @@ import UserProfile from '../components/UserProfile';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { fetchUsers } from '../actions/actionFetch';
+import { selectUser } from '../actions/actionUsers';
 import PropTypes from 'prop-types';
 
 class UsersContainer extends Component {
@@ -13,7 +14,8 @@ class UsersContainer extends Component {
     renderList() {
         return this.props.users.map((user) => {
             return (
-                <UserProfile 
+                <UserProfile
+                    key={user.id}
                     user={user.username}
                     age={user.age}
                     src={user.picture}
@@ -58,7 +60,10 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({ fetchUsers: fetchUsers}, dispatch);
+    return bindActionCreators({ 
+        fetchUsers: fetchUsers,
+        selectUser: selectUser
+    }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UsersContainer);
