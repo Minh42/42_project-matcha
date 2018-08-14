@@ -1,9 +1,10 @@
 import React from 'react'
 import { Field, reduxForm } from 'redux-form'
 import validate from './validate'
-// import step3 from '../../../assets/img/step3.png'
+import step3 from '../../../assets/img/step3.png'
 
 import axios from 'axios'
+// var path = require('path');
 
 class WizardFormFourPage extends React.Component{
 	constructor(props) {
@@ -11,7 +12,7 @@ class WizardFormFourPage extends React.Component{
  
 		this.state = {
 			selectedFile: null,
-			UrlPicture: require('../../../assets/img/profile/Sat Aug 11 2018 18:14:37 GMT+0200 (CEST).jpeg')
+			UrlPicture: step3
 		}
         this.fileChangedHandler = this.fileChangedHandler.bind(this);
         this.uploadHandler = this.uploadHandler.bind(this);
@@ -28,12 +29,16 @@ async uploadHandler() {
 	data.append('file', this.state.selectedFile)
 
 	const res = await axios.post('/api/uploadProfilePicture', data) 
-	const filename = res.data
+	// let assetsPath = require.context('../../../assets/img/profile', true, /\.(png|jpe?g|svg)$/);
+	console.log(res.data)
+	const name = res.data
+	
+	const filename = "../../../assets/img/profile/" + name;
 	console.log(filename)
-	const path = "../../../" + filename
-	console.log(path)
+	// const path = "'../../../" + filename + "'"
+	// console.log(path)
 	this.setState({
-		UrlPicture: require(path)
+		UrlPicture: filename
 	  })
 }
 
@@ -41,21 +46,25 @@ async uploadHandler() {
 	const { handleSubmit, previousPage } = this.props
 
 	return (
-		<form onSubmit={handleSubmit}>
+		<div>
 		<h2 className="has-text-centered titleOnboarding">Maybe a picture...</h2>
 		<progress className="progress progressOnboarding" value="80" max="100">80%</progress>
 			<div className="columns">
 				<div className="column">
 					<figure className="image is-128x128">
 					{this.state.UrlPicture}
-						<img src={this.state.UrlPicture}/>
+						<img id="imageid" src={this.state.UrlPicture}/>
 					</figure>
 				</div>
 			</div>
-			<div>
-				<input type="file" onChange={this.fileChangedHandler} name="file"/>
+			<form>
+				<div className="field">
+					<div className="control">
+						<input type="file" onChange={this.fileChangedHandler} name="file"/>
+					</div>
+				</div>
 				<div onClick={this.uploadHandler}>Upload!</div>
-			</div>
+			</form>
 			<br></br>
 			<div className="columns">
 				<div className="column is-2">
@@ -64,12 +73,12 @@ async uploadHandler() {
 					</button>
 				</div>
 				<div className="column is-2 is-offset-8">
-					<button type="submit" className="next button buttonOnboarding">
+					<button className="next button buttonOnboarding" onClick={handleSubmit}>
 						Next
 					</button>
 				</div>
 			</div>
-		</form>
+		</div>
 	)}
 }
 export default reduxForm({

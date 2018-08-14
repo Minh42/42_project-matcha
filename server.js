@@ -26,6 +26,8 @@ app.set('view engine', 'mustache');
 //   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204 
 // }
 
+app.use(express.static('assets'));
+
 const middlewares = [
   helmet(),
   // csrf({ cookie: true }),

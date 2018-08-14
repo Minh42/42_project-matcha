@@ -346,6 +346,31 @@ class User {
             throw new Error(err)
         } 
     }
+
+    static async addLatLng(lat, lng, user_id) {
+        try {
+            let ret = await pool.query("UPDATE `users` SET `latitude` = ?, `longitude` = ? WHERE `user_id` = ?", [lat, lng, user_id]);
+            if (ret) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async findLocalisation(user_id) {
+        try {
+            let ret = await pool.query("SELECT `latitude`, `longitude` FROM `users` WHERE `user_id` = ?", [user_id]);
+            return ret;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
 }
 
 

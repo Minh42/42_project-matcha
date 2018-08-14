@@ -19,6 +19,9 @@ const sizeOf = require('image-size');
 
 const path = require('path');
 
+//LOCALISATION
+var geocoder = require('geocoder');
+
 //PARAMETER EMAIL (nodemailer)
 const nodemailer = require("nodemailer");
 const transporter = nodemailer.createTransport({
@@ -444,7 +447,10 @@ var upload = multer({ dest: 'assets/img/' })
 
 router.post('/api/uploadProfilePicture', upload.single('file'), authenticate, (req, res) => {
   let user = require('../models/user.class');
-  console.log(req.file)
+  console.log(req.file.path)
+  const firstPath = req.file.path
+  const firstPathSplit = firstPath.split('/')
+  console.log(firstPathSplit[2])
   const buffer = readChunk.sync(req.file.path, 0, 4200)
   const type = req.file.mimetype
   const typeSplit = type.split('/')
@@ -452,7 +458,8 @@ router.post('/api/uploadProfilePicture', upload.single('file'), authenticate, (r
   const size = req.file.size
 
   // const name = new Date();
-  const name = user.makeid()
+  // const name = user.makeid()
+  const name = firstPathSplit[2]
 
   const newPath = 'assets/img/profile/'
   if (!fs.existsSync(newPath)) {
@@ -471,9 +478,9 @@ router.post('/api/uploadProfilePicture', upload.single('file'), authenticate, (r
         fs.readFile(req.file.path , function(err, data) {
           fs.writeFile(targetFile, data, function(err) {
               fs.unlink(req.file.path, function(){
-                  if(err) throw err;
+                  // if(err) throw err;
                   // const dataFile = "../../../" + targetFile 
-                  res.send(targetFile);
+                  res.json(fileName);
               });
           }); 
       }); 
@@ -491,5 +498,47 @@ router.post('/api/uploadProfilePicture', upload.single('file'), authenticate, (r
   }
   // res.send(req.file)
 });
+
+router.get('/api/geocoder/', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  const location= {}
+  const messages= {}
+
+  const address = req.param('address')
+  const user_id = req.currentUser[0].user_id
+
+  geocoder.geocode(address, function ( err, data ) {
+    console.log(data.results[0])
+    if (data.results[0] === undefined) {
+      messages.error = "doesn't exist"
+      res.json(messages)
+    }
+    else {
+    
+    const newData = data.results[0].geometry
+    const lat = newData.location.lat
+    location.lat = lat
+    const lng = newData.location.lng
+    location.lng = lng
+    user.addLatLng(lat, lng, user_id)
+      .then ((ret) => {
+        if (ret) {
+          console.log(location)
+          res.json(location)
+        }
+      })
+    }
+  });
+})
+
+// router.get('/api/findLocalisation', authenticate, (req, res) => {
+//   let user = require('../models/user.class');
+//   const user_id = req.currentUser[0].user_id
+
+//   user.findLocalisation(user_id)
+//     .then((ret) => {
+//       console.log(ret)
+//     })
+// })
 
 module.exports = router 
