@@ -7,6 +7,10 @@ import ReviewsContainer from '../containers/ReviewsContainer';
 import LoginContainer from '../containers/LoginContainer';
 import step3 from '../../assets/img/step3.png' 
 
+// const path = require.context('../../assets/img', true);
+// const name = './step3.png';
+// let img_src = path(name)
+
 const LandingPage = () => {
     return (
         <div>

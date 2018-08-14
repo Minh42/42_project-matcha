@@ -45,6 +45,7 @@ class Header extends Component{
     }
 
     showNavbar() {
+        console.log(this.props.authenticated);
         switch (this.props.authenticated) {
             case null:
                 return;

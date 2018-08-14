@@ -2,7 +2,6 @@ import axios from 'axios';
 import {reset} from 'redux-form';
 import setAuthorizationToken from '../../library/setAuthorizationToken';
 
-export const FETCH_CURRENT_USER = 'FETCH_CURRENT_USER'
 export const AUTHENTICATED = 'AUTHENTICATED_USER';
 export const UNAUTHENTICATED = 'UNAUTHENTICATED_USER';
 export const AUTHENTICATION_ERROR = 'AUTHENTICATION_ERROR';
@@ -24,36 +23,6 @@ export function fetchCurrentUser() {
 		else {
 			dispatch({ 
 				type: AUTHENTICATED
-			});
-		}
-	}
-}
-
-export function signInFacebookAction() {
-	return async (dispatch) => {
-		try {
-			dispatch({ 
-				type: AUTHENTICATED
-			});
-		} catch (error) {
-			dispatch({
-				type: AUTHENTICATION_ERROR,
-				payload: 'Invalid email or password'
-			});
-		}
-	}
-}
-
-export function signInGoogleAction() {
-	return async (dispatch) => {
-		try {
-			dispatch({ 
-				type: AUTHENTICATED
-			});
-		} catch (error) {
-			dispatch({
-				type: AUTHENTICATION_ERROR,
-				payload: 'Invalid email or password'
 			});
 		}
 	}

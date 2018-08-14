@@ -438,54 +438,22 @@ router.post('/api/deleteTags', authenticate, (req, res) => {
 //PROFILE PICTURE
 var upload = multer({ dest: 'assets/img/' })
 
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, '/tmp/my-uploads')
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now())
+  }
+})
+
+var upload = multer({ storage: storage })
+
+
 router.post('/api/uploadProfilePicture', upload.single('file'), authenticate, (req, res) => {
-  let user = require('../models/user.class');
-  console.log(req.file)
-  const buffer = readChunk.sync(req.file.path, 0, 4200)
-  const type = req.file.mimetype
-  const typeSplit = type.split('/')
-  const ext = typeSplit[1]
-  const size = req.file.size
 
-  // const name = new Date();
-  const name = user.makeid()
 
-  const newPath = 'assets/img/profile/'
-  if (!fs.existsSync(newPath)) {
-    fs.mkdirSync('assets/img/profile/')
-  }
 
-  const fileName = name + '.' + ext
-  console.log('fileName', fileName)
-  //verifier si dossier existe ou non
-  const targetFile = newPath + fileName
-  console.log(targetFile)
-
-  if (isJpg(buffer) || isPng(buffer) || isGif(buffer)) {
-    if (typeSplit[1] === 'jpeg' || typeSplit[1] === 'png' || typeSplit[1] === 'gif') {
-      if (size < 10000000) {
-        fs.readFile(req.file.path , function(err, data) {
-          fs.writeFile(targetFile, data, function(err) {
-              fs.unlink(req.file.path, function(){
-                  if(err) throw err;
-                  // const dataFile = "../../../" + targetFile 
-                  res.send(targetFile);
-              });
-          }); 
-      }); 
-      }
-      else {
-        console.log("too big")
-      }
-    } 
-    else {
-      console.log("not working")
-    }
-  } 
-  else {
-    console.log("not working")
-  }
-  // res.send(req.file)
 });
 
 router.get('/api/profile', authenticate, async (req, res) => {

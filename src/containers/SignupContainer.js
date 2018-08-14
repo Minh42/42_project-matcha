@@ -6,8 +6,10 @@ import FormContainer from './FormContainer';
 import Button from '../components/Button';
 import { Link } from 'react-router-dom';
 
-import { signInGoogleAction } from '../actions/actionUsers';
-import { signInFacebookAction } from '../actions/actionUsers';
+// import { signInGoogleAction } from '../actions/actionUsers';
+// import { signInFacebookAction } from '../actions/actionUsers';
+import { fetchCurrentUser } from '../actions/actionUsers';
+
 import { bindActionCreators } from 'redux';
 
 import GoogleLoginButton from "react-social-login-buttons/lib/buttons/GoogleLoginButton";
@@ -43,12 +45,12 @@ class SignupContainer extends Component{
 
 	onSubmitGoogle() {
 		location.href = "api/auth/google";
-		this.props.signInGoogleAction();
+		this.props.fetchCurrentUser();
 	}
 	
 	onSubmitFacebook() {
 		location.href = "api/auth/facebook";
-		this.props.signInFacebookAction();
+		this.props.fetchCurrentUser();
 	}
 
 	
@@ -99,15 +101,16 @@ class SignupContainer extends Component{
 	)}
 }
 
-SignupContainer.propTypes = {
-	signInGoogleAction: PropTypes.func.isRequired,
-	signInFacebookAction: PropTypes.func.isRequired
-};
+// SignupContainer.propTypes = {
+// 	signInGoogleAction: PropTypes.func.isRequired,
+// 	signInFacebookAction: PropTypes.func.isRequired
+// };
 
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({ 
-		signInGoogleAction: signInGoogleAction,
-		signInFacebookAction: signInFacebookAction
+		// signInGoogleAction: signInGoogleAction,
+		// signInFacebookAction: signInFacebookAction
+		fetchCurrentUser: fetchCurrentUser
 	}, dispatch);
 }
 
