@@ -19,6 +19,9 @@ const isPng = require('is-png');
 const isGif = require('is-gif');
 const sizeOf = require('image-size');
 
+//LOCALISATION
+var geocoder = require('geocoder');
+
 //PARAMETER EMAIL (nodemailer)
 const nodemailer = require("nodemailer");
 const transporter = nodemailer.createTransport({
@@ -519,5 +522,86 @@ router.get('/api/profile', authenticate, async (req, res) => {
   var promise = await getData();
   res.json(promise);
 });
+
+router.get('/api/geocoder/', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  const location= {}
+  const messages= {}
+
+  const address = req.param('address')
+  console.log(address)
+  const user_id = req.currentUser[0].user_id
+
+  geocoder.geocode(address, function ( err, data ) {
+    console.log(data)
+    if (data.results[0] === undefined) {
+      messages.error = "doesn't exist"
+      res.json(messages)
+    }
+    else {
+    
+    const newData = data.results[0].geometry
+    const lat = newData.location.lat
+    location.lat = lat
+    const lng = newData.location.lng
+    location.lng = lng
+    user.addLatLng(lat, lng, user_id)
+      .then ((ret) => {
+        if (ret) {
+          console.log(location)
+          res.json(location)
+        }
+      })
+    }
+  });
+})
+
+router.get('/api/findLocalisation', authenticate, (req, res) => {
+  const localisation = {}
+  const lat = req.currentUser[0].latitude
+  const lng = req.currentUser[0].longitude
+
+  localisation.lat = lat
+  localisation.lng = lng
+  res.json(localisation)
+})
+
+router.post('/api/addNewinfoBDD', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  const user_id = req.currentUser[0].user_id
+
+  const birthdate = req.body.birthdate
+  const gender = req.body.sex
+  const occupation = req.body.occupation
+  const interest = req.body.interest
+  const relationship = req.body.relationship
+  const bio = req.body.bio
+
+  user.addNewinfoUser(birthdate, gender, occupation, bio, user_id)
+    .then((ret) => {
+      if (ret) {
+
+      }
+    })
+})
+
+// router.get('/api/findIP', function(req, res) {
+
+//   var ipOS = require('os').networkInterfaces().en0[1].address;
+//   console.log(ipOS)
+
+//   var ipv6 = req.connection.remoteAddress
+//   console.log(ipv6)
+//   var address = new Address6(ipOS);
+ 
+// address.isValid(); // true
+ 
+// var teredo = address.inspectTeredo();
+ 
+// var ip = teredo.client4   // '157.60.0.1'
+// console.log(ip)
+// res.json(ipv6)
+// });
+
 
 module.exports = router 

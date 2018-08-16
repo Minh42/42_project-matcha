@@ -42,7 +42,11 @@ const validate = values => {
 	// 	if (values.bio.length > 300) {
 	// 	errors.bio = 'too long'
 	// 	}
-	// }	
+	// }
+	
+	// if (!values.relationship) {
+	// 	errors.relationship = 'Required'
+	//   }
 	return errors
   }
   
