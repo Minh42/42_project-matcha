@@ -12,16 +12,12 @@ const passportConfig = require('../server/services/passport');
 
 //MULTER + IMAGE
 const multer  = require('multer')
-const readChunk = require('read-chunk'); //find buffer
+const path = require('path');
+const readChunk = require('read-chunk');
 const isJpg = require('is-jpg');
 const isPng = require('is-png');
 const isGif = require('is-gif');
 const sizeOf = require('image-size');
-
-const path = require('path');
-
-//LOCALISATION
-var geocoder = require('geocoder');
 
 //PARAMETER EMAIL (nodemailer)
 const nodemailer = require("nodemailer");
@@ -439,25 +435,71 @@ router.post('/api/deleteTags', authenticate, (req, res) => {
 })
 
 //PROFILE PICTURE
-var upload = multer({ dest: 'assets/img/' })
 
-var storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, '/tmp/my-uploads')
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.fieldname + '-' + Date.now())
-  }
+router.post('/upload', (req, res, next) => {
+  let imageFile = req.files.file;
+
+  imageFile.mv(`./public/img/profile/${req.body.filename}.jpg`, function(err) {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.json({file: `public/img/profile/${req.body.filename}.jpg`});
+  });
 })
 
-var upload = multer({ storage: storage })
 
 
-router.post('/api/uploadProfilePicture', upload.single('file'), authenticate, (req, res) => {
+// var upload = multer({ dest: 'public/img/' })
 
+// router.post('/api/uploadProfilePicture', upload.single('file'), authenticate, (req, res) => {
+//   let user = require('../models/user.class');
+//   console.log(req.file)
+//   const buffer = readChunk.sync(req.file.path, 0, 4200)
+//   const type = req.file.mimetype
+//   const typeSplit = type.split('/')
+//   const ext = typeSplit[1]
+//   const size = req.file.size
 
+//   // const name = new Date();
+//   const name = user.makeid()
 
-});
+//   const newPath = 'public/img/profile/'
+//   if (!fs.existsSync(newPath)) {
+//     fs.mkdirSync('public/img/profile/')
+//   }
+
+//   const fileName = name + '.' + ext
+//   console.log('fileName', fileName)
+//   //verifier si dossier existe ou non
+//   const targetFile = newPath + fileName
+//   console.log(targetFile)
+
+//   if (isJpg(buffer) || isPng(buffer) || isGif(buffer)) {
+//     if (typeSplit[1] === 'jpeg' || typeSplit[1] === 'png' || typeSplit[1] === 'gif') {
+//       if (size < 10000000) {
+//         fs.readFile(req.file.path , function(err, data) {
+//           fs.writeFile(targetFile, data, function(err) {
+//               fs.unlink(req.file.path, function(){
+//                   if(err) throw err;
+//                   // const dataFile = "../../../" + targetFile 
+//                   res.send(targetFile);
+//               });
+//           }); 
+//       }); 
+//       }
+//       else {
+//         console.log("too big")
+//       }
+//     } 
+//     else {
+//       console.log("not working")
+//     }
+//   } 
+//   else {
+//     console.log("not working")
+//   }
+//   // res.send(req.file)
+// });
 
 router.get('/api/profile', authenticate, async (req, res) => {
   let user = require('../models/user.class');
@@ -477,47 +519,5 @@ router.get('/api/profile', authenticate, async (req, res) => {
   var promise = await getData();
   res.json(promise);
 });
-
-router.get('/api/geocoder/', authenticate, (req, res) => {
-  let user = require('../models/user.class');
-  const location= {}
-  const messages= {}
-
-  const address = req.param('address')
-  const user_id = req.currentUser[0].user_id
-
-  geocoder.geocode(address, function ( err, data ) {
-    console.log(data.results[0])
-    if (data.results[0] === undefined) {
-      messages.error = "doesn't exist"
-      res.json(messages)
-    }
-    else {
-    
-    const newData = data.results[0].geometry
-    const lat = newData.location.lat
-    location.lat = lat
-    const lng = newData.location.lng
-    location.lng = lng
-    user.addLatLng(lat, lng, user_id)
-      .then ((ret) => {
-        if (ret) {
-          console.log(location)
-          res.json(location)
-        }
-      })
-    }
-  });
-})
-
-// router.get('/api/findLocalisation', authenticate, (req, res) => {
-//   let user = require('../models/user.class');
-//   const user_id = req.currentUser[0].user_id
-
-//   user.findLocalisation(user_id)
-//     .then((ret) => {
-//       console.log(ret)
-//     })
-// })
 
 module.exports = router 

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import Review from '../components/Review';
-import portugal from '../../assets/img/portugal.jpg'
-import australie from '../../assets/img/australie.jpg' 
-import japon from '../../assets/img/japon.jpg'
+import portugal from '../../public/img/portugal.jpg'
+import australie from '../../public/img/australie.jpg' 
+import japon from '../../public/img/japon.jpg'
 
 const ReviewsContainer = () => {
 	return (

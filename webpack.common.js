@@ -21,6 +21,16 @@ let config = {
                 presets: ['env', 'react', 'stage-3', 'stage-0'] 
               }
             }
+          }, 
+          {
+            test: /\.(png|jpe?g|gif)$/,
+            use: [{
+              loader: 'url-loader', //  return a DataURL if the file is smaller than byte limit
+              options: {
+                fallback: 'file-loader',
+                limit: 10 * 1024,
+              }
+            }]
           }
         ]
       },
