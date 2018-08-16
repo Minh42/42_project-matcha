@@ -10,20 +10,10 @@ const midUser = require('../src/middlewares/midUser');
 const passport = require('passport');
 const passportConfig = require('../server/services/passport');
 
-//MULTER + IMAGE
-const multer  = require('multer')
-const readChunk = require('read-chunk'); //find buffer
-const isJpg = require('is-jpg');
-const isPng = require('is-png');
-const isGif = require('is-gif');
-const sizeOf = require('image-size');
-
+const multer  = require('multer');
+const readChunk = require('read-chunk');
 const path = require('path');
-
-// IP
-var Address6 = require('ip-address').Address6;
-var ip = require('ip');
-const reqIp = require('request-ip');
+const uuidv4 = require('uuid/v4');
 
 //LOCALISATION
 var geocoder = require('geocoder');
@@ -444,25 +434,63 @@ router.post('/api/deleteTags', authenticate, (req, res) => {
 })
 
 //PROFILE PICTURE
-var upload = multer({ dest: 'assets/img/' })
 
-var storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, '/tmp/my-uploads')
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './uploads');
   },
-  filename: function (req, file, cb) {
-    cb(null, file.fieldname + '-' + Date.now())
+  filename: (req, file, cb) => {
+    const newFilename = `${uuidv4()}${path.extname(file.originalname)}`;
+    cb(null, newFilename);
+  },
+});
+
+const upload = multer({ storage });
+
+router.post('/api/upload', upload.single('file'), authenticate, function(req, res) {
+  if (!req.file) {
+    return res.send({
+      error: "Upload file not found"
+    });
+  } else {
+    let image = require('../models/image.class');
+    let buffer = fs.readFileSync(req.file.path)
+    let mimetype = req.file.mimetype;
+    let size = req.file.size;
+
+    if(image.isValid(buffer, mimetype, size)) {
+      let id = req.currentUser[0].user_id;
+      let oldPath = req.file.path;
+      let targetPath = `public/img/profile/${id}/${req.file.filename}`;
+    
+      const targetDir = 'public/img/profile/' + id;
+      if (!fs.existsSync(targetDir)) {
+        fs.mkdirSync(targetDir)
+      }
+
+      fs.rename(oldPath, targetPath, (err) => {
+        if (err) {
+          return res.status(500).send(err);
+        }
+      });
+
+      image.savePicture(id, targetPath).then((ret) => {
+        if(ret) {
+          res.json({file: targetPath});
+        } else {
+          return res.send({
+            error: "Unable to save file"
+          });
+        }  
+      })
+
+    } else {
+      return res.send({
+        error: "Upload file is invalid"
+      });
+    }
   }
 })
-
-var upload = multer({ storage: storage })
-
-
-router.post('/api/uploadProfilePicture', upload.single('file'), authenticate, (req, res) => {
-
-
-
-});
 
 router.get('/api/profile', authenticate, async (req, res) => {
   let user = require('../models/user.class');
