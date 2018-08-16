@@ -37,7 +37,7 @@ import renderField from './renderField'
                 name="sex"
                 component="input"
                 type="radio"
-                value="male"
+                value="man"
               />{' '}
               Male
             </label>
@@ -46,7 +46,7 @@ import renderField from './renderField'
                 name="sex"
                 component="input"
                 type="radio"
-                value="female"
+                value="woman"
               />{' '}
               Female
             </label>

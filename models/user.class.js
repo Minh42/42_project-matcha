@@ -343,6 +343,7 @@ class User {
         } 
     }
 
+    //FIND TAGS FROM TAGS
     static async findTagName(tag_id) {
         try {
             let ret = await pool.query("SELECT `name` FROM `tags` WHERE `tag_id` = ?", [tag_id]);
@@ -353,6 +354,7 @@ class User {
         } 
     }
 
+    //DELETE TAG FROM USER_TAGS
     static async deleteTagInsideUserTags(user_id, tag_id) {
         try {
             let ret = await pool.query("DELETE FROM `user_tags` WHERE `user_id` = ? AND `tag_id` = ?", [user_id, tag_id])
@@ -368,6 +370,7 @@ class User {
         } 
     }
 
+    //LOCALISATION
     static async addLatLng(lat, lng, user_id) {
         try {
             let ret = await pool.query("UPDATE `users` SET `latitude` = ?, `longitude` = ? WHERE `user_id` = ?", [lat, lng, user_id]);
@@ -383,10 +386,17 @@ class User {
         } 
     }
 
-    static async findLocalisation(user_id) {
+    //INSERT NEW INFO FROM ONBOARDING
+
+    static async addNewinfoUser(birthdate, gender, occupation, bio, user_id) {
         try {
-            let ret = await pool.query("SELECT `latitude`, `longitude` FROM `users` WHERE `user_id` = ?", [user_id]);
-            return ret;
+            let ret = await pool.query("UPDATE `users` SET `birth_date` = ?, `gender` = ?, `bio` = ?, `occupation`= ? WHERE `user_id` = ?", [birthdate, gender, bio, occupation, user_id]);
+            if (ret) {
+                return true;
+            }
+            else {
+                return false;
+            }
         }
         catch(err) {
             throw new Error(err)

@@ -20,6 +20,11 @@ const sizeOf = require('image-size');
 
 const path = require('path');
 
+// IP
+var Address6 = require('ip-address').Address6;
+var ip = require('ip');
+const reqIp = require('request-ip');
+
 //LOCALISATION
 var geocoder = require('geocoder');
 
@@ -484,10 +489,11 @@ router.get('/api/geocoder/', authenticate, (req, res) => {
   const messages= {}
 
   const address = req.param('address')
+  console.log(address)
   const user_id = req.currentUser[0].user_id
 
   geocoder.geocode(address, function ( err, data ) {
-    console.log(data.results[0])
+    console.log(data)
     if (data.results[0] === undefined) {
       messages.error = "doesn't exist"
       res.json(messages)
@@ -510,14 +516,52 @@ router.get('/api/geocoder/', authenticate, (req, res) => {
   });
 })
 
-// router.get('/api/findLocalisation', authenticate, (req, res) => {
-//   let user = require('../models/user.class');
-//   const user_id = req.currentUser[0].user_id
+router.get('/api/findLocalisation', authenticate, (req, res) => {
+  const localisation = {}
+  const lat = req.currentUser[0].latitude
+  const lng = req.currentUser[0].longitude
 
-//   user.findLocalisation(user_id)
-//     .then((ret) => {
-//       console.log(ret)
-//     })
-// })
+  localisation.lat = lat
+  localisation.lng = lng
+  res.json(localisation)
+})
+
+router.post('/api/addNewinfoBDD', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  const user_id = req.currentUser[0].user_id
+
+  const birthdate = req.body.birthdate
+  const gender = req.body.sex
+  const occupation = req.body.occupation
+  const interest = req.body.interest
+  const relationship = req.body.relationship
+  const bio = req.body.bio
+
+  user.addNewinfoUser(birthdate, gender, occupation, bio, user_id)
+    .then((ret) => {
+      if (ret) {
+
+      }
+    })
+})
+
+// router.get('/api/findIP', function(req, res) {
+
+//   var ipOS = require('os').networkInterfaces().en0[1].address;
+//   console.log(ipOS)
+
+//   var ipv6 = req.connection.remoteAddress
+//   console.log(ipv6)
+//   var address = new Address6(ipOS);
+ 
+// address.isValid(); // true
+ 
+// var teredo = address.inspectTeredo();
+ 
+// var ip = teredo.client4   // '157.60.0.1'
+// console.log(ip)
+// res.json(ipv6)
+// });
+
 
 module.exports = router 

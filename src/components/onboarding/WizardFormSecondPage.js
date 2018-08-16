@@ -1,10 +1,25 @@
 import React from 'react'
 import { Field, reduxForm } from 'redux-form'
 import validate from './validate'
-import renderField from './renderField'
+
+const relationship = ['Marriage', 'Casual sex', 'friends', 'One night stand', 'Long term relationship', 'Short term relationship']
 		  
 const renderErrorInterest = ({ meta: { touched, error } }) =>
-  touched && error ? <span className= "help is-danger">{error}</span> : false
+	touched && error ? <span className= "help is-danger">{error}</span> : false
+	
+const renderRelationshipSelector = ({ input, meta: { touched, error } }) => (
+		<div>
+			<select {...input}>
+				<option value="">Select a relation...</option>
+				{relationship.map(val => (
+					<option value={val} key={val}>
+						{val}
+					</option>
+				))}
+			</select>
+			{touched && error && <span className="help is-danger">{error}</span>}
+		</div>
+	)
       
 const WizardFormSecondPage = props => {
   const { handleSubmit, previousPage } = props
@@ -45,14 +60,7 @@ const WizardFormSecondPage = props => {
 					<label className="label labelOnboarding">Relationship</label>
 					<div className="field">
 						<div className="select">
-						<Field name="relationship" component="select">
-							<option>Marriage</option>
-							<option>Casual sex</option>
-							<option>friends</option>
-							<option>One night stand</option>
-							<option>Long term relationship</option>
-							<option>Short term relationship</option>
-						</Field>
+						<Field name="relationship" component={renderRelationshipSelector}/>
 						</div>
 					</div>
 				</div>

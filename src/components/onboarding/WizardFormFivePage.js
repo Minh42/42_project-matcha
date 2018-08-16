@@ -1,8 +1,9 @@
 import React from 'react'
-import { Field, reduxForm } from 'redux-form'
+import { Field, reduxForm, formValueSelector } from 'redux-form'
 import validate from './validate'
 import axios from 'axios';
-import { Z_MEM_ERROR } from 'zlib';
+import { connect } from 'react-redux'
+import location from '../../../library/location'
 
 const style = {
 	height: "300px",
@@ -19,25 +20,21 @@ class WizardFormFivePage extends React.Component{
 	}
 
 	this.handleFormSubmit = this.handleFormSubmit.bind(this);
+	this.handleSubmitIP = this.handleSubmitIP.bind(this);
 }
 
 	async componentDidMount(){
 
-		// const res = await axios.get('/api/findLocalisation')
-		var platform = new H.service.Platform({
-									'app_id': 'HCNqC0RcmL39gXGywpWp',
-			  					'app_code': 'TQVQp_tmDvVeacAsGbVbqA'
-									});
+		const res = await axios.get('/api/findLocalisation')
+		var lat = res.data.lat
+		var lng = res.data.lng
 
-		var defaultLayers = platform.createDefaultLayers();
-		var map = new H.Map(document.getElementById('mapContainer'),
-						defaultLayers.normal.map,
-						{
-						center: {lat: 52.5, lng: 13.4},
-						zoom: 10
-						});
-		var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
-		var ui = H.ui.UI.createDefault(map, defaultLayers);
+		if (lat === undefined && lng === undefined) {
+			lat = 52.5
+			lng = 13.4
+		}
+
+		location.showLocation(lat, lng)	
 		}
 
 		async handleFormSubmit() {
@@ -52,29 +49,7 @@ class WizardFormFivePage extends React.Component{
 			if (error === undefined) {
 				error = ""
 		
-			document.getElementById("mapContainer").remove()
-
-			const newDiv = document.createElement('div')
-			newDiv.setAttribute("id", "mapContainer")
-			const currentDiv = document.getElementById("parentContainer"); 
-			currentDiv.parentNode.insertBefore(newDiv, currentDiv);
-
-			const divCreate = document.getElementById('mapContainer')
-			divCreate.style.height = "300px"
-
-			var platform = new H.service.Platform({
-				'app_id': 'HCNqC0RcmL39gXGywpWp',
-				'app_code': 'TQVQp_tmDvVeacAsGbVbqA'
-				});
-			var defaultLayers = platform.createDefaultLayers();		
-			var map = new H.Map(document.getElementById('mapContainer'),
-						defaultLayers.normal.map,
-						{
-						center: {lat: lat, lng: lng},
-						zoom: 10
-						});
-			var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
-			var ui = H.ui.UI.createDefault(map, defaultLayers);
+			location.showLocation(lat, lng)	
 			}
 
 			this.setState({
@@ -82,10 +57,32 @@ class WizardFormFivePage extends React.Component{
 				})
 		}
 
+	handleSubmitIP() {
+		var x = document.getElementById("parentContainer");
+		function showPosition(position) {
+			x.innerHTML = "Latitude: " + position.coords.latitude + 
+			"<br>Longitude: " + position.coords.longitude;
+		}
+
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(showPosition);
+			axios.get('http://ip-api.com/json') 
+			.then((res) => {
+				console.log(res)
+				var lat = res.data.lat
+				var lng = res.data.lon
+				location.showLocation(lat, lng)
+			})
+		} else { 
+			x.innerHTML = "Geolocation is not supported by this browser.";
+		}
+
+	}
+
 	
 	render () {
 
-	const { pristine, previousPage, submitting } = this.props
+	const { previousPage } = this.props
 
 		return (
 		<div>
@@ -93,27 +90,27 @@ class WizardFormFivePage extends React.Component{
 		<progress className="progress progressOnboarding" value="100" max="100">100%</progress>
 		<br></br>
 		<div className="columns">
-			<div className="column is-6">
-          <p>Location</p>
-						<div style={style} id="mapContainer"></div>
-						<div id="parentContainer"></div>
+			<div className="column is-6 has-text-centered">
+				<div className="button is-small buttonOnboarding" onClick={this.handleSubmitIP}>Allow localisation</div>
+				<div style={style} id="mapContainer"></div>
+				<div id="parentContainer"></div>
 			</div>
 			<div className="column is-6">
 			<form>
             <div className="field">
               <label className="label">Enter your localisation</label>
-							<div className="control">
-								<input 	type="text"
-												id="address"
-												className="input" 
-												id="address" 
-												placeholder="London"
-												required />
-								<p className="help is-danger">{this.state.message}</p>
-								</div>
+					<div className="control">
+						<input 	type="text"
+								id="address"
+								className="input" 
+								id="address" 
+								placeholder="London"
+								required />
+						<p id="demo" className="help is-danger">{this.state.message}</p>
+					</div>
             </div>
           <div>
-            <div className="button buttonOnboarding" onClick={this.handleFormSubmit}>Search</div>
+            <div className="button is-small buttonOnboarding" onClick={this.handleFormSubmit}>Search</div>
 					</div>
       </form>
 
@@ -126,7 +123,7 @@ class WizardFormFivePage extends React.Component{
 				</button>
 			</div>
 			<div className="column is-2 is-offset-8">
-				<button type="submit" className="button buttonOnboarding" disabled={pristine || submitting}>
+				<button type="submit" className="button buttonOnboarding">
 				Submit
 				</button>
 			</div>
@@ -135,6 +132,17 @@ class WizardFormFivePage extends React.Component{
 		)
 	}
 }
+
+const selector = formValueSelector('wizard') // <-- same as form name
+WizardFormFivePage = connect(
+  state => {
+	axios.post('/api/addNewinfoBDD', state.form.wizard.values)
+    return {
+      state
+    }
+  }
+)(WizardFormFivePage)
+
 export default reduxForm({
   form: 'wizard', //Form name is same
   destroyOnUnmount: false,

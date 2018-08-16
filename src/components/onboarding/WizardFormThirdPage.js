@@ -1,8 +1,7 @@
 import React from 'react'
-import { Field, reduxForm, formValueSelector } from 'redux-form'
+import { Field, reduxForm } from 'redux-form'
 import validate from './validate'
 import { WithContext as ReactTags } from 'react-tag-input';
-import { connect } from 'react-redux'
 
 import axios from 'axios';
 
@@ -142,19 +141,6 @@ class WizardFormThirdPage extends React.Component{
 		</form>
 	)}
 }
-
-const selector = formValueSelector('wizard') // <-- same as form name
-WizardFormThirdPage = connect(
-  state => {
-    // can select values individually
-    console.log(state.form.wizard.values)
-    // const birthdate = selector(state, 'birthdate')
-    // console.log(birthdate)
-    return {
-      state
-    }
-  }
-)(WizardFormThirdPage)
 
 export default reduxForm({
   form: 'wizard', //Form name is same

@@ -21,6 +21,11 @@ app.set('views', path.join(__dirname, 'views'))
 app.engine('mustache', mustacheExpress());
 app.set('view engine', 'mustache');
 
+
+//IP
+var requestIp = require('request-ip');
+app.use(requestIp.mw())
+
 // var corsOptions = {
 //   origin: '*',
 //   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204 
