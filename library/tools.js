@@ -35,6 +35,12 @@ function isEmail(email) {
 	return true;
 }
 
+function isAddress(address) {
+	var regex = /[0-9]{1,3}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)+/;
+	if (!regex.test(address)) return false;
+	return true;
+}
+
 function isHash(password) {
 	const saltRounds = 10;
 	var salt = bcrypt.genSaltSync(saltRounds);
@@ -50,5 +56,6 @@ module.exports = {
 	isUsername: isUsername,
 	isPassword: isPassword,
 	isEmail: isEmail,
+	isAddress: isAddress,
 	isHash: isHash
 }

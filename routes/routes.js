@@ -483,8 +483,12 @@ router.get('/api/profile', authenticate, async (req, res) => {
   res.json(promise);
 });
 
+
+//LOCALISATION
+
 router.get('/api/geocoder/', authenticate, (req, res) => {
   let user = require('../models/user.class');
+  let check = require('../library/tools');
   const location= {}
   const messages= {}
 
@@ -492,34 +496,46 @@ router.get('/api/geocoder/', authenticate, (req, res) => {
   console.log(address)
   const user_id = req.currentUser[0].user_id
 
-  geocoder.geocode(address, function ( err, data ) {
+  if (check.isAddress(address) === true)
+  {
+    geocoder.geocode(address, function ( err, data ) {
     console.log(data)
     if (data.results[0] === undefined) {
-      messages.error = "doesn't exist"
+      messages.error = "address doesn't exist"
       res.json(messages)
+      } else {
+        console.log(data.results[0])
+        const newData = data.results[0].geometry
+        const lat = newData.location.lat
+        location.lat = lat
+        const lng = newData.location.lng
+        location.lng = lng
+        user.addLatLng(lat, lng, user_id)
+          .then ((ret) => {
+          if (ret) {
+            console.log(location)
+              res.json(location)
+          }
+        })
+      }
+    });
+  } else {
+    messages.error = "wrong address"
+    res.json(messages)
     }
-    else {
-    
-    const newData = data.results[0].geometry
-    const lat = newData.location.lat
-    location.lat = lat
-    const lng = newData.location.lng
-    location.lng = lng
-    user.addLatLng(lat, lng, user_id)
-      .then ((ret) => {
-        if (ret) {
-          console.log(location)
-          res.json(location)
-        }
-      })
-    }
-  });
 })
 
 router.get('/api/findLocalisation', authenticate, (req, res) => {
   const localisation = {}
   const lat = req.currentUser[0].latitude
   const lng = req.currentUser[0].longitude
+  const geolocalisationAllowed = req.currentUser[0].geolocalisationAllowed
+
+  if (geolocalisationAllowed === 1) {
+    localisation.message = "Disable Localisation"
+  } else {
+    localisation.message = "Allow localisation"
+  }
 
   localisation.lat = lat
   localisation.lng = lng
@@ -530,20 +546,124 @@ router.post('/api/addNewinfoBDD', authenticate, (req, res) => {
   let user = require('../models/user.class');
   const user_id = req.currentUser[0].user_id
 
+  console.log(req.body)
   const birthdate = req.body.birthdate
   const gender = req.body.sex
   const occupation = req.body.occupation
   const interest = req.body.interest
-  const relationship = req.body.relationship
   const bio = req.body.bio
 
   user.addNewinfoUser(birthdate, gender, occupation, bio, user_id)
     .then((ret) => {
       if (ret) {
-
+        user.searchIdGenders(interest)
+          .then((ret) => {
+          var gender_id = ret[0].gender_id
+          user.findUserId("interested_in_gender", user_id)
+          .then((ret) => {
+            if (ret) {
+              user.updateInterestedInGender(user_id, gender_id)
+              .then((ret) => {
+                res.send("success")
+              })
+            } else {
+              user.addInsideInterestedInGender(gender_id, user_id)
+              .then((ret) => {
+                res.send("success")
+              })
+            }
+          })
+        })
       }
     })
 })
+
+router.post('/api/addRelationshipBDD', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  const user_id = req.currentUser[0].user_id
+
+  const relationship = req.body.relationship
+  user.searchRelationshipId(relationship)
+    .then((ret) => {
+    console.log(ret)
+    var relationship_id = ret[0].relationship_type_id
+    user.findUserId("interested_in_relation", user_id)
+    .then((ret) => {
+      console.log(ret)
+      if (ret) {
+        user.updateInterestedInRelation(user_id, relationship_id)
+        .then((ret) => {
+          res.send("success")
+        })
+      } else {
+      console.log(relationship_id)
+      user.addInsideinterestedInRelation(relationship_id, user_id)
+        .then((ret) => {
+          res.send("success")
+        })
+      }
+    })
+})
+
+
+})
+
+// ALLOWED OR NOT LOCALISATION
+router.post('/api/localisationAllowedORnot', authenticate, (req, res) => {
+  console.log(req.currentUser[0])
+  const localisationAllowed = req.currentUser[0].geolocalisationAllowed
+  console.log(localisationAllowed)
+  res.json(localisationAllowed)
+})
+
+router.post('/api/localisationAllowed', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  const user_id = req.currentUser[0].user_id
+  console.log(req.body)
+  user.changeGeolocalisationAllow(user_id, 1)
+    .then((ret) => {
+      user.addIP(user_id, req.body.ip)
+        .then ((ret) => {
+          user.addLatLng(req.body.lat, req.body.lng, user_id) 
+            .then((ret) => {
+              res.json("success")
+            })
+        })
+    })
+})
+
+router.post('/api/localisationDisable', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  const user_id = req.currentUser[0].user_id
+  console.log(req.body)
+  user.changeGeolocalisationAllow(user_id, 0)
+    .then((ret) => {
+      user.addIP(user_id, req.body.ip)
+        .then ((ret) => {
+          user.addLatLng(req.body.lat, req.body.lng, user_id) 
+            .then((ret) => {
+              res.json("success")
+            })
+        })
+    })
+})
+
+//CHANGE ONBOARDING STATUS
+router.post('/api/changeOnboardingStatus', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  const user_id = req.currentUser[0].user_id
+
+  user.changeStatusOnboarding(user_id)
+  res.send("success")
+})
+
+// var ip = require('ip');
+
+// router.get('/api/findIP', (req, res) => {
+//   ipAddress = ip.address()
+//   console.log(ipAddress)
+//   res.send(ipAddress)
+// })
 
 // router.get('/api/findIP', function(req, res) {
 

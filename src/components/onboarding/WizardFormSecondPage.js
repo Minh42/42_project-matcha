@@ -33,7 +33,7 @@ const WizardFormSecondPage = props => {
 						name="interest"
 						component="input"
 						type="radio"
-						value="men"
+						value="man"
 						/>{' '}
 						Men
 					</label>
@@ -42,7 +42,7 @@ const WizardFormSecondPage = props => {
 						name="interest"
 						component="input"
 						type="radio"
-						value="women"
+						value="woman"
 						/>{' '}
 						Women
 					</label>
@@ -51,7 +51,7 @@ const WizardFormSecondPage = props => {
 						name="interest"
 						component="input"
 						type="radio"
-						value="both"
+						value="man and woman"
 						/>{' '}
 						Both
 					</label>

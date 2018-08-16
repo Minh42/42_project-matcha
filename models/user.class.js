@@ -256,6 +256,15 @@ class User {
         } 
     }
 
+    static async changeStatusOnboarding(user_id) {
+        try {
+            await pool.query("UPDATE `users` SET `onboardingDone` = ? WHERE `user_id` = ?", [1, user_id]);
+        } 
+        catch(err) {
+            throw new Error(err)
+        }  
+    }
+
 
 
     // TABLE TAGS
@@ -402,7 +411,150 @@ class User {
             throw new Error(err)
         } 
     }
+
+    //CHANGE INFO GEOLOCALISATION ALLOW
+
+    static async changeGeolocalisationAllow(user_id, geolocalisationAllow) {
+        try {
+            let ret = await pool.query("UPDATE `users` SET `geolocalisationAllowed` = ? WHERE `user_id` = ?", [geolocalisationAllow, user_id]);
+                if (ret) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    //add IP BDD
+
+    static async addIP(user_id, ip) {
+        try {
+            let ret = await pool.query("UPDATE `users` SET `ip_address` = ? WHERE `user_id` = ?", [ip, user_id]);
+                if (ret) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    //ADD INTEREST INSIDE BDD
+
+    static async searchIdGenders(interest) {
+        try {
+            console.log(interest)
+            let ret = await pool.query("SELECT `gender_id` FROM `genders` WHERE `name` = ?", [interest]);
+            console.log(ret)
+            return ret;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async addInsideInterestedInGender(gender_id, user_id) {
+        try {
+            console.log(gender_id)
+            const values = {user_id: user_id, gender_id: gender_id};
+            const requete = 'INSERT INTO `interested_in_gender` SET ?'
+       
+            let ret = await pool.query(requete, values)
+                if (ret) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async findUserId(table, user_id) {
+        try {
+            console.log("table", table)
+            let ret = await pool.query("SELECT count(*) as id_exists FROM "+ table +" WHERE `user_id` = ?", [user_id]);
+            if (ret[0].id_exists > '0')
+                return true;
+            else
+                return false;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    //ADD RELATIONSHIP INSIDE BDD
+
+    static async searchRelationshipId(relationship) {
+        try {
+            console.log(relationship)
+            let ret = await pool.query("SELECT `relationship_type_id` FROM `relationships_type` WHERE `name` = ?", [relationship]);
+            return ret;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async addInsideinterestedInRelation(relationship_type_id, user_id) {
+        try {
+            const values = {user_id: user_id, relationship_type_id: relationship_type_id};
+            const requete = 'INSERT INTO `interested_in_relation` SET ?'
+       
+            let ret = await pool.query(requete, values)
+                if (ret) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async updateInterestedInGender(user_id, gender_id) {
+        try {
+            let ret = await pool.query("UPDATE `interested_in_gender` SET `gender_id` = ? WHERE `user_id` = ?", [gender_id, user_id]);
+                if (ret) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async updateInterestedInRelation(user_id, relationship_type_id) {
+        try {
+            let ret = await pool.query("UPDATE `interested_in_relation` SET `relationship_type_id` = ? WHERE `user_id` = ?", [relationship_type_id, user_id]);
+                if (ret) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
 }
+
 
 
 module.exports = User
