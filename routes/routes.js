@@ -10,14 +10,10 @@ const midUser = require('../src/middlewares/midUser');
 const passport = require('passport');
 const passportConfig = require('../server/services/passport');
 
-//MULTER + IMAGE
-const multer  = require('multer')
-const path = require('path');
+const multer  = require('multer');
 const readChunk = require('read-chunk');
-const isJpg = require('is-jpg');
-const isPng = require('is-png');
-const isGif = require('is-gif');
-const sizeOf = require('image-size');
+const path = require('path');
+const uuidv4 = require('uuid/v4');
 
 //LOCALISATION
 var geocoder = require('geocoder');
@@ -439,70 +435,62 @@ router.post('/api/deleteTags', authenticate, (req, res) => {
 
 //PROFILE PICTURE
 
-router.post('/upload', (req, res, next) => {
-  let imageFile = req.files.file;
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './uploads');
+  },
+  filename: (req, file, cb) => {
+    const newFilename = `${uuidv4()}${path.extname(file.originalname)}`;
+    cb(null, newFilename);
+  },
+});
 
-  imageFile.mv(`./public/img/profile/${req.body.filename}.jpg`, function(err) {
-    if (err) {
-      return res.status(500).send(err);
+const upload = multer({ storage });
+
+router.post('/api/upload', upload.single('file'), authenticate, function(req, res) {
+  if (!req.file) {
+    return res.send({
+      error: "Upload file not found"
+    });
+  } else {
+    let image = require('../models/image.class');
+    let buffer = fs.readFileSync(req.file.path)
+    let mimetype = req.file.mimetype;
+    let size = req.file.size;
+
+    if(image.isValid(buffer, mimetype, size)) {
+      let id = req.currentUser[0].user_id;
+      let oldPath = req.file.path;
+      let targetPath = `public/img/profile/${id}/${req.file.filename}`;
+    
+      const targetDir = 'public/img/profile/' + id;
+      if (!fs.existsSync(targetDir)) {
+        fs.mkdirSync(targetDir)
+      }
+
+      fs.rename(oldPath, targetPath, (err) => {
+        if (err) {
+          return res.status(500).send(err);
+        }
+      });
+
+      image.savePicture(id, targetPath).then((ret) => {
+        if(ret) {
+          res.json({file: targetPath});
+        } else {
+          return res.send({
+            error: "Unable to save file"
+          });
+        }  
+      })
+
+    } else {
+      return res.send({
+        error: "Upload file is invalid"
+      });
     }
-    res.json({file: `public/img/profile/${req.body.filename}.jpg`});
-  });
+  }
 })
-
-
-
-// var upload = multer({ dest: 'public/img/' })
-
-// router.post('/api/uploadProfilePicture', upload.single('file'), authenticate, (req, res) => {
-//   let user = require('../models/user.class');
-//   console.log(req.file)
-//   const buffer = readChunk.sync(req.file.path, 0, 4200)
-//   const type = req.file.mimetype
-//   const typeSplit = type.split('/')
-//   const ext = typeSplit[1]
-//   const size = req.file.size
-
-//   // const name = new Date();
-//   const name = user.makeid()
-
-//   const newPath = 'public/img/profile/'
-//   if (!fs.existsSync(newPath)) {
-//     fs.mkdirSync('public/img/profile/')
-//   }
-
-//   const fileName = name + '.' + ext
-//   console.log('fileName', fileName)
-//   //verifier si dossier existe ou non
-//   const targetFile = newPath + fileName
-//   console.log(targetFile)
-
-//   if (isJpg(buffer) || isPng(buffer) || isGif(buffer)) {
-//     if (typeSplit[1] === 'jpeg' || typeSplit[1] === 'png' || typeSplit[1] === 'gif') {
-//       if (size < 10000000) {
-//         fs.readFile(req.file.path , function(err, data) {
-//           fs.writeFile(targetFile, data, function(err) {
-//               fs.unlink(req.file.path, function(){
-//                   if(err) throw err;
-//                   // const dataFile = "../../../" + targetFile 
-//                   res.send(targetFile);
-//               });
-//           }); 
-//       }); 
-//       }
-//       else {
-//         console.log("too big")
-//       }
-//     } 
-//     else {
-//       console.log("not working")
-//     }
-//   } 
-//   else {
-//     console.log("not working")
-//   }
-//   // res.send(req.file)
-// });
 
 router.get('/api/profile', authenticate, async (req, res) => {
   let user = require('../models/user.class');

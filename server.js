@@ -5,7 +5,6 @@ const cors = require('cors');
 const bodyParser = require('body-parser')
 const session = require('express-session')
 const mustacheExpress = require('mustache-express')
-const fileUpload = require('express-fileupload');
 const helmet = require('helmet')
 // const csrf = require('csurf')
 
@@ -31,8 +30,7 @@ const middlewares = [
     keys: [keys.cookieKey]
   }),
   passport.initialize(),
-  passport.session(),
-  fileUpload()
+  passport.session()
 ]
 
 app.use(middlewares)
