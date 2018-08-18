@@ -211,72 +211,7 @@ router.post('/api/sendNewPassword', function(req, res) {
   });
 })
 
-//CHANGE BASIC INFO USER
-router.post('/api/modifData', (req, res) => {
-  let user = require('../models/user.class');
-  const user_id = req.body.user_id
-  const login = req.body.login
-  const firstname = req.body.firstName
-  const lastname = req.body.lastName
-  const email = req.body.email
-  user.changeUserInfo(user_id, login, firstname, lastname, email)
-    .then(function(ret) {
-      res.send({redirect: '/ModifProfile'});
-    })
-})
-
-//CHANGE NEW INFO USER
-router.post('/api/changeNewInfo', (req, res) => {
-  let user = require('../models/user.class');
-  const tags = req.body.tags;
-
-  const birthdate = req.body.values.birthdate
-  const sex = req.body.values.sex
-  const interest = req.body.values.interest
-  const bio = req.body.values.bio
-  const relationship = req.body.values.relationship
-})
-
-//CHANGE NEW INFO USER
-router.post('/api/changeNewInfo', (req, res) => {
-  let user = require('../models/user.class');
-  const user_id = req.body.values.user_id
-  const tags = req.body.tags;
-  const birthdate = req.body.values.birthdate
-  const sex = req.body.values.sex
-  const interest = req.body.values.interest
-  const bio = req.body.values.bio
-  const relationship = req.body.values.relationship
-  user.changeBirthdateGender(user_id, birthdate, sex)
-    .then(function(ret){
-  if (ret) {
-    user.changeInterest(user_id, interest)
-  .then(function(ret){
-  
-        });
-      }
-    }); 
-  });
-
-
-//CHANGE PASSWORD
-router.post('/api/changePassword', function(req, res) {
-  let user = require('../models/user.class');
-  let check = require('../library/tools');
-  let messages= {};
-
-  hashNewPassword = check.isHash(req.body.newPassword);
-
-  user.sendNewPasswordBDD(hashNewPassword, req.body.user_id)
-    .then (function(ret){
-      if (ret) {
-        res.send({redirect: '/ModifProfile'});
-      }
-      else {
-        res.sendStatus(401);
-      }
-    });
-})
+// AUTH GOOGLE + FACEBOOK
 
 router.get('/api/auth/facebook',
   passport.authenticate('facebook', { display: 'popup' }, { scope: ['public_profile', 'email'] })
@@ -355,6 +290,7 @@ router.post('/api/addTags', authenticate, (req, res) => {
                     if (ret === false) {
                       user.addInsideUserTag(tag_id, user_id)
                         .then((ret) => {
+                          
                       })
                     }
 
@@ -432,6 +368,20 @@ router.post('/api/deleteTags', authenticate, (req, res) => {
         })
   }) 
 })
+
+//SEARCH IF USER ADD TAG
+router.post('/api/searchTags', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  const user_id = req.currentUser[0].user_id
+  console.log("inside search tags")
+
+  user.findUserId("user_tags", user_id)
+    .then((ret) => {
+      console.log(ret)
+      res.json(ret)
+    })
+})
+
 
 //PROFILE PICTURE
 
@@ -521,18 +471,15 @@ router.get('/api/geocoder/', authenticate, (req, res) => {
   const messages= {}
 
   const address = req.param('address')
-  console.log(address)
   const user_id = req.currentUser[0].user_id
 
   if (check.isAddress(address) === true)
   {
     geocoder.geocode(address, function ( err, data ) {
-    console.log(data)
     if (data.results[0] === undefined) {
       messages.error = "address doesn't exist"
       res.json(messages)
       } else {
-        console.log(data.results[0])
         const newData = data.results[0].geometry
         const lat = newData.location.lat
         location.lat = lat
@@ -541,7 +488,6 @@ router.get('/api/geocoder/', authenticate, (req, res) => {
         user.addLatLng(lat, lng, user_id)
           .then ((ret) => {
           if (ret) {
-            console.log(location)
               res.json(location)
           }
         })
@@ -570,6 +516,53 @@ router.get('/api/findLocalisation', authenticate, (req, res) => {
   res.json(localisation)
 })
 
+
+// ALLOWED OR NOT LOCALISATION
+router.post('/api/localisationAllowedORnot', authenticate, (req, res) => {
+  console.log(req.currentUser[0])
+  const localisationAllowed = req.currentUser[0].geolocalisationAllowed
+  console.log(localisationAllowed)
+  res.json(localisationAllowed)
+})
+
+router.post('/api/localisationAllowed', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  const lat = req.body.lat
+  const lng = req.body.lng
+  const user_id = req.currentUser[0].user_id
+  console.log(req.body)
+  user.changeGeolocalisationAllow(user_id, 1)
+    .then((ret) => {
+      user.addIP(user_id, req.body.ip)
+        .then ((ret) => {
+          console.log("here")
+          user.addLatLng(lat, lng, user_id) 
+            .then((ret) => {
+              res.json("success")
+            })
+        })
+    })
+})
+
+router.post('/api/localisationDisable', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  const user_id = req.currentUser[0].user_id
+  console.log(req.body)
+  user.changeGeolocalisationAllow(user_id, 0)
+    .then((ret) => {
+      user.addIP(user_id, req.body.ip)
+        .then ((ret) => {
+          console.log("disable")
+          user.addLatLng(req.body.lat, req.body.lng, user_id) 
+            .then((ret) => {
+              res.json("success")
+            })
+        })
+    })
+})
+
+
+//NEW INFO BDD FROM ONBOARDING
 router.post('/api/addNewinfoBDD', authenticate, (req, res) => {
   let user = require('../models/user.class');
   const user_id = req.currentUser[0].user_id
@@ -631,49 +624,7 @@ router.post('/api/addRelationshipBDD', authenticate, (req, res) => {
         })
       }
     })
-})
-
-
-})
-
-// ALLOWED OR NOT LOCALISATION
-router.post('/api/localisationAllowedORnot', authenticate, (req, res) => {
-  console.log(req.currentUser[0])
-  const localisationAllowed = req.currentUser[0].geolocalisationAllowed
-  console.log(localisationAllowed)
-  res.json(localisationAllowed)
-})
-
-router.post('/api/localisationAllowed', authenticate, (req, res) => {
-  let user = require('../models/user.class');
-  const user_id = req.currentUser[0].user_id
-  console.log(req.body)
-  user.changeGeolocalisationAllow(user_id, 1)
-    .then((ret) => {
-      user.addIP(user_id, req.body.ip)
-        .then ((ret) => {
-          user.addLatLng(req.body.lat, req.body.lng, user_id) 
-            .then((ret) => {
-              res.json("success")
-            })
-        })
-    })
-})
-
-router.post('/api/localisationDisable', authenticate, (req, res) => {
-  let user = require('../models/user.class');
-  const user_id = req.currentUser[0].user_id
-  console.log(req.body)
-  user.changeGeolocalisationAllow(user_id, 0)
-    .then((ret) => {
-      user.addIP(user_id, req.body.ip)
-        .then ((ret) => {
-          user.addLatLng(req.body.lat, req.body.lng, user_id) 
-            .then((ret) => {
-              res.json("success")
-            })
-        })
-    })
+  })
 })
 
 //CHANGE ONBOARDING STATUS
@@ -710,6 +661,92 @@ router.post('/api/changeOnboardingStatus', authenticate, (req, res) => {
 // console.log(ip)
 // res.json(ipv6)
 // });
+
+// MODIFICATION PROFILE
+router.post('/api/findInfoUser', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  var info = {}
+  const user_id = req.currentUser[0].user_id
+  info.user_id = req.currentUser[0].user_id
+  info.login = req.currentUser[0].username
+  info.firstname = req.currentUser[0].firstname
+  info.lastname = req.currentUser[0].lastname
+  info.email = req.currentUser[0].email
+
+  info.birthdate = req.currentUser[0].birth_date
+  info.sex = req.currentUser[0].gender
+  info.occupation = req.currentUser[0].occupation
+  info.bio = req.currentUser[0].bio
+
+  user.selectNameGenders(user_id)
+    .then((ret) => {
+      info.interest = ret[0].name
+      user.selectNameRelationship(user_id)
+      .then((ret1) => {
+        info.relationship = ret1[0].name
+        res.json(info)
+      })
+    })
+})
+
+//CHANGE BASIC INFO USER
+router.post('/api/modifData', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  const user_id = req.currentUser[0].user_id
+  const login = req.body.login
+  const firstname = req.body.firstName
+  const lastname = req.body.lastName
+  const email = req.body.email
+  user.changeUserInfo(user_id, login, firstname, lastname, email)
+    .then(function(ret) {
+      res.send("success");
+    })
+})
+
+//CHANGE PASSWORD
+router.post('/api/changePassword', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  let check = require('../library/tools');
+  const user_id = req.currentUser[0].user_id
+  var message = {}
+
+  hashNewPassword = check.isHash(req.body.newPassword);
+
+  user.sendNewPasswordBDD(hashNewPassword, user_id)
+    .then (function(ret){
+      if (ret) {
+        message.success = "Your password is updated"
+        res.send(message);
+      }
+      else {
+        res.sendStatus(401);
+      }
+    });
+})
+
+//CHANGE NEW INFO USER
+router.post('/api/changeNewInfo', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  const user_id = req.currentUser[0].user_id
+
+  console.log(req.body)
+  const birthdate = req.body.birthdate
+  const sex = req.body.sex
+  const bio = req.body.bio
+  const occupation = req.body.occupation
+
+  const interest = req.body.interest
+  const relationship = req.body.relationship
+  user.addNewinfoUser(user_id, birthdate, sex, bio, occupation)
+    .then(function(ret){
+    if (ret) {
+    //   user.changeInterest(user_id, interest)s
+    // .then(function(ret){
+    
+    //       });
+        }
+    }); 
+  });
 
 
 module.exports = router 

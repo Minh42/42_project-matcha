@@ -217,21 +217,6 @@ class User {
         } 
     }
 
-    static async changeBirthdateGender(user_id, birthdate, sex) {
-        try {
-            let ret = await pool.query("UPDATE `users` SET `birth_date` = ?, `gender` = ? WHERE `user_id` = ?", [birthdate, sex, user_id]);
-            if (ret) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-        catch(err) {
-            throw new Error(err)
-        } 
-    }
-
     //RANDOM USERNAME
     static makeid() {
         var text = "";
@@ -382,6 +367,7 @@ class User {
     //LOCALISATION
     static async addLatLng(lat, lng, user_id) {
         try {
+            console.log(lat)
             let ret = await pool.query("UPDATE `users` SET `latitude` = ?, `longitude` = ? WHERE `user_id` = ?", [lat, lng, user_id]);
             if (ret) {
                 return true;
@@ -483,6 +469,7 @@ class User {
         try {
             console.log("table", table)
             let ret = await pool.query("SELECT count(*) as id_exists FROM "+ table +" WHERE `user_id` = ?", [user_id]);
+            console.log(ret)
             if (ret[0].id_exists > '0')
                 return true;
             else
@@ -553,6 +540,34 @@ class User {
             throw new Error(err)
         } 
     }
+
+    //FIND NAME GENDERS AND RELATIONSHIP USER
+    static async selectNameGenders(user_id) {
+        try {
+            let ret = await pool.query("SELECT `name` FROM `genders` INNER JOIN `interested_in_gender` ON interested_in_gender.gender_id = genders.gender_id INNER JOIN `users` ON users.user_id = interested_in_gender.user_id WHERE users.user_id = ?", [user_id]);
+            console.log("name:", ret)
+            return ret;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async selectNameRelationship(user_id) {
+        try {
+            let ret = await pool.query("SELECT `name` FROM `relationships_type` INNER JOIN `interested_in_relation` ON interested_in_relation.relationship_type_id = relationships_type.relationship_type_id INNER JOIN `users` ON users.user_id = interested_in_relation.user_id WHERE users.user_id = ?", [user_id]);
+            console.log("name:", ret)
+            return ret;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    // MODIF PROFILE
+
+    
+
 }
 
 

@@ -69,7 +69,7 @@ class WizardFormFivePage extends React.Component{
 		var message;
 		var x = document.getElementById("parentContainer");
 		function showPosition(position) {
-			x.innerHTML = "Latitude: " + position.coords.latitude + 
+			x = "Latitude: " + position.coords.latitude + 
 			"<br>Longitude: " + position.coords.longitude;
 		}
 
@@ -90,8 +90,8 @@ class WizardFormFivePage extends React.Component{
 									var lng = locationSplit[1]
 									const data = {
 										ip : res.data.ip,
-										lat: res.data.lat,
-										lng: res.data.lon
+										lat: lat,
+										lng: lng
 									}
 									axios.post('/api/localisationAllowed', data)
 										.then((ret) => {
@@ -143,20 +143,20 @@ class WizardFormFivePage extends React.Component{
 		<br></br>
 		<div className="columns">
 			<div className="column is-6 has-text-centered">
-				<div className="button is-small buttonOnboarding" onClick={this.handleSubmitIP}>{this.state.allow}</div>
+				<div className="button is-small buttonLocation" onClick={this.handleSubmitIP}>{this.state.allow}</div>
 				<div style={style} id="mapContainer"></div>
 				<div id="parentContainer"></div>
 			</div>
 			<div className="column is-6">
 			<form>
             <div className="field">
-              <label className="label">Enter your localisation</label>
+              <label className="label labelOnboarding">Enter your localisation</label>
 					<div className="control">
 						<input 	type="text"
 								id="address"
 								className="input" 
 								id="address" 
-								placeholder="your address"
+								placeholder="ex: 18 rue de la paix, Paris"
 								required />
 						<p id="demo" className="help is-danger">{this.state.message}</p>
 					</div>
@@ -175,7 +175,7 @@ class WizardFormFivePage extends React.Component{
 				</button>
 			</div>
 			<div className="column is-2 is-offset-8">
-				<button type="submit" className="button buttonOnboarding" onClick={this.handleOnboardingSubmit}>
+				<button type="submit" className="button buttonSubmit" onClick={this.handleOnboardingSubmit}>
 				Submit
 				</button>
 			</div>

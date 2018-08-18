@@ -2,26 +2,30 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Field, reduxForm } from 'redux-form';
 import Button from "../components/Button";
-import { WithContext as ReactTags } from 'react-tag-input';
+import renderField from '../components/renderField'
 
 import axios from 'axios';
 
-const KeyCodes = {
-	comma: 188,
-	enter: 13,
-	space: 32,
-  };
-   
-const delimiters = [KeyCodes.comma, KeyCodes.enter, KeyCodes.space];
+const relationship = ['marriage', 'casual sex', 'friends', 'one night stand', 'long term relationship', 'short term relationship']
+
+const renderRelationshipSelector = ({ input, meta: { touched, error } }) => (
+	<div>
+		<select {...input}>
+			<option value="">Select a relation...</option>
+			{relationship.map(val => (
+				<option value={val} key={val}>
+					{val}
+				</option>
+			))}
+		</select>
+		{touched && error && <span className="help is-danger">{error}</span>}
+	</div>
+)
 
 class NewInfoUserContainer extends React.Component{
 	constructor(props) {
         super(props);
- 
-        this.state = {
-            tags: [
-             ],
-        };
+
         this.handleDelete = this.handleDelete.bind(this);
 		this.handleAddition = this.handleAddition.bind(this);
 	}
@@ -36,26 +40,6 @@ class NewInfoUserContainer extends React.Component{
     handleAddition(tag) {
         this.setState(state => ({ tags: [...state.tags, tag] }));
 	}
- 
-	renderField(field) {
-		const { meta: { touched, error } } = field;
-		const className= `input ${touched && error ? 'is-danger' : ''}`;
-
-		return (
-			<div className= "field">
-				<label className="label">{field.label}</label>
-					<input
-						className={className}
-						type={field.type}
-						placeholder={field.placeholder}
-						{ ...field.input}
-					/>
-				<div className= "help is-danger">
-					{touched ? error : ''}
-				</div>
-			</div>
-		);
-	}
 
 	renderFieldArea(field) {
 		const { meta: { touched, error } } = field;
@@ -63,7 +47,7 @@ class NewInfoUserContainer extends React.Component{
 
 		return (
 			<div className= "field">
-				<label className="label">{field.label}</label>
+				<label className="label labelOnboarding">{field.label}</label>
 					<textarea
 						className={className}
 						type={field.type}
@@ -82,29 +66,34 @@ class NewInfoUserContainer extends React.Component{
 	}
 	
 	async handleInitialize() {
-		const res = await axios.get('/api/infoUser');
+		const res = await axios.post('/api/findInfoUser');
+		console.log(res.data)
+		const birthdate = res.data.birthdate
+		const birthdateSplit = birthdate.substring(0, 10);
+		console.log(res.data.relationship)
 		const initData = {
-			"user_id": res.data[0].user_id,
-			"login": res.data[0].username,
-			"firstName": res.data[0].firstname,
-			"lastName": res.data[0].lastname,
-			"email": res.data[0].email
+			"birthdate": birthdateSplit,
+			"sex": res.data.sex,
+			"occupation" :res.data.occupation,
+			"bio": res.data.bio,
+			"interest": res.data.interest,
+			"relationship": res.data.relationship
 		};
+		console.log("init data:", initData)
 		this.props.initialize(initData);
 	  }
 
-	async onSubmit (values){
-		const data = {
-			values :values,
-			tags: this.state.tags
-		}
-		const res = await axios.post(`/api/changeNewInfo`, data)
+	onSubmit (values){
+		console.log(values)
+		axios.post(`/api/addNewinfoBDD`, values)
+		.then((ret) => {
+			if (ret)
+			axios.post('/api/addRelationshipBDD', values)
+		})
 	}
 
 	render () {
 		const { handleSubmit } = this.props;
-		const { tags } = this.state;
-		const placeholder = "Add new Tag"
 
 		const renderErrorRadio = ({ meta: { touched, error } }) =>
 		touched && error ? <span className= "help is-danger">{error}</span> : false
@@ -115,39 +104,48 @@ class NewInfoUserContainer extends React.Component{
 	return (
 		<form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
 				<Field
-				label="Birthdate"
-                name="birthdate"
-                component={this.renderField}
-                type="number"
-                placeholder="birthdate"
-                />
-				<label className="label">Sex</label>
-					<label className="radio">
-						<Field
+					name="birthdate" 
+					type="date"
+					component={renderField}
+					label="Birthdate"
+					className="input"
+				/>
+				<label className="label labelOnboarding">Sex</label>
+				<label className="radio">
+					<Field
 						name="sex"
 						component="input"
 						type="radio"
-						value="male"
-						/>{' '}
-						M
+						value="man"
+					/>{' '}
+					Male
 					</label>
 					<label className="radio">
-						<Field
+					<Field
 						name="sex"
 						component="input"
 						type="radio"
-						value="female"
-						/>{' '}
-						F
+						value="woman"
+					/>{' '}
+					Female
 					</label>
 					<Field name="sex" component={renderErrorRadio} />
-				<label className="label">Interesting in</label>
-					<label className="radio">
+
+					<Field
+						name="occupation"
+						type="text"
+						component={renderField}
+						label="Occupation"
+						className="input"
+					/>
+
+				<label className="label labelOnboarding">Interesting in</label>
+				<label className="radio">
 						<Field
 						name="interest"
 						component="input"
 						type="radio"
-						value="men"
+						value="man"
 						/>{' '}
 						Men
 					</label>
@@ -156,7 +154,7 @@ class NewInfoUserContainer extends React.Component{
 						name="interest"
 						component="input"
 						type="radio"
-						value="women"
+						value="woman"
 						/>{' '}
 						Women
 					</label>
@@ -165,23 +163,16 @@ class NewInfoUserContainer extends React.Component{
 						name="interest"
 						component="input"
 						type="radio"
-						value="both"
+						value="man and woman"
 						/>{' '}
 						Both
 					</label>
 					<Field name="interest" component={renderErrorInterest} />
 				<div>
-					<label className="label">Relationship</label>
+					<label className="label labelOnboarding">Relationship</label>
 					<div className="field">
 						<div className="select">
-						<Field name="relationship" component="select">
-							<option>Marriage</option>
-							<option>Casual sex</option>
-							<option>friends</option>
-							<option>One night stand</option>
-							<option>Long term relationship</option>
-							<option>Short term relationship</option>
-						</Field>
+						<Field name="relationship" component={renderRelationshipSelector}/>
 						</div>
 					</div>
 				</div>
@@ -191,39 +182,62 @@ class NewInfoUserContainer extends React.Component{
 					component={this.renderFieldArea}
 					type="text"
 					/>
-				<div class="field">
-					<label class="label">Tags</label>
-					<ReactTags
-						tags={tags}
-						handleDelete={this.handleDelete}
-						handleAddition={this.handleAddition}
-						delimiters={delimiters} 
-						placeholder={placeholder}
-					/>
-				</div>
-			<Button type="submit" className="button is-rounded" title="Change these informations"/>
+			<Button type="submit" className="button buttonOnboarding" title="Change these informations"/>
 		</form>
 	)}
 }
 
 function validate(values) {
 	console.log(values)
-	let check = require('../../library/tools');
-	let errors = {};
+	const errors = {}
 
-	if (!values.birthdate)
-		errors.birthdate = "Please enter your birthdate";
+	if (values.birthdate !== undefined) {
+		var array_birthdate = values.birthdate.split('-');
+		console.log(array_birthdate[0])
+	}
 
-	if (!values.bio)
-		errors.bio = "Please enter your bio";
+	if (!values.birthdate) {
+	  errors.birthdate = 'Required'
+	}
+	else if (values.birthdate !== undefined)
+	{
+		if (array_birthdate[0] > 2000) {
+			errors.birthdate = 'You must be at least 18'
+		}	
+	}
 
-	if (!values.sex)
-		errors.sex = "Required";
+	if (!values.occupation) {
+	  errors.occupation = 'Required'
+	}
+	else if (values.occupation !== undefined)
+	{
+		if (values.occupation.length > 50) {
+		errors.occupation = 'too long'
+		}
+	}
 
-	if (!values.interest)
-		errors.interest = "Required"
+	if (!values.sex) {
+	  errors.sex = 'Required'
+	}
 
-	return errors;
+	if (!values.interest) {
+	  errors.interest = 'Required'
+	}
+
+	if (!values.bio) {
+	  errors.bio = 'Required'
+	}
+	else if (values.bio !== undefined)
+	{
+		if (values.bio.length > 300) {
+		errors.bio = 'too long'
+		}
+	}
+	
+	if (!values.relationship) {
+		errors.relationship = 'Required'
+	  }
+	return errors
 }
 
 const reduxFormNewInfoUserContainer = reduxForm({

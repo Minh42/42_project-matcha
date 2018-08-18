@@ -10,12 +10,17 @@ class UserProfile extends Component {
 	constructor(props, context) {
 		super(props, context);
 		this.state = {
-			isEditing: false,
+			isEditingPersonnalInfo: false,
+			isEditingOtherInfo: false,
+			isEditingProfilePicture: false,
+
 			// user: null,
 			// userPhotos: null,
 			// userTags: null
 		};
-		this.toggleEdit = this.toggleEdit.bind(this);
+		this.toggleEditPersonnalInfo = this.toggleEditPersonnalInfo.bind(this);
+		this.toggleEditOtherInfo = this.toggleEditOtherInfo.bind(this);
+		this.toggleEditProfilePicture =this.toggleEditProfilePicture.bind(this);
 	}
 
     componentDidMount() {
@@ -24,16 +29,47 @@ class UserProfile extends Component {
         // this.setState({user: res.data.infos, userPhotos: res.data.photos, userTags: res.data.tags});
 	}
 
-	toggleEdit() {
-		this.setState({isEditing: !this.state.isEditing})
+	toggleEditPersonnalInfo() {
+		this.setState({
+			isEditingPersonnalInfo: !this.state.isEditingPersonnalInfo,
+			isEditingOtherInfo: false,
+			isEditingProfilePicture: false
+		})
+	}
+
+	toggleEditOtherInfo() {
+		this.setState({
+			isEditingOtherInfo: !this.state.isEditingOtherInfo,
+			isEditingPersonnalInfo: false,
+			isEditingProfilePicture: false
+		})
+	}
+
+	toggleEditProfilePicture() {
+		this.setState({
+			isEditingProfilePicture: !this.state.isEditingProfilePicture,
+			isEditingPersonnalInfo: false,
+			isEditingOtherInfo: false,
+		})
 	}
 
 	showEditFeature() {
-		if (this.state.isEditing) {
+		if (this.state.isEditingPersonnalInfo) {
 			return (
 				<EditUserProfileContainer />
 			)
-		} else {
+		}
+		else if (this.state.isEditingOtherInfo) {
+			return (
+				<h1>hello other Info</h1>
+			)
+		}
+		else if (this.state.isEditingProfilePicture) {
+			return (
+				<h1>hello Profile picture</h1>
+			)
+		}
+		else if ((this.state.isEditingPersonnalInfo === false) && (this.state.isEditingOtherInfo === false) && (this.state.isEditingProfilePicture === false)) {
 			return (
 				<UserProfileContainer />
 			)
@@ -43,17 +79,25 @@ class UserProfile extends Component {
 	render () {
 		return (
 		<div className="columns" id="mail-app">
-			<aside className="column is-2 aside hero is-fullheight">
-				<div className="compose has-text-centered">
-                    <a className="button is-danger is-block is-bold">
-						<span className="compose" onClick={this.toggleEdit}>Edit profile</span>
-					</a>
-                </div>
+			<aside className="column is-2 aside">
+				<div className="compose">
+					<div>
+						<button className="button buttonProfile" onClick={this.toggleEditPersonnalInfo}>Edit personnal infos</button>
+					</div>
+					<br></br>
+					<div>
+						<button className="button buttonProfile" onClick={this.toggleEditOtherInfo}>Edit Other infos</button>
+					</div>
+					<br></br>
+					<div>
+						<button className="button buttonProfile" onClick={this.toggleEditProfilePicture}>Edit profile picture</button>
+					</div>
+				</div>
 			</aside>
-			<div className="column is-4 messages hero is-fullheight" id="message-feed">
+			<div className="column is-4 messages" id="message-feed">
 				Hello
 			</div>
-			<div className="column is-6 message hero is-fullheight" id="message-pane">
+			<div className="column is-6 message" id="message-pane">
 				{this.showEditFeature()}
 			</div>
 		</div>

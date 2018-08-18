@@ -40,20 +40,26 @@
     border-bottom: solid 2px #E52A6F;
     margin-top: 8%;
     font-size: 1em;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
+    font-size: 1.2vw;
 }
 
 .buttonsignIn{
     margin-top: 5%;
     background-color: white;
+    font-weight: bold;
+    color: black;
     opacity: 0.3;
     padding-left: 30px;
     padding-right: 30px;
 }
 
 .buttonregister {
+    font-family: 'Lato', sans-serif;
     background-color: white;
-    opacity: 0.3;
+    font-weight: bold;
+    color: black;
+    opacity: 0.4;
     padding-left: 30px;
     padding-right: 30px;
 }
@@ -63,6 +69,47 @@
     opacity: 0.8;
     padding-left: 25px;
     padding-right: 25px;
+    font-weight: bold;
+    color: white;
+    border: none;
+    font-size: 1em;
+}
+
+.buttonOnboarding:hover {
+    background-color: rgba(229, 42, 111, 0.288);
+    color: #E52A6F;
+    border: solid 1px #E52A6F;
+}
+
+.buttonLocation {
+    background-color: rgba(229, 42, 111, 0.461);
+    // opacity: 0.9;
+    padding-left: 25px;
+    padding-right: 25px;
+    font-weight: bold;
+    color: white;
+    border: none;
+}
+
+.buttonLocation:hover {
+    background-color: rgba(229, 42, 111, 0.288);
+    color: #E52A6F;
+}
+
+.buttonSubmit {
+    background-color: #E52A6F;
+    opacity: 0.8;
+    padding-left: 15px;
+    padding-right: 15px;
+    font-weight: bold;
+    color: white;
+    border: none;
+}
+
+.buttonSubmit:hover {
+    background-color: rgba(229, 42, 111, 0.288);
+    color: #E52A6F;
+    border: solid 1px #E52A6F;
 }
 
 .progressOnboarding {
@@ -72,9 +119,17 @@
 
 .button {
     font-family: 'Lato', sans-serif;
+}
+
+.buttonProfile {
+    background-color: #E52A6F;
+    opacity: 0.8;
+    padding-left: 15px;
+    padding-right: 15px;
     font-weight: bold;
-    color: black;
+    color: white;
     border: none;
+    font-size: 1.2vw;
 }
 
 .round-button {
