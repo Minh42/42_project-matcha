@@ -453,7 +453,16 @@ router.post('/api/upload', upload.single('file'), authenticate, function(req, re
       error: "Upload file not found"
     });
   } else {
+    const sharp = require('sharp');
     let image = require('../models/image.class');
+
+    sharp(fs.readFileSync(req.file.path))
+      .resize(800, null)
+      .toBuffer(function(err, buffer) {
+      fs.writeFile(req.file.path, buffer, function(e) {
+      })
+    });
+
     let buffer = fs.readFileSync(req.file.path)
     let mimetype = req.file.mimetype;
     let size = req.file.size;
@@ -491,6 +500,35 @@ router.post('/api/upload', upload.single('file'), authenticate, function(req, re
     }
   }
 })
+
+router.get('/api/displayPicture', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  let id = req.currentUser[0].user_id;
+  user.selectAllUserPhotos(id).then((ret) => {
+    if (ret) {
+      res.status(200).send(ret);
+    } else {
+      return res.send({
+        error: "Unable to retrieve files"
+      });
+    }
+  })
+})
+
+router.post('/api/deletePicture', authenticate, (req, res) => {
+  let image = require('../models/image.class'); 
+  let id = req.currentUser[0].user_id;
+  let path = req.body.picture.replace('http://localhost:8080/', '');
+  image.deletePicture(id, path).then((ret) => {
+    if (ret) {
+      res.status(200).send('Record deleted');
+    } else {
+      return res.send({
+        error: "Unable to delete file"
+      });
+    }
+  })
+});
 
 router.get('/api/profile', authenticate, async (req, res) => {
   let user = require('../models/user.class');

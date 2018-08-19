@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack-dev-server --config webpack.dev.js --watch --display-error-details",
+    "dev": "webpack-dev-server --config webpack.dev.js --watch",
     "build": "webpack --config webpack.prod.js"
   },
   "keywords": [],
@@ -41,7 +41,7 @@
     "url-loader": "^1.1.0",
     "webpack-cli": "^3.0.3",
     "webpack-dashboard": "^2.0.0",
-    "webpack-dev-server": "^3.1.4",
+    "webpack-dev-server": "^3.1.5",
     "webpack-livereload-plugin": "^2.1.1",
     "webpack-merge": "^4.1.4"
   },
@@ -72,6 +72,7 @@
     "gender": "0.0.1",
     "geocoder": "^0.2.3",
     "geoip2": "^1.0.5",
+    "gm": "^1.23.1",
     "helmet": "^3.12.1",
     "here-js-api": "^1.0.8",
     "image-type": "^3.0.0",
@@ -108,7 +109,6 @@
     "react-flip-move": "^3.0.2",
     "react-google-button": "^0.5.3",
     "react-here-maps": "^0.4.0",
-    "react-hot-loader": "^4.3.4",
     "react-modal": "^3.5.1",
     "react-progress-button": "^5.1.0",
     "react-redux": "^5.0.7",
@@ -124,6 +124,7 @@
     "redux-thunk": "^2.3.0",
     "request-ip": "^2.1.1",
     "require-context": "^1.1.0",
+    "sharp": "^0.20.5",
     "shortid": "^2.2.12",
     "transform-runtime": "0.0.0",
     "universal-cookie": "^2.2.0",

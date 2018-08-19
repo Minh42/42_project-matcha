@@ -39,10 +39,15 @@ class Image {
 
     static async savePicture(user_id, path) {
         try {
-            const values = {user_id: user_id, image_path: path};
-            const requete = 'INSERT INTO `user_photos` SET ?'
-            let ret = await pool.query(requete, values)
-            return true;
+            let count = await pool.query("SELECT count(*) as value_exists FROM `user_photos` WHERE `user_id` = ?", [user_id]);
+            if (count[0].value_exists <= '5') {
+                const values = {user_id: user_id, image_path: path};
+                const requete = 'INSERT INTO `user_photos` SET ?'
+                await pool.query(requete, values)
+                return true;
+            } else {
+                return false;
+            }   
         }
         catch(err) {
             console.log(err)
@@ -52,16 +57,12 @@ class Image {
 
     static async deletePicture(userId, path) {
         try {
-            let requete = "SELECT image_path from `users` INNER JOIN `user_photos` ON user_photos.user_id = users.user_id WHERE users.user_id = ?";
-            let ret = await pool.query(requete, userId);
-            if (ret.includes(path)) {
-                return true;
-            } else {
-                console.log('No such record in database');
-                return false;
-            }
+            let requete = "DELETE FROM `user_photos` WHERE user_id = ? AND image_path = ?";
+            let ret = await pool.query(requete, [userId, path]);
+            return true;
         } catch(err) {
-            throw new Error(err)
+            console.log(err);
+            return false;
         } 
     }
     

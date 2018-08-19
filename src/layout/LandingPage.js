@@ -6,11 +6,7 @@ import FlashMessagesList from '../components/FlashMessagesList';
 import ReviewsContainer from '../containers/ReviewsContainer';
 import LoginContainer from '../containers/LoginContainer';
 import step3 from '../../public/img/step3.png' 
-
-// const path = require.context('../../assets/img', true);
-// const name = './step3.png';
-// let img_src = path(name)
-// alert(img_src)
+import FilesUploadContainer from '../components/FilesUploadContainer';
 
 const LandingPage = () => {
     return (

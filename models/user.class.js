@@ -46,7 +46,8 @@ class User {
             let ret = await pool.query(requete, [userId]);
             return ret;
         } catch(err) {
-            throw new Error(err)
+            console.log(err);
+            return false;
         } 
     }
 

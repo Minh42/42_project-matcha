@@ -3,7 +3,6 @@ const config = require('../../server/config/keys');
 
 module.exports = function verifyToken(req, res, next) {
     if (req.user) {
-        console.log('still here')
         req.currentUser = [req.user[0]];
         next();
     } else {
