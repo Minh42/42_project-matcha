@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { Field, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
 import { withRouter } from "react-router-dom";
+import renderField from '../components/renderField'
 
 import axios from 'axios';
 
@@ -14,27 +15,6 @@ class ResetPassword extends Component {
            messagesSuccess : ""
         }
         console.log(this.props.match.params.id);
-    }
-
-    renderField(field) {
-        const { meta: { touched, error } } = field;
-        const danger = `input ${touched && error ? 'is-danger' : ''}`;
-
-        return (
-            <div className="field">
-                <label className="label">{field.label}</label>
-                <div className="control">
-                    <input 
-                        className={danger}
-                        type={field.type}
-                        {...field.input}
-                    />
-                    <div className="help is-danger">
-                        {touched ? error : ''}
-                    </div>
-                </div>
-            </div>
-        );
     }
 
    async onSubmit(values) {
@@ -57,13 +37,13 @@ class ResetPassword extends Component {
                                 label="Enter your new password"
                                 name="newPasswordReset"
                                 type="password"
-                                component={this.renderField}
+                                component={renderField}
                             />
                             <Field
                                 label="Confirm your new password"
                                 name="confirmedNewPassword"
                                 type="password"
-                                component={this.renderField}
+                                component={renderField}
                             />
                              <h1 className="messages help is-success">{ this.state.messagesSuccess }</h1>
                              <h1 className="messages help is-danger">{ this.state.messagesError }</h1>

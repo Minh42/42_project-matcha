@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { Field, reduxForm, formValueSelector } from 'redux-form'
 import validate from './validate'
 
-import renderField from './renderField'
+import renderField from '../renderField'
 
   class WizardFormFirstPage extends React.Component{
   
@@ -23,12 +23,13 @@ import renderField from './renderField'
       <p className="has-text-centered titleOnboarding">Tell us more about you</p>
         <progress className="progress progressOnboarding" value="20" max="100">20%</progress>
         <Field
-          name="birthdate"
+          name="birthdate" 
           type="date"
           component={renderField}
           label="Birthdate"
           className="input"
         />
+        
         <div>
           <label className="label labelOnboarding">Sex</label>
           <div>

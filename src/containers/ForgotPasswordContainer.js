@@ -4,6 +4,7 @@ import { Field, reduxForm } from 'redux-form';
 // import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from "react-router-dom";
+import renderField from '../components/renderField'
 
 import axios from 'axios';
 import $ from 'jquery';
@@ -22,26 +23,26 @@ class ForgotPassword extends Component {
     //     document.getElementById('modal_signin').classList.remove("is-active");
     // }
     
-    renderField(field) {
-        const { meta: { touched, error } } = field;
-        const danger = `input ${touched && error ? 'is-danger' : ''}`;
+    // renderField(field) {
+    //     const { meta: { touched, error } } = field;
+    //     const danger = `input ${touched && error ? 'is-danger' : ''}`;
 
-        return (
-            <div className="field">
-                <label className="label">{field.label}</label>
-                <div className="control">
-                    <input 
-                        className={danger}
-                        type={field.type}
-                        {...field.input}
-                    />
-                    <div className="help is-danger">
-                        {touched ? error : ''}
-                    </div>
-                </div>
-            </div>
-        );
-    }
+    //     return (
+    //         <div className="field">
+    //             <label className="label">{field.label}</label>
+    //             <div className="control">
+    //                 <input 
+    //                     className={danger}
+    //                     type={field.type}
+    //                     {...field.input}
+    //                 />
+    //                 <div className="help is-danger">
+    //                     {touched ? error : ''}
+    //                 </div>
+    //             </div>
+    //         </div>
+    //     );
+    // }
 
     async onSubmit(values) {
         var success;
@@ -72,7 +73,7 @@ class ForgotPassword extends Component {
                                 label="Please enter your email"
                                 name="email"
                                 type="email"
-                                component={this.renderField}
+                                component={renderField}
                             />
                              <h1 className="messages help is-success">{ this.state.messagesSuccess }</h1>
                              <h1 className="messages help is-danger">{ this.state.messagesError }</h1>

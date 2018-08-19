@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import { Field, reduxForm } from 'redux-form';
+import renderField from '../components/renderField'
 
 import axios from 'axios';
 
@@ -12,41 +13,13 @@ class ResetPassword extends Component {
         }
     }
 
-    renderField(field) {
-        const { meta: { touched, error } } = field;
-        const danger = `input ${touched && error ? 'is-danger' : ''}`;
-
-        return (
-            <div className="field">
-                <label className="label">{field.label}</label>
-                <div className="control">
-                    <input 
-                        className={danger}
-                        type={field.type}
-                        {...field.input}
-                    />
-                    <div className="help is-danger">
-                        {touched ? error : ''}
-                    </div>
-                </div>
-            </div>
-        );
-	}
-	
-	componentDidMount() {
-		this.handleInitialize();
-	}
-	
-	async handleInitialize() {
-		const res = await axios.get('/api/infoUser');
-		const initData = {
-			"user_id": res.data[0].user_id,
-		};
-		this.props.initialize(initData);
-	  }
-
    async onSubmit(values) {
         const res = await axios.post('/api/changePassword', values)
+        const success = res.data.success
+        console.log(success)
+        this.setState({
+            messagesSuccess : success
+        })
     }
 
     render () {
@@ -57,17 +30,17 @@ class ResetPassword extends Component {
 					label="Enter your new password"
 					name="newPassword"
 					type="password"
-					component={this.renderField}
+					component={renderField}
 				/>
 				<Field
 					label="Confirm your new password"
 					name="confirmedNewPassword"
 					type="password"
-					component={this.renderField}
+					component={renderField}
 				/>
-				<h1 className="messages help is-success">{ this.state.messagesSuccess }</h1>
-				<h1 className="messages help is-danger">{ this.state.messagesError }</h1>
-				<button type="submit" className="button is-rounded">Submit</button>
+				<h1 className="helpMessages help is-success">{ this.state.messagesSuccess }</h1>
+				<h1 className="helpMessages help is-danger">{ this.state.messagesError }</h1>
+				<button type="submit" className="button buttonOnboarding">Submit</button>
 			</form>
         );
     }

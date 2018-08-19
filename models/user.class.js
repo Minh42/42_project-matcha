@@ -218,21 +218,6 @@ class User {
         } 
     }
 
-    static async changeBirthdateGender(user_id, birthdate, sex) {
-        try {
-            let ret = await pool.query("UPDATE `users` SET `birth_date` = ?, `gender` = ? WHERE `user_id` = ?", [birthdate, sex, user_id]);
-            if (ret) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-        catch(err) {
-            throw new Error(err)
-        } 
-    }
-
     //RANDOM USERNAME
     static makeid() {
         var text = "";
@@ -255,6 +240,15 @@ class User {
         catch(err) {
             throw new Error(err)
         } 
+    }
+
+    static async changeStatusOnboarding(user_id) {
+        try {
+            await pool.query("UPDATE `users` SET `onboardingDone` = ? WHERE `user_id` = ?", [1, user_id]);
+        } 
+        catch(err) {
+            throw new Error(err)
+        }  
     }
 
 
@@ -374,6 +368,7 @@ class User {
     //LOCALISATION
     static async addLatLng(lat, lng, user_id) {
         try {
+            console.log(lat)
             let ret = await pool.query("UPDATE `users` SET `latitude` = ?, `longitude` = ? WHERE `user_id` = ?", [lat, lng, user_id]);
             if (ret) {
                 return true;
@@ -403,7 +398,179 @@ class User {
             throw new Error(err)
         } 
     }
+
+    //CHANGE INFO GEOLOCALISATION ALLOW
+
+    static async changeGeolocalisationAllow(user_id, geolocalisationAllow) {
+        try {
+            let ret = await pool.query("UPDATE `users` SET `geolocalisationAllowed` = ? WHERE `user_id` = ?", [geolocalisationAllow, user_id]);
+                if (ret) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    //add IP BDD
+
+    static async addIP(user_id, ip) {
+        try {
+            let ret = await pool.query("UPDATE `users` SET `ip_address` = ? WHERE `user_id` = ?", [ip, user_id]);
+                if (ret) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    //ADD INTEREST INSIDE BDD
+
+    static async searchIdGenders(interest) {
+        try {
+            console.log(interest)
+            let ret = await pool.query("SELECT `gender_id` FROM `genders` WHERE `name` = ?", [interest]);
+            console.log(ret)
+            return ret;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async addInsideInterestedInGender(gender_id, user_id) {
+        try {
+            console.log(gender_id)
+            const values = {user_id: user_id, gender_id: gender_id};
+            const requete = 'INSERT INTO `interested_in_gender` SET ?'
+       
+            let ret = await pool.query(requete, values)
+                if (ret) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async findUserId(table, user_id) {
+        try {
+            console.log("table", table)
+            let ret = await pool.query("SELECT count(*) as id_exists FROM "+ table +" WHERE `user_id` = ?", [user_id]);
+            console.log(ret)
+            if (ret[0].id_exists > '0')
+                return true;
+            else
+                return false;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    //ADD RELATIONSHIP INSIDE BDD
+
+    static async searchRelationshipId(relationship) {
+        try {
+            console.log(relationship)
+            let ret = await pool.query("SELECT `relationship_type_id` FROM `relationships_type` WHERE `name` = ?", [relationship]);
+            return ret;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async addInsideinterestedInRelation(relationship_type_id, user_id) {
+        try {
+            const values = {user_id: user_id, relationship_type_id: relationship_type_id};
+            const requete = 'INSERT INTO `interested_in_relation` SET ?'
+       
+            let ret = await pool.query(requete, values)
+                if (ret) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async updateInterestedInGender(user_id, gender_id) {
+        try {
+            let ret = await pool.query("UPDATE `interested_in_gender` SET `gender_id` = ? WHERE `user_id` = ?", [gender_id, user_id]);
+                if (ret) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async updateInterestedInRelation(user_id, relationship_type_id) {
+        try {
+            let ret = await pool.query("UPDATE `interested_in_relation` SET `relationship_type_id` = ? WHERE `user_id` = ?", [relationship_type_id, user_id]);
+                if (ret) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    //FIND NAME GENDERS AND RELATIONSHIP USER
+    static async selectNameGenders(user_id) {
+        try {
+            let ret = await pool.query("SELECT `name` FROM `genders` INNER JOIN `interested_in_gender` ON interested_in_gender.gender_id = genders.gender_id INNER JOIN `users` ON users.user_id = interested_in_gender.user_id WHERE users.user_id = ?", [user_id]);
+            console.log("name:", ret)
+            return ret;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async selectNameRelationship(user_id) {
+        try {
+            let ret = await pool.query("SELECT `name` FROM `relationships_type` INNER JOIN `interested_in_relation` ON interested_in_relation.relationship_type_id = relationships_type.relationship_type_id INNER JOIN `users` ON users.user_id = interested_in_relation.user_id WHERE users.user_id = ?", [user_id]);
+            console.log("name:", ret)
+            return ret;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    // MODIF PROFILE
+
+    
+
 }
+
 
 
 module.exports = User

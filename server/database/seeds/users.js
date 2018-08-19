@@ -43,7 +43,7 @@ let createUser = (knex, id, bio, occupations) => {
     occupation: pickRand(occupations),
     ip_address: faker.internet.ip(),
     geolocalisationAllowed: true,
-    onboardingDone: false,
+    onboardingDone: true,
     popularity: Math.floor(Math.random() * 100),
     fb_id: null,
     google_id: null,

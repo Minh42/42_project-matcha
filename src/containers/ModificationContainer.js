@@ -2,53 +2,30 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Field, reduxForm } from 'redux-form';
 import Button from "../components/Button";
+import renderField from '../components/renderField'
 
 import axios from 'axios';
 
 class ModificationContainer extends React.Component{
-
-	renderField(field) {
-		const { meta: { touched, error } } = field;
-		const className= `input ${touched && error ? 'is-danger' : ''}`;
-
-		return (
-			<div className= "field">
-				<label className="label">{field.label}</label>
-				<div className={field.icon ? "control has-icons-left" : ''}>
-                    <span className={field.icon ? "icon is-small is-left" : ''}>
-                        <i className={field.icon}></i>
-                    </span>
-					<input
-						className={className}
-						type={field.type}
-						placeholder={field.placeholder}
-						{ ...field.input}
-					/>
-				</div>
-				<div className= "help is-danger">
-					{touched ? error : ''}
-				</div>
-			</div>
-		);
-	}
 
 	componentDidMount() {
 		this.handleInitialize();
 	}
 	
 	async handleInitialize() {
-		const res = await axios.get('/api/infoUser');
+		const res = await axios.post('/api/findInfoUser');
+		console.log(res)
 		const initData = {
-			"user_id": res.data[0].user_id,
-			"login": res.data[0].username,
-			"firstName": res.data[0].firstname,
-			"lastName": res.data[0].lastname,
-			"email": res.data[0].email
+			"login": res.data.login,
+			"firstName": res.data.firstname,
+			"lastName": res.data.lastname,
+			"email": res.data.email
 		};
 		this.props.initialize(initData);
 	  }
 
 	async onSubmit (values){
+		console.log(values)
 		const res = await axios.post(`/api/modifData`, values)
 	}
 
@@ -61,21 +38,21 @@ class ModificationContainer extends React.Component{
 				name="login"
 				type="text"
 				icon="fas fa-user"
-				component= {this.renderField}
+				component= {renderField}
 				placeholder="Username"
 			/>
 			<Field
 				label="Firstname"
 				name="firstName"
 				type="text"
-				component= {this.renderField}
+				component= {renderField}
 				placeholder="First Name"
 			/>
 			<Field
 				label="Lastname"
 				name="lastName"
 				type="text"
-				component= {this.renderField}
+				component= {renderField}
 				placeholder="Last Name"
 			/>
 			<Field
@@ -83,10 +60,10 @@ class ModificationContainer extends React.Component{
 				name="email"
 				type="email"
 				icon="fas fa-envelope"
-				component= {this.renderField}
+				component= {renderField}
 				placeholder="Email"
 			/>
-			<Button type="submit" className="button is-rounded" title="Change these informations"/>
+			<Button type="submit" className="button buttonOnboarding" title="Change these informations"/>
 			</form>
 	)}
 }
