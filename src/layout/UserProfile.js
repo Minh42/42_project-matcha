@@ -23,12 +23,6 @@ class UserProfile extends Component {
 		this.toggleEditProfilePicture =this.toggleEditProfilePicture.bind(this);
 	}
 
-    componentDidMount() {
-		console.log(this.state.data)
-        // const res = await axios.get('/api/profile');
-        // this.setState({user: res.data.infos, userPhotos: res.data.photos, userTags: res.data.tags});
-	}
-
 	toggleEditPersonnalInfo() {
 		this.setState({
 			isEditingPersonnalInfo: !this.state.isEditingPersonnalInfo,
@@ -54,9 +48,12 @@ class UserProfile extends Component {
 	}
 
 	showEditFeature() {
+		console.log(this.props.selectedUser)
 		if (this.state.isEditingPersonnalInfo) {
 			return (
-				<EditUserProfileContainer />
+				<EditUserProfileContainer 
+					user={this.props.selectedUser.data.infos}
+				/>
 			)
 		}
 		else if (this.state.isEditingOtherInfo) {
@@ -105,7 +102,6 @@ class UserProfile extends Component {
 }
 
 function mapStateToProps(state) {
-	console.log(state)
     return { 
 		errorMessage: state.auth.error,
 		selectedUser: state.selectedUser

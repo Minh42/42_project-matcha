@@ -14,7 +14,9 @@ class EditUserProfileContainer extends Component {
                 <div className="columns is-mobile">
                     <div className="column is-5">
                         <h2>Personnal Informations</h2>
-                        <ModificationContainer /> 
+                        <ModificationContainer 
+                            user={this.props.user}
+                        /> 
                     </div>
                     <div className="column is-5 is-offset-1">
                         <h2>Change your password</h2>

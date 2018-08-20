@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack-dev-server --config webpack.dev.js --watch",
+    "dev": "webpack-dev-server --config webpack.dev.js --watch --display-error-details",
     "build": "webpack --config webpack.prod.js"
   },
   "keywords": [],
@@ -124,6 +124,7 @@
     "redux-thunk": "^2.3.0",
     "request-ip": "^2.1.1",
     "require-context": "^1.1.0",
+    "reselect": "^3.0.1",
     "sharp": "^0.20.5",
     "shortid": "^2.2.12",
     "transform-runtime": "0.0.0",

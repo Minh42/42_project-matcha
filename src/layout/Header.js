@@ -40,7 +40,7 @@ class Header extends Component{
 
     async handleSubmit() {
         const res = await axios.get('/api/profile');
-        console.log(res.data);
+        console.log(res);
         this.props.selectUser(res);
     }
 

@@ -13,13 +13,12 @@ class ModificationContainer extends React.Component{
 	}
 	
 	async handleInitialize() {
-		const res = await axios.post('/api/findInfoUser');
-		console.log(res)
+		// const res = await axios.post('/api/findInfoUser');
 		const initData = {
-			"login": res.data.login,
-			"firstName": res.data.firstname,
-			"lastName": res.data.lastname,
-			"email": res.data.email
+			"login": this.props.user.username,
+			"firstName": this.props.user.firstname,
+			"lastName": this.props.user.lastname,
+			"email": this.props.user.email
 		};
 		this.props.initialize(initData);
 	  }
@@ -100,7 +99,7 @@ const reduxFormModificationContainer = reduxForm({
 	form : 'modifUser',
 	initialValues : {
 		login: null
-	  }
+	}
 }) (ModificationContainer)
 
 export default reduxFormModificationContainer;

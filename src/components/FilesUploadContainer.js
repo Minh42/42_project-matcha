@@ -62,8 +62,8 @@ class FilesUploadContainer extends Component {
       var count = Object.keys(this.state.files).length;
       if (count > 0) {
         return (
-          <div class="columns">
-            <div class="column is-6 is-offset-3">
+          <div className="columns">
+            <div className="column is-6 is-offset-3">
                 <img src={this.state.files[0]} alt="Placeholder image"/>
             </div>
           </div>
@@ -102,7 +102,9 @@ class FilesUploadContainer extends Component {
         border: "8px solid rgba(255,255,255,.5)",
         borderRadius: 20
       };
-    
+      console.log('im here')
+      console.log(this.state.files)
+      console.log('im here')
       return this.state.files.map((file) => {
         const uuidv4 = require('uuid/v4');
         var id = uuidv4();
@@ -139,8 +141,8 @@ class FilesUploadContainer extends Component {
               <div className="dropzone">
                 <Dropzone accept="image/*" onDrop={this.onDrop.bind(this)} style={dropzoneStyle}>
                   <div className="is-overlay is-clipped has-text-centered">
-                    <span class="icon is-small"><i class="fas fa-plus-circle"></i></span>
-                    <p class="help">Drag &amp; drop or upload files</p>
+                    <span className="icon is-small"><i className="fas fa-plus-circle"></i></span>
+                    <p className="help">Drag &amp; drop or upload files</p>
                   </div>
                 </Dropzone>
               </div>

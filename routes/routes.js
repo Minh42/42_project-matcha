@@ -246,8 +246,15 @@ router.get('/api/current_user', authenticate, (req, res) => {
 
 router.get('/api/homepage', authenticate, (req, res) => {
   let user = require('../models/user.class');
+  let id = req.currentUser[0].user_id;
+  console.log(id);
   user.selectAllUsers().then(function(ret) {
     if (ret) {
+      console.log(ret);
+      users = JSON.parse(JSON.stringify(ret));
+      console.log(users);
+      users = users.filter(user => user.user_id.includes(id))
+      console.log(users);
       res.json(ret);
     } else {
     res.sendStatus(404);

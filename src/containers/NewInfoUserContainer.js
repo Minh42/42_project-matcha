@@ -67,10 +67,8 @@ class NewInfoUserContainer extends React.Component{
 	
 	async handleInitialize() {
 		const res = await axios.post('/api/findInfoUser');
-		console.log(res.data)
 		const birthdate = res.data.birthdate
 		const birthdateSplit = birthdate.substring(0, 10);
-		console.log(res.data.relationship)
 		const initData = {
 			"birthdate": birthdateSplit,
 			"sex": res.data.sex,
@@ -79,12 +77,10 @@ class NewInfoUserContainer extends React.Component{
 			"interest": res.data.interest,
 			"relationship": res.data.relationship
 		};
-		console.log("init data:", initData)
 		this.props.initialize(initData);
 	  }
 
 	onSubmit (values){
-		console.log(values)
 		axios.post(`/api/addNewinfoBDD`, values)
 		.then((ret) => {
 			if (ret)
@@ -188,12 +184,10 @@ class NewInfoUserContainer extends React.Component{
 }
 
 function validate(values) {
-	console.log(values)
 	const errors = {}
 
 	if (values.birthdate !== undefined) {
 		var array_birthdate = values.birthdate.split('-');
-		console.log(array_birthdate[0])
 	}
 
 	if (!values.birthdate) {
