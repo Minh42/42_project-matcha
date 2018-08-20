@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import NewInfoUserContainer from './NewInfoUserContainer';
 import TagsComponent from '../components/TagsComponent';
+import LocationComponent from '../components/LocationComponent';
 
 class EditUserProfileContainer extends Component {
 
@@ -18,6 +19,7 @@ class EditUserProfileContainer extends Component {
 					<TagsComponent /> 
 				</div>
 			</div>
+				<LocationComponent/>
 		</div>
     )};
 }

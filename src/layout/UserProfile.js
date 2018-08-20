@@ -27,11 +27,6 @@ class UserProfile extends Component {
         this.props.selectUser(res);
 	}
 
-	async componentDidUpdate() {
-		const res = await axios.get('/api/profile');
-        this.props.selectUser(res);
-	}
-
 	toggleEditPersonnalInfo() {
 		this.setState({
 			isEditingPersonnalInfo: !this.state.isEditingPersonnalInfo
@@ -119,10 +114,10 @@ class UserProfile extends Component {
 					{this.showEditButtons()}
 				</div>
 			</aside>
-			<div className="column is-4 messages hero is-fullheight" id="message-feed">
+			<div className="column is-3 messages hero is-fullheight" id="message-feed">
 				Hello
 			</div>
-			<div className="column is-6 message hero is-fullheight" id="message-pane">
+			<div className="column is-7 message hero is-fullheight" id="message-pane">
 				{this.showEditFeature()}
 			</div>
 		</div>

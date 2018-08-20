@@ -68,7 +68,7 @@ class TagsComponent extends React.Component{
 		return (
 			<div>
 			<div className="field">
-				<label className="label">Tags</label>
+				<label className="label is small labelOnboarding">Tags</label>
 					<ReactTags tags={tags}
 					handleDelete={this.handleDelete}
 					handleAddition={this.handleAddition}
