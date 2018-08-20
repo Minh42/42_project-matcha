@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import axios from 'axios';
+import { selectUser } from '../actions/actionUsers';
+import { bindActionCreators } from 'redux';
 
 import EditUserProfileContainer from '../containers/EditUserProfileContainer';
+import EditUserOtherInfoContainer from '../containers/EditUserOtherInfoContainer';
 import UserProfileContainer from '../containers/UserProfileContainer';
 
 class UserProfile extends Component {
@@ -18,6 +20,16 @@ class UserProfile extends Component {
 		this.toggleEditPersonnalInfo = this.toggleEditPersonnalInfo.bind(this);
 		this.toggleEditOtherInfo = this.toggleEditOtherInfo.bind(this);
 		this.toggleBack =this.toggleBack.bind(this);
+	}
+
+	async componentDidMount() {
+		const res = await axios.get('/api/profile');
+        this.props.selectUser(res);
+	}
+
+	async componentDidUpdate() {
+		const res = await axios.get('/api/profile');
+        this.props.selectUser(res);
 	}
 
 	toggleEditPersonnalInfo() {
@@ -47,34 +59,29 @@ class UserProfile extends Component {
 	}
 
 	showEditFeature() {
-		console.log(this.props.selectedUser)
-		if (this.props.selectedUser) {
-			if (this.state.isEditingPersonnalInfo) {
-				return (
-					<EditUserProfileContainer 
-						user={this.props.selectedUser.data.infos}
-					/>
-				)
-			}
-			else if (this.state.isEditingOtherInfo) {
-				return (
-					<h1>hello other Info</h1>
-				)
-			}
-			else if (this.state.isEditingProfilePicture) {
-				return (
-					<h1>hello Profile picture</h1>
-				)
-			}
-			else if ((!this.state.isEditingPersonnalInfo) && (!this.state.isEditingOtherInfo) && (!this.state.isEditingProfilePicture)) {
-				return (
-					<UserProfileContainer
-						user={this.props.selectedUser.data.infos}
-						photos={this.props.selectedUser.data.photos}
-						tags={this.props.selectedUser.data.tags}
-					/>
-				)
-			}
+		if (this.state.isEditingPersonnalInfo) {
+			return (
+				<EditUserProfileContainer 
+					user={this.props.selectedUser.data.infos}
+				/>
+			)
+		}
+		else if (this.state.isEditingOtherInfo) {
+			return (
+				<EditUserOtherInfoContainer
+					user={this.props.selectedUser.data}				
+				/>
+			)
+		}
+		else if (this.state.isEditingProfilePicture) {
+			return (
+				<h1>hello Profile picture</h1>
+			)
+		}
+		else if ((!this.state.isEditingPersonnalInfo) && (!this.state.isEditingOtherInfo) && (!this.state.isEditingProfilePicture)) {
+			return (
+				<UserProfileContainer />
+			)
 		}
 	}
 
@@ -82,24 +89,23 @@ class UserProfile extends Component {
 		if ((this.state.isEditingPersonnalInfo) || (this.state.isEditingOtherInfo) || (this.state.isEditingProfilePicture)) {
 			return (
 				<div>
-					<button className="button buttonProfile" onClick={this.toggleBack}>Back</button>
+					<a className="button is-small is-fullwidth buttonProfile" onClick={this.toggleBack}>Back</a>
 				</div>
 			)
 		} else {
 			return (
 				<div>
 					<div>
-						<button className="button buttonProfile" onClick={this.toggleEditProfilePicture}>Edit profile picture</button>
+						<a className="button is-small is-fullwidth buttonProfile" onClick={this.toggleEditProfilePicture}>Edit profile picture</a>
 					</div>
 					<br></br>
 					<div>
-						<button className="button buttonProfile" onClick={this.toggleEditPersonnalInfo}>Edit personnal infos</button>
+						<a className="button is-small is-fullwidth buttonProfile" onClick={this.toggleEditPersonnalInfo}>Edit personnal infos</a>
 					</div>
 					<br></br>
 					<div>
-						<button className="button buttonProfile" onClick={this.toggleEditOtherInfo}>Edit other infos</button>
+						<a className="button is-small is-fullwidth buttonProfile" onClick={this.toggleEditOtherInfo}>Edit other infos</a>
 					</div>
-					<br></br>
 				</div>
 			)
 		}
@@ -130,4 +136,10 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps, null)(UserProfile);
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators({ 
+        selectUser: selectUser
+    }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserProfile);

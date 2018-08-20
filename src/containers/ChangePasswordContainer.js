@@ -40,7 +40,7 @@ class ResetPassword extends Component {
 				/>
 				<h1 className="helpMessages help is-success">{ this.state.messagesSuccess }</h1>
 				<h1 className="helpMessages help is-danger">{ this.state.messagesError }</h1>
-				<button type="submit" className="button buttonOnboarding">Submit</button>
+				<button type="submit" className="button is-small is-fullwidth buttonOnboarding">Submit</button>
 			</form>
         );
     }

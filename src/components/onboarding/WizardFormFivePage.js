@@ -5,6 +5,7 @@ import axios from 'axios';
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import location from '../../../library/location'
+import LocationComponent from '../LocationComponent';
 
 const style = {
 	height: "300px",

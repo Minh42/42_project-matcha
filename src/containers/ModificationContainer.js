@@ -62,7 +62,7 @@ class ModificationContainer extends React.Component{
 				component= {renderField}
 				placeholder="Email"
 			/>
-			<Button type="submit" className="button buttonOnboarding" title="Change these informations"/>
+			<Button type="submit" className="button is-small is-fullwidth buttonOnboarding" title="Change these informations"/>
 			</form>
 	)}
 }

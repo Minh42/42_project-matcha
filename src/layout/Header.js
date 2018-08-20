@@ -7,10 +7,7 @@ import { withRouter } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { signOutAction } from '../actions/actionUsers';
-import { selectUser } from '../actions/actionUsers';
 import { bindActionCreators } from 'redux';
-
-import axios from 'axios';
 
 class Header extends Component{
 	constructor(props) {
@@ -18,7 +15,6 @@ class Header extends Component{
 		this.showModal = this.showModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
         this.handleLogout = this.handleLogout.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
 
         this.state = {
             firstname : "",
@@ -36,12 +32,6 @@ class Header extends Component{
 
     handleLogout() {
         this.props.signOutAction(this.props.history);
-    }
-
-    async handleSubmit() {
-        const res = await axios.get('/api/profile');
-        console.log(res);
-        this.props.selectUser(res);
     }
 
     showNavbar() {
@@ -62,7 +52,7 @@ class Header extends Component{
                         <Link to="/messages"><Button className="button is-rounded" title="My messages"/></Link>
                     </p>,
                     <p key = "profile" className="control">
-                        <LinkButton to='/profile' onClick={this.handleSubmit} className="button is-rounded">My profile</LinkButton>
+                        <LinkButton to='/profile' className="button is-rounded">My profile</LinkButton>
                     </p>,
                     <p key = "logout" className="control">
                         <LinkButton to='/' onClick={this.handleLogout} className="button is-rounded">Signout</LinkButton>
@@ -126,7 +116,6 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({ 
         signOutAction: signOutAction,
-        selectUser: selectUser
     }, dispatch);
 }
 

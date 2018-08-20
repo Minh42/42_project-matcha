@@ -1,9 +1,9 @@
 import React from 'react'
 
 const renderField = ({ input, label, type, className, meta: { touched, error } }) => (
-  className= `input ${touched && error ? 'is-danger' : ''}`,
+  className= `input is-small ${touched && error ? 'is-danger' : ''}`,
   <div className="field">
-    <label className="label labelOnboarding">{label}</label>
+    <label className="label is-size-7 is-mobile labelOnboarding">{label}</label>
     <div className="control">
       <input 
       {...input} 

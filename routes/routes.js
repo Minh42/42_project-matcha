@@ -491,13 +491,18 @@ router.get('/api/profile', authenticate, async (req, res) => {
   let user = require('../models/user.class');
   async function getData() {
     const infos = req.currentUser[0];
+    console.log(infos)
     const photos = await user.selectAllUserPhotos(req.currentUser[0].user_id);
     const tags = await user.selectAllUserTags(req.currentUser[0].user_id);
+    const interest = await user.selectNameGenders(req.currentUser[0].user_id);
+    const relationship = await user.selectNameRelationship(req.currentUser[0].user_id)
   
     const customData = {
       infos: infos,
       photos: photos,
-      tags: tags
+      tags: tags,
+      interest: interest,
+      relationship: relationship
     };
     console.log(customData)
     return customData;
@@ -708,33 +713,6 @@ router.post('/api/changeOnboardingStatus', authenticate, (req, res) => {
 // res.json(ipv6)
 // });
 
-// MODIFICATION PROFILE
-router.post('/api/findInfoUser', authenticate, (req, res) => {
-  let user = require('../models/user.class');
-  var info = {}
-  const user_id = req.currentUser[0].user_id
-  info.user_id = req.currentUser[0].user_id
-  info.login = req.currentUser[0].username
-  info.firstname = req.currentUser[0].firstname
-  info.lastname = req.currentUser[0].lastname
-  info.email = req.currentUser[0].email
-
-  info.birthdate = req.currentUser[0].birth_date
-  info.sex = req.currentUser[0].gender
-  info.occupation = req.currentUser[0].occupation
-  info.bio = req.currentUser[0].bio
-
-  user.selectNameGenders(user_id)
-    .then((ret) => {
-      info.interest = ret[0].name
-      user.selectNameRelationship(user_id)
-      .then((ret1) => {
-        info.relationship = ret1[0].name
-        res.json(info)
-      })
-    })
-})
-
 //CHANGE BASIC INFO USER
 router.post('/api/modifData', authenticate, (req, res) => {
   let user = require('../models/user.class');
@@ -769,30 +747,5 @@ router.post('/api/changePassword', authenticate, (req, res) => {
       }
     });
 })
-
-//CHANGE NEW INFO USER
-router.post('/api/changeNewInfo', authenticate, (req, res) => {
-  let user = require('../models/user.class');
-  const user_id = req.currentUser[0].user_id
-
-  console.log(req.body)
-  const birthdate = req.body.birthdate
-  const sex = req.body.sex
-  const bio = req.body.bio
-  const occupation = req.body.occupation
-
-  const interest = req.body.interest
-  const relationship = req.body.relationship
-  user.addNewinfoUser(user_id, birthdate, sex, bio, occupation)
-    .then(function(ret){
-    if (ret) {
-    //   user.changeInterest(user_id, interest)s
-    // .then(function(ret){
-    
-    //       });
-        }
-    }); 
-  });
-
 
 module.exports = router 
