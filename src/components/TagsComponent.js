@@ -27,7 +27,7 @@ class TagsComponent extends React.Component{
   async componentDidMount(){
     const ret = await axios.post('/api/searchTags'); //search tag by user_id
       const res = await axios.post('/api/findTags'); // find tags user
-      const tags = res.data
+			const tags = res.data
       const i = 0
       this.setState({
         tags: (ret.data === true) ? addTag(i, tags) : []

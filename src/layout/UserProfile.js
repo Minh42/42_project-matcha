@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import axios from 'axios';
+import { selectUser } from '../actions/actionUsers';
+import { bindActionCreators } from 'redux';
 
 import EditUserProfileContainer from '../containers/EditUserProfileContainer';
 import EditUserOtherInfoContainer from '../containers/EditUserOtherInfoContainer';
@@ -14,42 +15,50 @@ class UserProfile extends Component {
 			isEditingPersonnalInfo: false,
 			isEditingOtherInfo: false,
 			isEditingProfilePicture: false,
-
-			// user: null,
-			// userPhotos: null,
-			// userTags: null
 		};
+		this.toggleEditProfilePicture =this.toggleEditProfilePicture.bind(this);
 		this.toggleEditPersonnalInfo = this.toggleEditPersonnalInfo.bind(this);
 		this.toggleEditOtherInfo = this.toggleEditOtherInfo.bind(this);
-		this.toggleEditProfilePicture =this.toggleEditProfilePicture.bind(this);
+		this.toggleBack =this.toggleBack.bind(this);
+	}
+
+	async componentDidMount() {
+		const res = await axios.get('/api/profile');
+        this.props.selectUser(res);
+	}
+
+	async componentDidUpdate() {
+		const res = await axios.get('/api/profile');
+        this.props.selectUser(res);
 	}
 
 	toggleEditPersonnalInfo() {
 		this.setState({
-			isEditingPersonnalInfo: !this.state.isEditingPersonnalInfo,
-			isEditingOtherInfo: false,
-			isEditingProfilePicture: false
+			isEditingPersonnalInfo: !this.state.isEditingPersonnalInfo
 		})
 	}
 
 	toggleEditOtherInfo() {
 		this.setState({
-			isEditingOtherInfo: !this.state.isEditingOtherInfo,
-			isEditingPersonnalInfo: false,
-			isEditingProfilePicture: false
+			isEditingOtherInfo: !this.state.isEditingOtherInfo
 		})
 	}
 
 	toggleEditProfilePicture() {
 		this.setState({
-			isEditingProfilePicture: !this.state.isEditingProfilePicture,
+			isEditingProfilePicture: !this.state.isEditingProfilePicture
+		})
+	}
+
+	toggleBack() {
+		this.setState({
+			isEditingProfilePicture: false,
 			isEditingPersonnalInfo: false,
-			isEditingOtherInfo: false,
+			isEditingOtherInfo: false
 		})
 	}
 
 	showEditFeature() {
-		console.log(this.props.selectedUser)
 		if (this.state.isEditingPersonnalInfo) {
 			return (
 				<EditUserProfileContainer 
@@ -69,9 +78,35 @@ class UserProfile extends Component {
 				<h1>hello Profile picture</h1>
 			)
 		}
-		else if ((this.state.isEditingPersonnalInfo === false) && (this.state.isEditingOtherInfo === false) && (this.state.isEditingProfilePicture === false)) {
+		else if ((!this.state.isEditingPersonnalInfo) && (!this.state.isEditingOtherInfo) && (!this.state.isEditingProfilePicture)) {
 			return (
 				<UserProfileContainer />
+			)
+		}
+	}
+
+	showEditButtons() {
+		if ((this.state.isEditingPersonnalInfo) || (this.state.isEditingOtherInfo) || (this.state.isEditingProfilePicture)) {
+			return (
+				<div>
+					<a className="button is-small is-fullwidth buttonProfile" onClick={this.toggleBack}>Back</a>
+				</div>
+			)
+		} else {
+			return (
+				<div>
+					<div>
+						<a className="button is-small is-fullwidth buttonProfile" onClick={this.toggleEditProfilePicture}>Edit profile picture</a>
+					</div>
+					<br></br>
+					<div>
+						<a className="button is-small is-fullwidth buttonProfile" onClick={this.toggleEditPersonnalInfo}>Edit personnal infos</a>
+					</div>
+					<br></br>
+					<div>
+						<a className="button is-small is-fullwidth buttonProfile" onClick={this.toggleEditOtherInfo}>Edit other infos</a>
+					</div>
+				</div>
 			)
 		}
 	}
@@ -81,23 +116,13 @@ class UserProfile extends Component {
 		<div className="columns" id="mail-app">
 			<aside className="column is-2 aside">
 				<div className="compose">
-					<p className="buttons">
-					<div>
-						<a className="button is-fullwidth buttonProfile" onClick={this.toggleEditPersonnalInfo}>Edit personnal infos</a>
-					</div>
-					<div>
-						<a className="button is-fullwidth buttonProfile" onClick={this.toggleEditOtherInfo}>Edit Other infos</a>
-					</div>
-					<div>
-						<a className="button is-fullwidth buttonProfile" onClick={this.toggleEditProfilePicture}>Edit profile picture</a>
-					</div>
-					</p>
+					{this.showEditButtons()}
 				</div>
 			</aside>
-			<div className="column is-4 messages" id="message-feed">
+			<div className="column is-4 messages hero is-fullheight" id="message-feed">
 				Hello
 			</div>
-			<div className="column is-6 message" id="message-pane">
+			<div className="column is-6 message hero is-fullheight" id="message-pane">
 				{this.showEditFeature()}
 			</div>
 		</div>
@@ -111,4 +136,10 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps, null)(UserProfile);
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators({ 
+        selectUser: selectUser
+    }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserProfile);

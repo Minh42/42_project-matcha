@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 
 import NewInfoUserContainer from './NewInfoUserContainer';
 import TagsComponent from '../components/TagsComponent';

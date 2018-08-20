@@ -23,23 +23,6 @@ const renderRelationshipSelector = ({ input , meta: { touched, error } }) => (
 )
 
 class NewInfoUserContainer extends React.Component{
-	constructor(props) {
-        super(props);
-
-        this.handleDelete = this.handleDelete.bind(this);
-		this.handleAddition = this.handleAddition.bind(this);
-	}
-	
-	handleDelete(i) {
-        const { tags } = this.state;
-        this.setState({
-         tags: tags.filter((tag, index) => index !== i),
-        });
-    }
- 
-    handleAddition(tag) {
-        this.setState(state => ({ tags: [...state.tags, tag] }));
-	}
 
 	renderFieldArea(field) {
 		const { meta: { touched, error } } = field;
@@ -66,16 +49,16 @@ class NewInfoUserContainer extends React.Component{
 	}
 	
 	async handleInitialize() {
-		const res = await axios.post('/api/findInfoUser');
-		const birthdate = res.data.birthdate
+		console.log(this.props.user)
+		const birthdate = this.props.user.infos.birth_date
 		const birthdateSplit = birthdate.substring(0, 10);
 		const initData = {
 			"birthdate": birthdateSplit,
-			"sex": res.data.sex,
-			"occupation" :res.data.occupation,
-			"bio": res.data.bio,
-			"interest": res.data.interest,
-			"relationship": res.data.relationship
+			"sex": this.props.user.infos.gender,
+			"occupation" : this.props.user.infos.occupation,
+			"bio": this.props.user.infos.bio,
+			"interest": this.props.user.interest[0].name,
+			"relationship": this.props.user.relationship[0].name
 		};
 		this.props.initialize(initData);
 	  }
