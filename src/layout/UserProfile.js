@@ -81,17 +81,17 @@ class UserProfile extends Component {
 		<div className="columns" id="mail-app">
 			<aside className="column is-2 aside">
 				<div className="compose">
+					<p className="buttons">
 					<div>
-						<button className="button buttonProfile" onClick={this.toggleEditPersonnalInfo}>Edit personnal infos</button>
+						<a className="button is-fullwidth buttonProfile" onClick={this.toggleEditPersonnalInfo}>Edit personnal infos</a>
 					</div>
-					<br></br>
 					<div>
-						<button className="button buttonProfile" onClick={this.toggleEditOtherInfo}>Edit Other infos</button>
+						<a className="button is-fullwidth buttonProfile" onClick={this.toggleEditOtherInfo}>Edit Other infos</a>
 					</div>
-					<br></br>
 					<div>
-						<button className="button buttonProfile" onClick={this.toggleEditProfilePicture}>Edit profile picture</button>
+						<a className="button is-fullwidth buttonProfile" onClick={this.toggleEditProfilePicture}>Edit profile picture</a>
 					</div>
+					</p>
 				</div>
 			</aside>
 			<div className="column is-4 messages" id="message-feed">

@@ -8,7 +8,7 @@ import axios from 'axios';
 
 const relationship = ['marriage', 'casual sex', 'friends', 'one night stand', 'long term relationship', 'short term relationship']
 
-const renderRelationshipSelector = ({ input, meta: { touched, error } }) => (
+const renderRelationshipSelector = ({ input , meta: { touched, error } }) => (
 	<div>
 		<select {...input}>
 			<option value="">Select a relation...</option>
@@ -43,11 +43,11 @@ class NewInfoUserContainer extends React.Component{
 
 	renderFieldArea(field) {
 		const { meta: { touched, error } } = field;
-		const className= `input ${touched && error ? 'is-danger' : ''}`;
+		const className= `input is-small ${touched && error ? 'is-danger' : ''}`;
 
 		return (
 			<div className= "field">
-				<label className="label labelOnboarding">{field.label}</label>
+				<label className="label is-small labelOnboarding">{field.label}</label>
 					<textarea
 						className={className}
 						type={field.type}
@@ -110,7 +110,7 @@ class NewInfoUserContainer extends React.Component{
 					label="Birthdate"
 					className="input"
 				/>
-				<label className="label labelOnboarding">Sex</label>
+				<label className="label is-small labelOnboarding">Sex</label>
 				<label className="radio">
 					<Field
 						name="sex"
@@ -139,7 +139,7 @@ class NewInfoUserContainer extends React.Component{
 						className="input"
 					/>
 
-				<label className="label labelOnboarding">Interesting in</label>
+				<label className="label is-small labelOnboarding">Interesting in</label>
 				<label className="radio">
 						<Field
 						name="interest"
@@ -169,7 +169,7 @@ class NewInfoUserContainer extends React.Component{
 					</label>
 					<Field name="interest" component={renderErrorInterest} />
 				<div>
-					<label className="label labelOnboarding">Relationship</label>
+					<label className="label is-small labelOnboarding">Relationship</label>
 					<div className="field">
 						<div className="select">
 						<Field name="relationship" component={renderRelationshipSelector}/>
@@ -182,7 +182,7 @@ class NewInfoUserContainer extends React.Component{
 					component={this.renderFieldArea}
 					type="text"
 					/>
-			<Button type="submit" className="button buttonOnboarding" title="Change these informations"/>
+			<Button type="submit" className="button is-small is-fullwidth buttonOnboarding" title="Change these informations"/>
 		</form>
 	)}
 }

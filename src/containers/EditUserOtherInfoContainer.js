@@ -10,16 +10,16 @@ class EditUserProfileContainer extends Component {
 
     render () {
         return (
-             <div>
-                <div className="columns is-mobile">
-                    <div className="column is-5">
-                        <ModificationContainer /> 
-                    </div>
-                    <div className="column is-5 is-offset-1">
-                        <ChangePasswordContainer /> 
-                    </div>
-                </div>
-             </div>
+		<div>
+			<div className="columns is-mobile">
+				<div className="column is-5">
+					<NewInfoUserContainer /> 
+				</div>
+				<div className="column is-5 is-offset-1">
+					<TagsComponent /> 
+				</div>
+			</div>
+		</div>
     )};
 }
 
