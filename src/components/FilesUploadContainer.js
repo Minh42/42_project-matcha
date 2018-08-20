@@ -102,9 +102,6 @@ class FilesUploadContainer extends Component {
         border: "8px solid rgba(255,255,255,.5)",
         borderRadius: 20
       };
-      console.log('im here')
-      console.log(this.state.files)
-      console.log('im here')
       return this.state.files.map((file) => {
         const uuidv4 = require('uuid/v4');
         var id = uuidv4();

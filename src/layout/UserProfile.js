@@ -47,27 +47,34 @@ class UserProfile extends Component {
 	}
 
 	showEditFeature() {
-		if (this.state.isEditingPersonnalInfo) {
-			return (
-				<EditUserProfileContainer 
-					user={this.props.selectedUser.data.infos}
-				/>
-			)
-		}
-		else if (this.state.isEditingOtherInfo) {
-			return (
-				<h1>hello other Info</h1>
-			)
-		}
-		else if (this.state.isEditingProfilePicture) {
-			return (
-				<h1>hello Profile picture</h1>
-			)
-		}
-		else if ((!this.state.isEditingPersonnalInfo) && (!this.state.isEditingOtherInfo) && (!this.state.isEditingProfilePicture)) {
-			return (
-				<UserProfileContainer />
-			)
+		console.log(this.props.selectedUser)
+		if (this.props.selectedUser) {
+			if (this.state.isEditingPersonnalInfo) {
+				return (
+					<EditUserProfileContainer 
+						user={this.props.selectedUser.data.infos}
+					/>
+				)
+			}
+			else if (this.state.isEditingOtherInfo) {
+				return (
+					<h1>hello other Info</h1>
+				)
+			}
+			else if (this.state.isEditingProfilePicture) {
+				return (
+					<h1>hello Profile picture</h1>
+				)
+			}
+			else if ((!this.state.isEditingPersonnalInfo) && (!this.state.isEditingOtherInfo) && (!this.state.isEditingProfilePicture)) {
+				return (
+					<UserProfileContainer
+						user={this.props.selectedUser.data.infos}
+						photos={this.props.selectedUser.data.photos}
+						tags={this.props.selectedUser.data.tags}
+					/>
+				)
+			}
 		}
 	}
 

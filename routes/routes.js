@@ -250,11 +250,11 @@ router.get('/api/homepage', authenticate, (req, res) => {
   console.log(id);
   user.selectAllUsers().then(function(ret) {
     if (ret) {
-      console.log(ret);
-      users = JSON.parse(JSON.stringify(ret));
-      console.log(users);
-      users = users.filter(user => user.user_id.includes(id))
-      console.log(users);
+      // console.log(ret);
+      // users = JSON.parse(JSON.stringify(ret));
+      // console.log(users);
+      // users = users.filter(user => user.user_id.includes(id))
+      // console.log(users);
       res.json(ret);
     } else {
     res.sendStatus(404);
@@ -499,6 +499,7 @@ router.get('/api/profile', authenticate, async (req, res) => {
       photos: photos,
       tags: tags
     };
+    console.log(customData)
     return customData;
   }
 
