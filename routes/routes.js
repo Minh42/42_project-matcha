@@ -491,7 +491,6 @@ router.get('/api/profile', authenticate, async (req, res) => {
   let user = require('../models/user.class');
   async function getData() {
     const infos = req.currentUser[0];
-    console.log(infos)
     const photos = await user.selectAllUserPhotos(req.currentUser[0].user_id);
     const tags = await user.selectAllUserTags(req.currentUser[0].user_id);
     const interest = await user.selectNameGenders(req.currentUser[0].user_id);
@@ -504,7 +503,6 @@ router.get('/api/profile', authenticate, async (req, res) => {
       interest: interest,
       relationship: relationship
     };
-    console.log(customData)
     return customData;
   }
 

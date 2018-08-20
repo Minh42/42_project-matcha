@@ -7,6 +7,7 @@ import { bindActionCreators } from 'redux';
 import EditUserProfileContainer from '../containers/EditUserProfileContainer';
 import EditUserOtherInfoContainer from '../containers/EditUserOtherInfoContainer';
 import UserProfileContainer from '../containers/UserProfileContainer';
+import FilesUploadContainer from '../components/FilesUploadContainer';
 
 class UserProfile extends Component {
 	constructor(props, context) {
@@ -24,12 +25,7 @@ class UserProfile extends Component {
 
 	async componentDidMount() {
 		const res = await axios.get('/api/profile');
-        this.props.selectUser(res);
-	}
-
-	async componentDidUpdate() {
-		const res = await axios.get('/api/profile');
-        this.props.selectUser(res);
+		this.props.selectUser(res);
 	}
 
 	toggleEditPersonnalInfo() {
@@ -59,29 +55,38 @@ class UserProfile extends Component {
 	}
 
 	showEditFeature() {
-		if (this.state.isEditingPersonnalInfo) {
-			return (
-				<EditUserProfileContainer 
-					user={this.props.selectedUser.data.infos}
-				/>
-			)
-		}
-		else if (this.state.isEditingOtherInfo) {
-			return (
-				<EditUserOtherInfoContainer
-					user={this.props.selectedUser.data}				
-				/>
-			)
-		}
-		else if (this.state.isEditingProfilePicture) {
-			return (
-				<h1>hello Profile picture</h1>
-			)
-		}
-		else if ((!this.state.isEditingPersonnalInfo) && (!this.state.isEditingOtherInfo) && (!this.state.isEditingProfilePicture)) {
-			return (
-				<UserProfileContainer />
-			)
+		console.log(this.props.selectedUser)
+		if(this.props.selectedUser) {
+			if (this.state.isEditingPersonnalInfo) {
+				return (
+					<EditUserProfileContainer 
+						user={this.props.selectedUser.data.infos}
+					/>
+				)
+			}
+			else if (this.state.isEditingOtherInfo) {
+				return (
+					<EditUserOtherInfoContainer
+						user={this.props.selectedUser.data}				
+					/>
+				)
+			}
+			else if (this.state.isEditingProfilePicture) {
+				return (
+					<FilesUploadContainer/>
+				)
+			}
+			else if ((!this.state.isEditingPersonnalInfo) && (!this.state.isEditingOtherInfo) && (!this.state.isEditingProfilePicture)) {
+				return (
+					<UserProfileContainer 
+						user={this.props.selectedUser.data.infos}	
+						photos={this.props.selectedUser.data.photos}
+						tags={this.props.selectedUser.data.tags}
+						interest={this.props.selectedUser.data.interest}
+						relationship={this.props.selectedUser.data.relationship}	
+					/>
+				)
+			}
 		}
 	}
 
