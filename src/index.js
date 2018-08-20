@@ -25,9 +25,10 @@ ReactDOM.render(
 
 if (process.env.NODE_ENV !== 'production' && module.hot) {
     module.hot.accept('./App', function () {
-      ReactDOM.render(
+        var NextApp = require('./App').default
+        ReactDOM.render(
         <Provider store={store}>
-            <App />
+            <NextApp />
         </Provider>
        , document.querySelector('.root'));
     })

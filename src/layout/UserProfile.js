@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 
 import EditUserProfileContainer from '../containers/EditUserProfileContainer';
+import EditUserOtherInfoContainer from '../containers/EditUserOtherInfoContainer';
 import UserProfileContainer from '../containers/UserProfileContainer';
 
 class UserProfile extends Component {
@@ -21,12 +22,6 @@ class UserProfile extends Component {
 		this.toggleEditPersonnalInfo = this.toggleEditPersonnalInfo.bind(this);
 		this.toggleEditOtherInfo = this.toggleEditOtherInfo.bind(this);
 		this.toggleEditProfilePicture =this.toggleEditProfilePicture.bind(this);
-	}
-
-    componentDidMount() {
-		console.log(this.state.data)
-        // const res = await axios.get('/api/profile');
-        // this.setState({user: res.data.infos, userPhotos: res.data.photos, userTags: res.data.tags});
 	}
 
 	toggleEditPersonnalInfo() {
@@ -54,14 +49,19 @@ class UserProfile extends Component {
 	}
 
 	showEditFeature() {
+		console.log(this.props.selectedUser)
 		if (this.state.isEditingPersonnalInfo) {
 			return (
-				<EditUserProfileContainer />
+				<EditUserProfileContainer 
+					user={this.props.selectedUser.data.infos}
+				/>
 			)
 		}
 		else if (this.state.isEditingOtherInfo) {
 			return (
-				<h1>hello other Info</h1>
+				<EditUserOtherInfoContainer
+					user={this.props.selectedUser.data}				
+				/>
 			)
 		}
 		else if (this.state.isEditingProfilePicture) {
@@ -105,7 +105,6 @@ class UserProfile extends Component {
 }
 
 function mapStateToProps(state) {
-	console.log(state)
     return { 
 		errorMessage: state.auth.error,
 		selectedUser: state.selectedUser

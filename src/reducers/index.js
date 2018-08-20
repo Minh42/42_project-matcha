@@ -4,7 +4,7 @@ import authReducer from './reducer_auth';
 import signUpReducer from './reducer_signup';
 import flashMessagesReducer from './reducer_flashMessages';
 import usersReducer from './reducer_users';
-import selectedUser from './reducer_selectedUser';
+import selectedUserReducer from './reducer_selectedUser';
 import { UNAUTHENTICATED } from '../actions/actionUsers';
 
 // mapping of our state
@@ -14,7 +14,7 @@ const appReducer = combineReducers({
     form: formReducer,
     flashMessages: flashMessagesReducer,
     users: usersReducer,
-    selectedUser: selectedUser
+    selectedUser: selectedUserReducer
 });
 
 const rootReducer = (state, action) => {

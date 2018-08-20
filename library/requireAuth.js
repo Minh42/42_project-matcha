@@ -19,7 +19,6 @@ export default function(ComposedComponent) {
 
 		componentDidUpdate(nextProps) {
 			if (!nextProps.isAuthenticated) {
-				console.log('IM HERERZREZ')
 				this.props.history.push('/');
 			}
 		}
