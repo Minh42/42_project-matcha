@@ -107,7 +107,7 @@ class FilesUploadContainer extends Component {
         var id = uuidv4();
         return (
             <ImageList
-                id={id}
+                key={id}
                 src={file}
                 style={style}
                 alt="preview"

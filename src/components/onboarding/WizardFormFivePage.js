@@ -1,12 +1,12 @@
-import React from 'react'
-import { Field, reduxForm, formValueSelector } from 'redux-form'
-import validate from './validate'
+import React, { Component } from 'react';
+import { Field, reduxForm, formValueSelector } from 'redux-form';
+import validate from './validate';
 import axios from 'axios';
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import LocationComponent from '../LocationComponent';
 
-class WizardFormFivePage extends React.Component{
+class WizardFormFivePage extends Component{
 
 	constructor(props) {
 		super(props);
@@ -20,7 +20,6 @@ class WizardFormFivePage extends React.Component{
 			this.props.history.push('/homepage');
 	}
 
-	
 	render () {
 
 	const { previousPage } = this.props

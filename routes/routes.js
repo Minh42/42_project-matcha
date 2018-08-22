@@ -241,9 +241,10 @@ router.get('/api/signout', (req, res) => {
 });
 
 router.get('/api/current_user', authenticate, (req, res) => {
-  console.log('HELLO HELLO HELLO')
-  console.log(req.currentUser[0])
-  res.send(req.currentUser[0]);
+  if (req.currentUser === null) 
+    res.send(req.currentUser);
+  else 
+    res.send(req.currentUser[0]);
 });
 
 router.get('/api/homepage', authenticate, (req, res) => {

@@ -6,6 +6,9 @@ export const AUTHENTICATED = 'AUTHENTICATED_USER';
 export const UNAUTHENTICATED = 'UNAUTHENTICATED_USER';
 export const AUTHENTICATION_ERROR = 'AUTHENTICATION_ERROR';
 
+export const ONBOARDING = 'ONBOARDING';
+export const UNONBOARDING = 'UNONBOARDING';
+
 export const REGISTERATION_SUCCESS = 'REGISTRATION_SUCCESS';
 export const REGISTERATION_ERROR = 'REGISTRATION_ERROR';
 export const REGISTERATION_FAILED = 'REGISTRATION_FAILED';
@@ -59,7 +62,6 @@ export function signOutAction(history) {
 			type: UNAUTHENTICATED
 		});
 		await axios.get('/api/signout')
-		// history.push('/');
 	}
 }
 
@@ -101,4 +103,20 @@ export function selectUser(user) {
 		type: USER_SELECTED,
 		payload: user
 	};
+}
+
+export function setOnboarding(){
+	return async (dispatch) => {
+		dispatch({ 
+			type: ONBOARDING
+		});
+	}
+}
+
+export function setUnOnboarding(){
+	return async (dispatch) => {
+		dispatch({ 
+			type: UNONBOARDING
+		});
+	}
 }
