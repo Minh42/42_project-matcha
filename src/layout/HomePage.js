@@ -4,11 +4,18 @@ import UsersContainer from '../containers/UsersContainer';
 import { connect } from 'react-redux';
 import { setUnOnboarding } from '../actions/actionUsers';
 import { bindActionCreators } from 'redux';
+import { withRouter } from 'react-router-dom';
+import axios from 'axios';
 
 class HomePage extends Component {
 
-	componentDidMount(){
-		this.props.setUnOnboarding();
+	async componentDidMount(){
+		const res = await axios.get('/api/onboarding');
+		if(res.data) {
+			this.props.history.push('/onboarding');
+		} else {
+			this.props.setUnOnboarding();
+		}
 	}
 	
 	render () {
@@ -32,4 +39,4 @@ function mapDispatchToProps(dispatch) {
 	}, dispatch);
   }
 
-export default connect(null, mapDispatchToProps)(HomePage);
+export default withRouter(connect(null, mapDispatchToProps)(HomePage));

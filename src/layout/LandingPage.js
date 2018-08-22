@@ -8,12 +8,11 @@ import { withRouter } from 'react-router-dom';
 
 class LandingPage extends Component {
     
-    // componentDidMount() {
-    //     // console.log(this.state.auth)
-    //     if (this.props.auth) {
-    //         this.props.history.push('/homepage');
-    //     }
-    // }
+    componentDidMount() {
+        if (this.props.auth.authenticated) {
+            this.props.history.push('/homepage');
+        }
+    }
     
     render() {
         return (
@@ -50,4 +49,4 @@ function mapStateToProps(state) {
     };
 }
 
-export default withRouter(connect(mapStateToProps, null)(LandingPage));
+export default connect(mapStateToProps, null)(LandingPage);

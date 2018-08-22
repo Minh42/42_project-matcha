@@ -62,6 +62,7 @@ export function signOutAction(history) {
 			type: UNAUTHENTICATED
 		});
 		await axios.get('/api/signout')
+		history.push('/');
 	}
 }
 

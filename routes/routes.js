@@ -267,15 +267,13 @@ router.get('/api/homepage', authenticate, (req, res) => {
 router.get('/api/onboarding', authenticate, (req, res) => {
   let user = require('../models/user.class');
   const user_id = req.currentUser[0].user_id
-  user.onboardingState(user_id)
-    .then((ret) => {
-      console.log(ret)
-      if (ret === 0) {
-        res.send(true);
-      } else {
-        res.send(false);
-      }
-    })
+  user.onboardingState(user_id).then((ret) => {
+    if (ret === 0) {
+      res.send(true);
+    } else {
+      res.send(false);
+    }
+  })
 });
 
 router.post('/api/addTags', authenticate, (req, res) => {

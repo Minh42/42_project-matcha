@@ -41,7 +41,7 @@ class Header extends Component {
             ];
         } else if (this.props.auth.authenticated && this.props.auth.onboarding) {
             return;
-        } else if (this.props.auth.authenticated && !this.props.auth.onboarding) {
+        } else if (this.props.auth.authenticated) {
             switch (this.props.auth.authenticated) {
                 case null:
                     return;
