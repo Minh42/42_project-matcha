@@ -1,11 +1,13 @@
 import React, { Component } from 'react'
-import PropTypes from 'prop-types'
 import WizardFormFirstPage from './WizardFormFirstPage'
 import WizardFormSecondPage from './WizardFormSecondPage'
 import WizardFormThirdPage from './WizardFormThirdPage'
 import WizardFormFourPage from './WizardFormFourPage'
 import WizardFormFivePage from './WizardFormFivePage'
 import axios from 'axios';
+import { connect } from 'react-redux';
+import { setOnboarding } from '../../actions/actionUsers';
+import { bindActionCreators } from 'redux';
 
 class WizardForm extends Component {
   constructor(props) {
@@ -18,8 +20,8 @@ class WizardForm extends Component {
   }
 
   async componentDidMount() {
+    this.props.setOnboarding();
     const res = await axios.get('/api/onboarding');
-    console.log(res.data)
     if (res.data === false) {
       this.props.history.push('/homepage');
     }
@@ -83,8 +85,10 @@ class WizardForm extends Component {
   }
 }
 
-WizardForm.propTypes = {
-  onSubmit: PropTypes.func.isRequired
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({ 
+    setOnboarding: setOnboarding
+  }, dispatch);
 }
 
-export default WizardForm
+export default connect(null, mapDispatchToProps)(WizardForm);

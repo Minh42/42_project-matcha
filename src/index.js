@@ -10,7 +10,7 @@ import configureStore from './store/configureStore';
 
 const store = configureStore();
 
-// persist auth state on refresh
+// persist state on refresh
 store.subscribe(throttle(() => {
     saveState({
         auth: store.getState().auth,

@@ -4,6 +4,7 @@ import { bindActionCreators } from 'redux';
 import FlashMessage from './FlashMessage';
 import PropTypes from 'prop-types';
 import { deleteFlashMessage } from '../actions/actionMessages';
+import { TransitionGroup, CSSTransition } from 'react-transition-group'
 
 class FlashMessagesList extends Component {
     render() {
@@ -11,13 +12,15 @@ class FlashMessagesList extends Component {
             <FlashMessage key={message.id} message={message} deleteFlashMessage={this.props.deleteFlashMessage}/>
         );
         return (
-            <div>{messages}</div>
+            <div>
+                {messages}
+            </div>
         );
     }
 }
 
 FlashMessagesList.propTypes = {
-	messages: PropTypes.array.isRequired,
+	// messages: PropTypes.array.isRequired,
 	deleteFlashMessage: PropTypes.func.isRequired
 }
 

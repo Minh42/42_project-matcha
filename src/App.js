@@ -26,10 +26,12 @@ class App extends Component {
     }
 
     render() {
+        // const isHeaderRoute = (!window.location.pathname.includes('onboarding'))
         return (
             <Router>
                 <div>
-                    <Header />
+                    {/* {isHeaderRoute && <Header/>} */}
+                    <Header/>
                     <Switch>
                         <Route exact path="/" component={LandingPage} />
                         <Route path="/homepage" component={requireAuth(HomePage)} />
@@ -38,6 +40,7 @@ class App extends Component {
                         <Route path="/resetPassword/:login" component={ResetPassword} />
                         <Route path="/profile" component={UserProfile} />
                         <Route path="/onboarding" component={Onboarding} />
+                        {/* <Route component={NotFound} /> */}
                     </Switch>
                     <Footer />
                 </div>

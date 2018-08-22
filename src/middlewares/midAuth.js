@@ -14,16 +14,20 @@ module.exports = function verifyToken(req, res, next) {
         if (token) {
             jwt.verify(token, config.jwtSecret, (err, decoded) => {
                 if (err) {
-                    res.status(401).json({ error: 'Failed to authenticate' })
+                    req.currentUser = null;
+                    // res.status(401).json({ error: 'Failed to authenticate' })
+                    next();
                 } else {
                     req.currentUser = decoded.user;
                     next();
                 }
             });
         } else {
-            res.status(403).json({
-                error: 'No token provided'
-            });
+            req.currentUser = null;
+            // res.status(403).json({
+            //     error: 'No token provided'
+            // });
+            next();
         }
     }
 }

@@ -9,8 +9,7 @@ import { connect } from 'react-redux';
 import { signOutAction } from '../actions/actionUsers';
 import { bindActionCreators } from 'redux';
 
-
-class Header extends Component{
+class Header extends Component {
 	constructor(props) {
 		super(props);
 		this.showModal = this.showModal.bind(this);
@@ -36,29 +35,42 @@ class Header extends Component{
     }
 
     showNavbar() {
-        switch (this.props.authenticated) {
-            case null:
-                return;
-            case false:
-                return [
-                    <Button key="login" className="button is-rounded" title="Sign In" action={this.showModal}/>
-                ];
-            default:
-                return [
-                    <p key="homepage" className="control">
-                        <Link to="/homepage"><Button className="button is-rounded" title=" homepage"/></Link>
-                    </p>,
-                    <p key = "messages" className="control">
-                        <Link to="/messages"><Button className="button is-rounded" title="My messages"/></Link>
-                    </p>,
-                    <p key = "profile" className="control">
-                        <LinkButton to='/profile' className="button is-rounded">My profile</LinkButton>
-                    </p>,
-                    <p key = "logout" className="control">
-                        <LinkButton to='/' onClick={this.handleLogout} className="button is-rounded">Signout</LinkButton>
-                    </p>
-            
-                ];
+    if (this.props.auth) {
+        if (!this.props.auth.authenticated && this.props.auth.onboarding === undefined) {
+            return [
+                <Button key="login" className="button is-rounded" title="Sign In" action={this.showModal}/>
+            ];
+        } else if (this.props.auth.authenticated && this.props.auth.onboarding) {
+            return;
+        } else if (this.props.auth.authenticated && !this.props.auth.onboarding) {
+            switch (this.props.auth.authenticated) {
+                case null:
+                    return;
+                case false:
+                    return [
+                        <Button key="login" className="button is-rounded" title="Sign In" action={this.showModal}/>
+                    ];
+                default:
+                    return [
+                        <p key="homepage" className="control">
+                            <Link to="/homepage"><Button className="button is-rounded" title=" homepage"/></Link>
+                        </p>,
+                        <p key = "messages" className="control">
+                            <Link to="/messages"><Button className="button is-rounded" title="My messages"/></Link>
+                        </p>,
+                        <p key = "profile" className="control">
+                            <LinkButton to='/profile' className="button is-rounded">My profile</LinkButton>
+                        </p>,
+                        <p key = "logout" className="control">
+                            <LinkButton to='/' onClick={this.handleLogout} className="button is-rounded">Signout</LinkButton>
+                        </p>
+                    ];
+                }
+            }
+        } else {
+            return [
+                <Button key="login" className="button is-rounded" title="Sign In" action={this.showModal}/>
+            ];  
         }
     }
 
@@ -109,7 +121,7 @@ class Header extends Component{
 
 function mapStateToProps(state) {
     return { 
-        authenticated: state.auth.authenticated
+        auth: state.auth
     };
 }
 

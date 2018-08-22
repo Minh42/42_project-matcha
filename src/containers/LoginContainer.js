@@ -42,9 +42,11 @@ class LoginContainer extends Component {
         if (this.props.errorMessage) {
             return (
                 <p className="help is-danger">
-                    {this.props.errorMessage}
+                    {this.props.errorMessage.error}
                 </p>
             );
+        } else {
+            return;
         }
     }
 
@@ -89,7 +91,7 @@ class LoginContainer extends Component {
 }
 
 LoginContainer.propTypes = {
-	errorMessage: PropTypes.string,
+	errorMessage: PropTypes.object,
 	signInAction: PropTypes.func.isRequired
 };
 
@@ -106,7 +108,7 @@ function validate(values) {
 
 function mapStateToProps(state) {
     return { 
-        errorMessage: state.auth.error 
+        errorMessage: state.auth
     };
 }
 

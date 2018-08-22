@@ -1,12 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-// import CarouselContainer from '../containers/CarouselContainer';
 import SignupContainer from '../containers/SignupContainer';
 import FlashMessagesList from '../components/FlashMessagesList';
 import ReviewsContainer from '../containers/ReviewsContainer';
 import LoginContainer from '../containers/LoginContainer';
 import step3 from '../../public/img/step3.png' 
-import FilesUploadContainer from '../components/FilesUploadContainer';
 
 const LandingPage = () => {
     return (
