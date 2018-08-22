@@ -2,11 +2,6 @@ import React from 'react';
 import { Field, reduxForm } from 'redux-form';
 import Button from "../components/Button";
 import renderField from '../components/renderField'
-
-import { connect } from 'react-redux';
-import { selectUser } from '../actions/actionUsers';
-import { bindActionCreators } from 'redux';
-
 import axios from 'axios';
 
 const relationship = ['marriage', 'casual sex', 'friends', 'one night stand', 'long term relationship', 'short term relationship']
@@ -70,13 +65,7 @@ class NewInfoUserContainer extends React.Component{
 		axios.post(`/api/addNewinfoBDD`, values)
 		.then((ret) => {
 			if (ret)
-			axios.post('/api/addRelationshipBDD', values)
-				.then((ret) => {
-					axios.get('/api/profile')
-						.then((res) => {
-							this.props.selectUser(res);
-						})
-				})
+				axios.post('/api/addRelationshipBDD', values)
 		})
 	}
 
@@ -226,22 +215,9 @@ function validate(values) {
 	return errors
 }
 
-function mapStateToProps(state) {
-    return { 
-		errorMessage: state.auth.error,
-		selectedUser: state.selectedUser
-    };
-}
-
-function mapDispatchToProps(dispatch) {
-    return bindActionCreators({ 
-        selectUser: selectUser
-    }, dispatch);
-}
-
 const reduxFormNewInfoUserContainer = reduxForm({
 	validate,
 	form : 'newInfoUser'
 }) (NewInfoUserContainer)
 
-export default connect(mapStateToProps, mapDispatchToProps)(reduxFormNewInfoUserContainer);
+export default reduxFormNewInfoUserContainer;

@@ -111,8 +111,6 @@ router.post('/api/signin', function(req, res) {
     if (ret) {
       user.searchByColName("username", username).then(function(ret) {
         const token = jwt.sign({ user: ret }, config.jwtSecret);
-        console.log("inside api/signin")
-        console.log(token)
         res.json({token})
       })
     } else {
@@ -427,10 +425,12 @@ router.post('/api/upload', upload.single('file'), authenticate, function(req, re
 
     if(image.isValid(buffer, mimetype, size)) {
       let id = req.currentUser[0].user_id;
+      console.log(id);
       let oldPath = req.file.path;
       let targetPath = `public/img/profile/${id}/${req.file.filename}`;
     
       const targetDir = 'public/img/profile/' + id;
+      
       if (!fs.existsSync(targetDir)) {
         fs.mkdirSync(targetDir)
       }
@@ -491,20 +491,27 @@ router.post('/api/deletePicture', authenticate, (req, res) => {
 router.get('/api/profile', authenticate, async (req, res) => {
   let user = require('../models/user.class');
   async function getData() {
-    const infos = req.currentUser[0];
+    const id = req.currentUser[0].user_id;
+    console.log('im here')
     console.log(req.currentUser[0])
-    const photos = await user.selectAllUserPhotos(req.currentUser[0].user_id);
-    const tags = await user.selectAllUserTags(req.currentUser[0].user_id);
-    const interest = await user.selectNameGenders(req.currentUser[0].user_id);
-    const relationship = await user.selectNameRelationship(req.currentUser[0].user_id)
+    console.log('im here')
+    const infos = JSON.parse(JSON.stringify(await user.selectAllUserInfos(id)));
+    console.log(infos[0])
+    const photos = await user.selectAllUserPhotos(id);
+    const tags = await user.selectAllUserTags(id);
+    const interest = await user.selectNameGenders(id);
+    const relationship = await user.selectNameRelationship(id)
   
     const customData = {
-      infos: infos,
+      infos: infos[0],
       photos: photos,
       tags: tags,
       interest: interest,
       relationship: relationship
     };
+    console.log('im here2')
+    console.log(customData)
+    console.log('im here2')
     return customData;
   }
 

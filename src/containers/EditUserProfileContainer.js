@@ -7,12 +7,6 @@ import ModificationContainer from './ModificationContainer';
 import axios from 'axios';
 
 class EditUserProfileContainer extends Component {
-
-    async componentDidMount() {
-		const res = await axios.get('/api/profile');
-        this.props.selectUser(res);
-	}
-
     render () {
         return (
              <div>

@@ -7,9 +7,10 @@ class CarouselContainer extends Component {
     return this.props.photos.map(photo => {
       const uuidv4 = require('uuid/v4');
       var id = uuidv4();
+      var src = 'http://localhost:8080/' + photo.image_path;
       return (
-        <div>
-          <img key={id} src={photo.image_path}/>
+        <div key={id}>
+          <img src={src}/>
         </div>
       );
     })
