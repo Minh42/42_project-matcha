@@ -393,6 +393,17 @@ class User {
         } 
     }
 
+    static async findLatLngBDD(user_id) {
+        try {
+            let ret = await pool.query("SELECT `latitude`, `longitude`, `geolocalisationAllowed` FROM `users` WHERE `user_id` = ?", [user_id]);
+            console.log("inside fonction ret:", ret)
+            return ret;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
     //INSERT NEW INFO FROM ONBOARDING
 
     static async addNewinfoUser(birthdate, gender, occupation, bio, user_id) {

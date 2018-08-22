@@ -265,13 +265,17 @@ router.get('/api/homepage', authenticate, (req, res) => {
 
 //ONBOARDING
 router.get('/api/onboarding', authenticate, (req, res) => {
-  console.log(req.currentUser[0])
   let user = require('../models/user.class');
-  if (req.currentUser[0].onboardingDone === 0) {
-    res.send(true);
-  } else {
-    res.send(false);
-  }
+  const user_id = req.currentUser[0].user_id
+  user.onboardingState(user_id)
+    .then((ret) => {
+      console.log(ret)
+      if (ret === 0) {
+        res.send(true);
+      } else {
+        res.send(false);
+      }
+    })
 });
 
 router.post('/api/addTags', authenticate, (req, res) => {
@@ -558,29 +562,38 @@ router.get('/api/geocoder/', authenticate, (req, res) => {
 })
 
 router.get('/api/findLocalisation', authenticate, (req, res) => {
+  let user = require('../models/user.class');
   const localisation = {}
-  const lat = req.currentUser[0].latitude
-  const lng = req.currentUser[0].longitude
-  const geolocalisationAllowed = req.currentUser[0].geolocalisationAllowed
+  const user_id = req.currentUser[0].user_id
+  user.findLatLngBDD(user_id)
+    .then((ret) => {
+    const lat = ret[0].latitude
+    const lng = ret[0].longitude
+    const geolocalisationAllowed = ret[0].geolocalisationAllowed
 
-  if (geolocalisationAllowed === 1) {
-    localisation.message = "Disable Localisation"
-  } else {
-    localisation.message = "Allow localisation"
-  }
+    if (geolocalisationAllowed === 1) {
+      localisation.message = "Disable Localisation"
+    } else {
+      localisation.message = "Allow localisation"
+    }
 
-  localisation.lat = lat
-  localisation.lng = lng
-  res.json(localisation)
+    localisation.lat = lat
+    localisation.lng = lng
+    res.json(localisation)
+    })
 })
 
 
 // ALLOWED OR NOT LOCALISATION
 router.post('/api/localisationAllowedORnot', authenticate, (req, res) => {
-  console.log(req.currentUser[0])
-  const localisationAllowed = req.currentUser[0].geolocalisationAllowed
-  console.log(localisationAllowed)
-  res.json(localisationAllowed)
+  let user = require('../models/user.class');
+  const user_id = req.currentUser[0].user_id
+  user.findLatLngBDD(user_id)
+    .then((ret) => {
+      console.log(req.currentUser[0])
+      const localisationAllowed = ret[0].geolocalisationAllowed
+      res.json(localisationAllowed)
+    })
 })
 
 router.post('/api/localisationAllowed', authenticate, (req, res) => {
