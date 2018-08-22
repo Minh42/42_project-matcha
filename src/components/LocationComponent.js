@@ -46,7 +46,6 @@ class LocationComponent extends React.Component {
 			const lat = res.data.lat
 			const lng = res.data.lng
 			var error = res.data.error
-			console.log(error)
 
 			if (error === undefined) {
 				error = ""
@@ -137,7 +136,7 @@ class LocationComponent extends React.Component {
 										id="address"
 										className="input" 
 										id="address" 
-										placeholder="ex: 18 rue de la paix, Paris"
+										placeholder="ex: 18 rue de la paix Paris"
 										required />
 								<p id="demo" className="help is-danger">{this.state.message}</p>
 							</div>

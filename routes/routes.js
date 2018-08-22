@@ -241,7 +241,9 @@ router.get('/api/signout', (req, res) => {
 });
 
 router.get('/api/current_user', authenticate, (req, res) => {
-  res.send(req.currentUser);
+  console.log('HELLO HELLO HELLO')
+  console.log(req.currentUser[0])
+  res.send(req.currentUser[0]);
 });
 
 router.get('/api/homepage', authenticate, (req, res) => {
@@ -250,11 +252,11 @@ router.get('/api/homepage', authenticate, (req, res) => {
   console.log(id);
   user.selectAllUsers().then(function(ret) {
     if (ret) {
-      console.log(ret);
-      users = JSON.parse(JSON.stringify(ret));
-      console.log(users);
-      users = users.filter(user => user.user_id.includes(id))
-      console.log(users);
+      // console.log(ret);
+      // users = JSON.parse(JSON.stringify(ret));
+      // console.log(users);
+      // users = users.filter(user => user.user_id.includes(id))
+      // console.log(users);
       res.json(ret);
     } else {
     res.sendStatus(404);
@@ -289,11 +291,9 @@ router.post('/api/addTags', authenticate, (req, res) => {
           if (ret) { // TAG EXIST
             user.searchByColNameTag("name", tag)
               .then((ret) => {
-                tag_id = ret[0].tag_id // id_tag
-                // console.log(tag_id)
+                var tag_id = ret[0].tag_id // id_tag
                 user.findOneUserTags(tag_id, user_id)
                   .then((ret) => {
-                    // console.log(ret)
                     if (ret === false) {
                       user.addInsideUserTag(tag_id, user_id)
                         .then((ret) => {
@@ -491,7 +491,7 @@ router.get('/api/profile', authenticate, async (req, res) => {
   let user = require('../models/user.class');
   async function getData() {
     const infos = req.currentUser[0];
-    console.log(infos)
+    console.log(req.currentUser[0])
     const photos = await user.selectAllUserPhotos(req.currentUser[0].user_id);
     const tags = await user.selectAllUserTags(req.currentUser[0].user_id);
     const interest = await user.selectNameGenders(req.currentUser[0].user_id);
@@ -544,7 +544,7 @@ router.get('/api/geocoder/', authenticate, (req, res) => {
       }
     });
   } else {
-    messages.error = "wrong address"
+    messages.error = "ex: 18 rue de la paix Paris"
     res.json(messages)
     }
 })
@@ -714,6 +714,7 @@ router.post('/api/changeOnboardingStatus', authenticate, (req, res) => {
 
 //CHANGE BASIC INFO USER
 router.post('/api/modifData', authenticate, (req, res) => {
+  console.log(req.currentUser[0])
   let user = require('../models/user.class');
   const user_id = req.currentUser[0].user_id
   const login = req.body.login

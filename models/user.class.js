@@ -311,7 +311,7 @@ class User {
     static async addInsideUserTag(tag_id, user_id) {
         try {
             console.log(tag_id)
-            console.log(user_id)
+            // console.log(user_id)
             const values = {user_id: user_id, tag_id: tag_id};
             const requete = 'INSERT INTO `user_tags` SET ?'
        

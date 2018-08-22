@@ -25,7 +25,7 @@ class WizardFormThirdPage extends React.Component{
 				</div>
 			</div>
 		);
-  }
+	}
 
 	render () {
 		const { handleSubmit, previousPage } = this.props;
@@ -49,7 +49,7 @@ class WizardFormThirdPage extends React.Component{
             </button>
           </div>
           <div className="column is-2 is-offset-8">
-            <button type="submit" className="next button buttonOnboarding">
+            <button id="disabled" type="submit" className="next button buttonOnboarding" disabled="false" >
               Next
             </button>
           </div>

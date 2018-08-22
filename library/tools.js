@@ -41,6 +41,18 @@ function isAddress(address) {
 	return true;
 }
 
+function isOccupation(occupation) {
+	var regex = /[-a-zA-Zàâäéèêëïîôöùûüç]{1}/;
+	if (!regex.test(occupation)) return false;
+	return true;
+}
+
+function isBio(bio) {
+	var regex = /[-a-zA-Z0-9àâäéèêëïîôöùûüç]{1}/;
+	if (!regex.test(bio)) return false;
+	return true;
+}
+
 function isHash(password) {
 	const saltRounds = 10;
 	var salt = bcrypt.genSaltSync(saltRounds);
@@ -57,5 +69,7 @@ module.exports = {
 	isPassword: isPassword,
 	isEmail: isEmail,
 	isAddress: isAddress,
+	isOccupation: isOccupation,
+	isBio: isBio,
 	isHash: isHash
 }

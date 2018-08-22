@@ -13,7 +13,8 @@ const store = configureStore();
 // persist auth state on refresh
 store.subscribe(throttle(() => {
     saveState({
-        auth: store.getState().auth
+        auth: store.getState().auth,
+        selectedUser: store.getState().selectedUser
     });
 }, 1000));
 

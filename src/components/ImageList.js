@@ -9,7 +9,7 @@ class ImageList extends Component {
                 <div className="card-image">
                     <img key={id} src={src} style={style} alt={alt}/>
                     <div className="is-overlay is-clipped has-text-right">
-                        <a class="delete is-medium" onClick={() => removePicture(src)}></a>     
+                        <a className="delete is-medium" onClick={() => removePicture(src)}></a>     
                     </div>
                 </div>
             </div>

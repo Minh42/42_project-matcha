@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import { signOutAction } from '../actions/actionUsers';
 import { bindActionCreators } from 'redux';
 
+
 class Header extends Component{
 	constructor(props) {
 		super(props);
@@ -35,7 +36,6 @@ class Header extends Component{
     }
 
     showNavbar() {
-        console.log(this.props.authenticated);
         switch (this.props.authenticated) {
             case null:
                 return;
@@ -115,7 +115,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({ 
-        signOutAction: signOutAction,
+        signOutAction: signOutAction
     }, dispatch);
 }
 

@@ -2,6 +2,19 @@ import React, {Component} from 'react';
 import Slider from 'react-slick';
 
 class CarouselContainer extends Component {
+  
+  renderPhotos() {
+    return this.props.photos.map(photo => {
+      const uuidv4 = require('uuid/v4');
+      var id = uuidv4();
+      return (
+        <div>
+          <img key={id} src={photo.image_path}/>
+        </div>
+      );
+    })
+  }
+  
   render() {
     var settings = {
       dots: true,
@@ -11,22 +24,8 @@ class CarouselContainer extends Component {
       slidesToScroll: 1
     };
     return (
-        <Slider {...settings}>
-        <div>
-          <img src={step3}/>
-        </div>
-        <div>
-          <img src={australie}/>
-        </div>
-        <div>
-          <img src={step3}/>
-        </div>
-        <div>
-          <img src={step3}/>
-        </div>
-        <div>
-          <img src={step3}/>
-        </div>
+      <Slider {...settings}>
+          {this.renderPhotos()}
       </Slider>
     );
   }

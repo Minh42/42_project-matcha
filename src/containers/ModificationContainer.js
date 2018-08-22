@@ -1,8 +1,11 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { Field, reduxForm } from 'redux-form';
 import Button from "../components/Button";
 import renderField from '../components/renderField'
+
+import { connect } from 'react-redux';
+import { selectUser } from '../actions/actionUsers';
+import { bindActionCreators } from 'redux';
 
 import axios from 'axios';
 
@@ -26,6 +29,8 @@ class ModificationContainer extends React.Component{
 	async onSubmit (values){
 		console.log(values)
 		const res = await axios.post(`/api/modifData`, values)
+		const ret = await axios.get('/api/profile')
+		this.props.selectUser(ret);
 	}
 
 	render () {
@@ -94,6 +99,19 @@ function validate(values) {
 	return errors;
 }
 
+function mapStateToProps(state) {
+    return { 
+		errorMessage: state.auth.error,
+		selectedUser: state.selectedUser
+    };
+}
+
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators({ 
+        selectUser: selectUser
+    }, dispatch);
+}
+
 const reduxFormModificationContainer = reduxForm({
 	validate,
 	form : 'modifUser',
@@ -102,4 +120,4 @@ const reduxFormModificationContainer = reduxForm({
 	}
 }) (ModificationContainer)
 
-export default reduxFormModificationContainer;
+export default connect(mapStateToProps, mapDispatchToProps)(reduxFormModificationContainer);
