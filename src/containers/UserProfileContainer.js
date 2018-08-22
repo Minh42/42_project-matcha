@@ -24,7 +24,7 @@ class UserProfileContainer extends Component {
             const uuidv4 = require('uuid/v4');
             var id = uuidv4();
             return (
-              <div>#{tag.name}</div>
+              <div key={id}>#{tag.name}</div>
             );
         })
     }

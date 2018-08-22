@@ -46,7 +46,10 @@ class UserProfile extends Component {
 		})
 	}
 
-	toggleBack() {
+	async toggleBack() {
+		const ret = await axios.get('/api/profile')
+		this.props.selectUser(ret);
+		console.log(ret)
 		this.setState({
 			isEditingProfilePicture: false,
 			isEditingPersonnalInfo: false,

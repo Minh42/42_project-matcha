@@ -40,6 +40,17 @@ class User {
         } 
     }
 
+    static async selectAllUserInfos(userId) {
+        try {
+            let requete = "SELECT * from `users` WHERE users.user_id = ?";
+            let ret = await pool.query(requete, [userId]);
+            return ret;
+        } catch(err) {
+            console.log(err);
+            return false;
+        }         
+    }
+
     static async selectAllUserPhotos(userId) {
         try {
             let requete = "SELECT image_path from `users` INNER JOIN `user_photos` ON user_photos.user_id = users.user_id WHERE users.user_id = ?";

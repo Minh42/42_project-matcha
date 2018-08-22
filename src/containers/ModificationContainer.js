@@ -2,11 +2,6 @@ import React from 'react';
 import { Field, reduxForm } from 'redux-form';
 import Button from "../components/Button";
 import renderField from '../components/renderField'
-
-import { connect } from 'react-redux';
-import { selectUser } from '../actions/actionUsers';
-import { bindActionCreators } from 'redux';
-
 import axios from 'axios';
 
 class ModificationContainer extends React.Component{
@@ -16,7 +11,6 @@ class ModificationContainer extends React.Component{
 	}
 	
 	async handleInitialize() {
-		// const res = await axios.post('/api/findInfoUser');
 		const initData = {
 			"login": this.props.user.username,
 			"firstName": this.props.user.firstname,
@@ -27,10 +21,7 @@ class ModificationContainer extends React.Component{
 	  }
 
 	async onSubmit (values){
-		console.log(values)
-		const res = await axios.post(`/api/modifData`, values)
-		const ret = await axios.get('/api/profile')
-		this.props.selectUser(ret);
+		const res = await axios.post(`/api/modifData`, values);
 	}
 
 	render () {
@@ -99,19 +90,6 @@ function validate(values) {
 	return errors;
 }
 
-function mapStateToProps(state) {
-    return { 
-		errorMessage: state.auth.error,
-		selectedUser: state.selectedUser
-    };
-}
-
-function mapDispatchToProps(dispatch) {
-    return bindActionCreators({ 
-        selectUser: selectUser
-    }, dispatch);
-}
-
 const reduxFormModificationContainer = reduxForm({
 	validate,
 	form : 'modifUser',
@@ -120,4 +98,4 @@ const reduxFormModificationContainer = reduxForm({
 	}
 }) (ModificationContainer)
 
-export default connect(mapStateToProps, mapDispatchToProps)(reduxFormModificationContainer);
+export default reduxFormModificationContainer;
