@@ -189,7 +189,9 @@ function validate(values) {
 	{
 		if (array_birthdate[0] > 2000) {
 			errors.birthdate = 'You must be at least 18'
-		}	
+		} else if (array_birthdate[0] < 1900) {
+			errors.birthdate = 'You are too old'
+		}
 	}
 
 	if (!values.occupation) {
