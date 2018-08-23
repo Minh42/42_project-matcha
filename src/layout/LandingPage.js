@@ -9,8 +9,10 @@ import { withRouter } from 'react-router-dom';
 class LandingPage extends Component {
     
     componentDidMount() {
-        if (this.props.auth.authenticated) {
-            this.props.history.push('/homepage');
+        if (this.props.auth) {
+            if (this.props.auth.authenticated) {
+                this.props.history.push('/homepage');
+            }
         }
     }
     

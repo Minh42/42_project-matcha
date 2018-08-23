@@ -55,7 +55,7 @@ UsersContainer.propTypes = {
 
 function mapStateToProps(state) {
     return {
-        users: getAllUsers(state),
+        users: getMaeva(state),
         loading: state.users.loading,
         error: state.users.error
     }

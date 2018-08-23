@@ -76,6 +76,8 @@ function validateInput(users, callback) {
             callback(new Error('Please provide valid data for all men')); 
         } else if (!Array.isArray(men[i]["tags"]) || !men[i]["tags"].length) {
             callback(new Error("Please provide a list of interests for each person."));  
+        } else if (!isFloat(men[i]["longitude"]) || !isFloat(men[i]["latitude"])) {
+            callback(new Error("Coordinate values can only be in float."));
         }
         else {
             continue;
@@ -88,6 +90,8 @@ function validateInput(users, callback) {
             callback(new Error('Please provide valid data for all men')); 
         } else if (!Array.isArray(women[j]["tags"]) || !women[j]["tags"].length) {
             callback(new Error("Please provide a list of interests for each person."));  
+        } else if (!isFloat(women[j]["longitude"]) || !isFloat(women[j]["latitude"])) {
+            callback(new Error("Coordinate values can only be in float."));
         }
         else {
             continue;
@@ -100,6 +104,8 @@ function validateInput(users, callback) {
             callback(new Error('Please provide valid data for all men')); 
         } else if (!Array.isArray(both[k]["tags"]) || !both[k]["tags"].length) {
             callback(new Error("Please provide a list of interests for each person."));
+        } else if (!isFloat(both[k]["longitude"]) || !isFloat(both[k]["latitude"])) {
+            callback(new Error("Coordinate values can only be in float."));
         }
         else {
             continue;
@@ -107,22 +113,7 @@ function validateInput(users, callback) {
     }
 
     console.log('I CAME ALL THE WAY HERE')
-
-    //         if not isinstance(person["interests"], list):
-    //             raise AlgorithmError("Please provide a list of interests for each person.")
-                
-    //         # Check validity for the longitude and latitude if the coordinates field exists
-    //         if "coordinates" in person:
-    //             if not isinstance(person["coordinates"], dict):
-    //                 raise AlgorithmError("Please provide valid coordinates")
-    //             if "lat" not in person["coordinates"] or "long" not in person["coordinates"]:
-    //                 raise AlgorithmError("Please provide valid coordinates")
-    //             if not isinstance(person["coordinates"]["lat"], float) or not isinstance(person["coordinates"]["long"], float):
-    //                 raise AlgorithmError("coordinate values can only be in float.")
-
-
-
-
+    return true;
 }
 
 function groupByGender(users) {

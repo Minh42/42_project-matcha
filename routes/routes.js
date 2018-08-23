@@ -267,7 +267,8 @@ router.get('/api/homepage', authenticate, (req, res) => {
 //ONBOARDING
 router.get('/api/onboarding', authenticate, (req, res) => {
   let user = require('../models/user.class');
-  const user_id = req.currentUser[0].user_id
+  const user_id = req.currentUser[0].user_id;
+  console.log(user_id);
   user.onboardingState(user_id).then((ret) => {
     if (ret === 0) {
       res.send(true);
