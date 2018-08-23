@@ -252,11 +252,6 @@ router.get('/api/homepage', authenticate, (req, res) => {
   user.selectAllUsers().then(function(ret) {
     if (ret) {
       console.log(ret);
-      // console.log(ret);
-      // users = JSON.parse(JSON.stringify(ret));
-      // console.log(users);
-      // users = users.filter(user => user.user_id.includes(id))
-      // console.log(users);
       res.json(ret);
     } else {
     res.sendStatus(404);

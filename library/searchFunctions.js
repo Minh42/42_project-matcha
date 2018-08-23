@@ -1,5 +1,6 @@
 const assert = require('assert');
 const empty = require('is-empty');
+const isFloat = require('is-float-nodejs');
 
 function filterByProperty(array, prop, value) {
     var filtered = new Array();
@@ -16,120 +17,41 @@ function filterByProperty(array, prop, value) {
     return filtered;
 }
 
-// function match(user, users) {
-
-
-
-// }
-
-function validateInput(users, callback) {
-    assert.strictEqual(typeof (users), 'object', "argument 'users' must be a string");
-    assert.strictEqual(typeof (callback), 'function');
+function match(user, users) {
+    console.log(user["username"]);
+    // console.log(users);
+    var scoring_list = {};
+    const res = validateInput(users, function(err, data) {
+        if (err) {
+            console.log(err);
+        } 
+    });
+    // console.log(res)
 
     var groups = groupByGender(users);
-    console.log(groups)
     var men = groups["men"];
+    // console.log(men)
     var women = groups["women"];
+    console.log(women)
     var both = groups["both"];
-   
-    // check if arrays are empty or null
-    if ((!Array.isArray(men) || !men.length) && (!Array.isArray(women) || !women.length) && (!Array.isArray(both) || !both.length)) {
-        callback(new Error('Please provide groups by gender'));
-    }
-    else if (!Array.isArray(men) || !men.length) {
-        callback(new Error('Please provide the male group'));  
-    } else if (!Array.isArray(women) || !women.length) {
-        callback(new Error('Please provide the female group')); 
-    } else if (!Array.isArray(both) || !both.length) {
-        callback(new Error('Please provide male and female group'));   
-    }
 
-    // check if keys exist in arrays
-    for (var i = 0; i < men.length; i++) {
-        if (Object.keys(men[i]).includes("user_id", "gender", "tags", "popularity", "birth_date", "longitude", "latitude")) {
-            continue;
-        } else {
-            callback(new Error('Please provide required fields for all men')); 
-        }
-    }
+    // get user interested_in_relation
+
+    // for (var i = 0; i < men.length; i++) {
+    //     scoring_list[men[i]["user_id"]] = getScore(user, men[i]);
+    //     console.log(scoring_list);
+    // }
 
     for (var j = 0; j < women.length; j++) {
-        if (Object.keys(women[j]).includes("user_id", "gender", "tags", "popularity", "birth_date", "longitude", "latitude")) {
-            continue;
-        } else {
-            callback(new Error('Please provide required fields for all women')); 
-        }
+        scoring_list[women[j]["user_id"]] = getScore(user, women[j]);
+        console.log(scoring_list);
     }
 
-    for (var k = 0; k < both.length; k++) {
-        if (Object.keys(both[k]).includes("user_id", "gender", "tags", "popularity", "birth_date", "longitude", "latitude")) {
-            continue;
-        } else {
-            callback(new Error('Please provide required fields for all people')); 
-        }
-    }
+    // for (var k = 0; k < both.length; k++) {
+    //     scoring_list[both[k]["user_id"]] = getScore(user, both[k]);
+    //     console.log(scoring_list);
+    // }
 
-    // check data validity for each field
-    for (var i = 0; i < men.length; i++) {
-        if (empty(men[i]["user_id"]) || empty(men[i]["gender"]) || empty(men[i]["tags"]) || empty(men[i]["popularity"]) 
-        || empty(men[i]["birth_date"]) || empty(men[i]["longitude"]) || empty(men[i]["latitude"])) {
-            callback(new Error('Please provide valid data for all men')); 
-        } else if (!Array.isArray(men[i]["tags"]) || !men[i]["tags"].length) {
-            callback(new Error("Please provide a list of interests for each person."));  
-        } else if (!isFloat(men[i]["longitude"]) || !isFloat(men[i]["latitude"])) {
-            callback(new Error("Coordinate values can only be in float."));
-        }
-        else {
-            continue;
-        }
-    }
-
-    for (var j = 0; j < women.length; j++) {
-        if (empty(women[j]["user_id"]) || empty(women[j]["gender"]) || empty(women[j]["tags"]) || empty(women[j]["popularity"]) 
-        || empty(women[j]["birth_date"]) || empty(women[j]["longitude"]) || empty(women[j]["latitude"])) {
-            callback(new Error('Please provide valid data for all men')); 
-        } else if (!Array.isArray(women[j]["tags"]) || !women[j]["tags"].length) {
-            callback(new Error("Please provide a list of interests for each person."));  
-        } else if (!isFloat(women[j]["longitude"]) || !isFloat(women[j]["latitude"])) {
-            callback(new Error("Coordinate values can only be in float."));
-        }
-        else {
-            continue;
-        }
-    }
-
-    for (var k = 0; k < both.length; k++) {
-        if (empty(both[k]["user_id"]) || empty(both[k]["gender"]) || empty(both[k]["tags"]) || empty(both[k]["popularity"]) 
-        || empty(both[k]["birth_date"]) || empty(both[k]["longitude"]) || empty(both[k]["latitude"])) {
-            callback(new Error('Please provide valid data for all men')); 
-        } else if (!Array.isArray(both[k]["tags"]) || !both[k]["tags"].length) {
-            callback(new Error("Please provide a list of interests for each person."));
-        } else if (!isFloat(both[k]["longitude"]) || !isFloat(both[k]["latitude"])) {
-            callback(new Error("Coordinate values can only be in float."));
-        }
-        else {
-            continue;
-        }
-    }
-
-    console.log('I CAME ALL THE WAY HERE')
-    return true;
-}
-
-function groupByGender(users) {
-    var men = filterByProperty(users, "gender", "man");
-    var women = filterByProperty(users, "gender", "woman");
-    var both = users;
-
-    const groups = {
-        men: men,
-        women: women,
-        both: both
-    };
-
-    if ((men.length + women.length) === both.length) {
-        return groups;
-    }
 }
 
 function getScore(person1, person2) {
@@ -182,12 +104,137 @@ function getScore(person1, person2) {
         score -= distance * weights["coordinates"];
     }
 
+    // match = ($points/$total)*100;
     return score;
+}
+
+function validateInput(users, callback) {
+    assert.strictEqual(typeof (users), 'object', "argument 'users' must be a string");
+    assert.strictEqual(typeof (callback), 'function');
+
+    var groups = groupByGender(users);
+    var men = groups["men"];
+    var women = groups["women"];
+    var both = groups["both"];
+   
+    // check if arrays are empty or null
+    if ((!Array.isArray(men) || !men.length) && (!Array.isArray(women) || !women.length) && (!Array.isArray(both) || !both.length)) {
+        callback(new Error('Please provide groups by gender'));
+        return false;
+    }
+    else if (!Array.isArray(men) || !men.length) {
+        callback(new Error('Please provide the male group'));
+        return false; 
+    } else if (!Array.isArray(women) || !women.length) {
+        callback(new Error('Please provide the female group'));
+        return false;
+    } else if (!Array.isArray(both) || !both.length) {
+        callback(new Error('Please provide male and female group'));   
+        return false;
+    }
+  
+    // check if keys exist in arrays
+    for (var i = 0; i < men.length; i++) {
+        if (Object.keys(men[i]).includes("user_id", "gender", "tags", "popularity", "birth_date", "longitude", "latitude")) {
+            continue;
+        } else {
+            callback(new Error('Please provide required fields for all men')); 
+            return false;
+        }
+    }
+
+    for (var j = 0; j < women.length; j++) {
+        if (Object.keys(women[j]).includes("user_id", "gender", "tags", "popularity", "birth_date", "longitude", "latitude")) {
+            continue;
+        } else {
+            callback(new Error('Please provide required fields for all women'));
+            return false; 
+        }
+    }
+
+    for (var k = 0; k < both.length; k++) {
+        if (Object.keys(both[k]).includes("user_id", "gender", "tags", "popularity", "birth_date", "longitude", "latitude")) {
+            continue;
+        } else {
+            callback(new Error('Please provide required fields for all people')); 
+            return false;
+        }
+    }
+
+    // check data validity for each field
+    for (var i = 0; i < men.length; i++) {
+        if (empty(men[i]["user_id"]) || empty(men[i]["gender"]) || empty(men[i]["tags"]) || empty(men[i]["popularity"]) 
+        || empty(men[i]["birth_date"]) || empty(men[i]["longitude"]) || empty(men[i]["latitude"])) {
+            callback(new Error('Please provide valid data for all men')); 
+            return false;
+        } else if (!Array.isArray(men[i]["tags"].split(',')) || !men[i]["tags"].length) {
+            callback(new Error("Please provide a list of interests for each person."));  
+            return false;
+        } else if (!isFloat(men[i]["longitude"]) || !isFloat(men[i]["latitude"])) {
+            callback(new Error("Coordinate values can only be in float."));
+            return false;
+        }
+        else {
+            continue;
+        }
+    }
+
+    for (var j = 0; j < women.length; j++) {
+        if (empty(women[j]["user_id"]) || empty(women[j]["gender"]) || empty(women[j]["tags"]) || empty(women[j]["popularity"]) 
+        || empty(women[j]["birth_date"]) || empty(women[j]["longitude"]) || empty(women[j]["latitude"])) {
+            callback(new Error('Please provide valid data for all men')); 
+            return false;
+        } else if (!Array.isArray(women[j]["tags"].split(',')) || !women[j]["tags"].length) {
+            callback(new Error("Please provide a list of interests for each person."));  
+            return false;
+        } else if (!isFloat(women[j]["longitude"]) || !isFloat(women[j]["latitude"])) {
+            callback(new Error("Coordinate values can only be in float."));
+            return false;
+        }
+        else {
+            continue;
+        }
+    }
+
+    for (var k = 0; k < both.length; k++) {
+        if (empty(both[k]["user_id"]) || empty(both[k]["gender"]) || empty(both[k]["tags"]) || empty(both[k]["popularity"]) 
+        || empty(both[k]["birth_date"]) || empty(both[k]["longitude"]) || empty(both[k]["latitude"])) {
+            callback(new Error('Please provide valid data for all men')); 
+            return false;
+        } else if (!Array.isArray(both[k]["tags"].split(',')) || !both[k]["tags"].length) {
+            callback(new Error("Please provide a list of interests for each person."));
+            return false;
+        } else if (!isFloat(both[k]["longitude"]) || !isFloat(both[k]["latitude"])) {
+            callback(new Error("Coordinate values can only be in float."));
+            return false;
+        }
+        else {
+            continue;
+        }
+    }
+    return true;
+}
+
+function groupByGender(users) {
+    var men = filterByProperty(users, "gender", "man");
+    var women = filterByProperty(users, "gender", "woman");
+    var both = users;
+
+    const groups = {
+        men: men,
+        women: women,
+        both: both
+    };
+
+    if ((men.length + women.length) === both.length) {
+        return groups;
+    }
 }
 
 module.exports = {
     filterByProperty : filterByProperty,
     groupByGender: groupByGender,
     validateInput: validateInput,
-    getScore : getScore
+    getScore : getScore,
+    match: match
 }
