@@ -8,7 +8,7 @@ class WizardFormFourPage extends Component{
 	const { handleSubmit, previousPage } = this.props
 
 	return (
-		<div>
+		<form onSubmit={handleSubmit}>
 			<h2 className="has-text-centered titleOnboarding">Maybe a picture...</h2>
 			<progress className="progress progressOnboarding" value="80" max="100">80%</progress>
 			<FilesUploadContainer />
@@ -19,12 +19,12 @@ class WizardFormFourPage extends Component{
 					</button>
 				</div>
 				<div className="column is-2 is-offset-8">
-					<button type="submit" className="next button buttonOnboarding" onClick={handleSubmit}>
+					<button id="next" type="submit" className="next button buttonOnboarding" disabled="false">
 						Next
 					</button>
 				</div>
 			</div>
-		</div>
+		</form>
 	)}
 }
 

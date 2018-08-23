@@ -17,6 +17,7 @@ import UserProfile from './layout/UserProfile';
 import profileOtherUser from './layout/ProfileOtherUser';
 // import ModifProfile from './layout/ModifProfile';
 import Onboarding from './components/Onboarding/wizardForm';
+import NotFound from './components/NotFound';
 
 setAuthorizationToken(localStorage.jwtToken);
 
@@ -27,11 +28,9 @@ class App extends Component {
     }
 
     render() {
-        // const isHeaderRoute = (!window.location.pathname.includes('onboarding'))
         return (
             <Router>
                 <div>
-                    {/* {isHeaderRoute && <Header/>} */}
                     <Header/>
                     <Switch>
                         <Route exact path="/" component={LandingPage} />
@@ -42,7 +41,7 @@ class App extends Component {
                         <Route path="/profile" component={UserProfile} />
                         <Route path="/profileOtherUser/:id" component={profileOtherUser} />
                         <Route path="/onboarding" component={Onboarding} />
-                        {/* <Route component={NotFound} /> */}
+                        <Route component={NotFound} />
                     </Switch>
                     <Footer />
                 </div>

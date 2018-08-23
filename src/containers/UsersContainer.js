@@ -3,6 +3,7 @@ import UserProfile from '../components/UserProfile';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { fetchUsers } from '../actions/actionFetch';
+import { getMaeva } from '../selectors/index';
 import { getAllUsers } from '../selectors/index';
 import PropTypes from 'prop-types';
 
@@ -11,16 +12,16 @@ class UsersContainer extends Component {
     componentDidMount() {
         this.props.fetchUsers();
     }
-       
+
     renderList() {
+        console.log(this.props)
         return this.props.users.map((user) => {
             return (
             <div className="column is-half">
                 <UserProfile
-                    key={user.id}
-                    id={user.id}
+                    key={user.user_id}
                     user={user.username}
-                    age={user.age}
+                    age={user.birth_date}
                     src={user.picture}
                 />
             </div>

@@ -11,16 +11,11 @@ export function fetchUsers() {
             dispatch({
                 type: FETCH_USERS_REQUEST
             })
-            const res = await axios.get('/api/homepage');
-            var usersData = res.data.map(result => ({
-                id: result.user_id,
-                username: result.username,
-                age: getAge(result.birth_date),
-                picture: result.image_path
-            }))
+            const res = await axios.get('/api/homepage');        
+            // var usersData = JSON.stringify(res.data);
             dispatch({
                 type: FETCH_USERS_SUCCESS,
-                payload: usersData
+                payload: res.data
             })
         } catch (error) {
             dispatch({
