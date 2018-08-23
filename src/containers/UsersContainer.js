@@ -25,6 +25,7 @@ class UsersContainer extends Component {
                     age={user.birth_date}
                     src={user.picture}
                 />
+
             </div>
             );
         });
