@@ -6,6 +6,7 @@ import { fetchUsers } from '../actions/actionFetch';
 import { getAllUsers } from '../selectors/index';
 import PropTypes from 'prop-types';
 
+
 class UsersContainer extends Component {
     componentDidMount() {
         this.props.fetchUsers();
@@ -14,12 +15,15 @@ class UsersContainer extends Component {
     renderList() {
         return this.props.users.map((user) => {
             return (
+            <div className="column is-half">
                 <UserProfile
                     key={user.id}
+                    id={user.id}
                     user={user.username}
                     age={user.age}
                     src={user.picture}
                 />
+            </div>
             );
         });
     }

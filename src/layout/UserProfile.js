@@ -8,6 +8,7 @@ import EditUserProfileContainer from '../containers/EditUserProfileContainer';
 import EditUserOtherInfoContainer from '../containers/EditUserOtherInfoContainer';
 import UserProfileContainer from '../containers/UserProfileContainer';
 import FilesUploadContainer from '../components/FilesUploadContainer';
+import LikesViews from '../containers/LikesViewsContainer';
 
 class UserProfile extends Component {
 	constructor(props, context) {
@@ -122,13 +123,13 @@ class UserProfile extends Component {
 	render () {
 		return (
 		<div className="columns" id="mail-app">
-			<aside className="column is-2 aside">
+			<aside className="column is-2 aside backgroundInfoUser">
 				<div className="compose">
 					{this.showEditButtons()}
 				</div>
 			</aside>
 			<div className="column is-3 messages hero is-fullheight" id="message-feed">
-				Hello
+				<LikesViews />
 			</div>
 			<div className="column is-7 message hero is-fullheight" id="message-pane">
 				{this.showEditFeature()}

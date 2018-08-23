@@ -1,4 +1,5 @@
 import axios from 'axios';
+import getAge from 'get-age';
 
 export const FETCH_USERS_REQUEST = 'FETCH_USERS_REQUEST';
 export const FETCH_USERS_SUCCESS = 'FETCH_USERS_SUCCESS';
@@ -14,7 +15,7 @@ export function fetchUsers() {
             var usersData = res.data.map(result => ({
                 id: result.user_id,
                 username: result.username,
-                age: result.birth_date,
+                age: getAge(result.birth_date),
                 picture: result.image_path
             }))
             dispatch({
