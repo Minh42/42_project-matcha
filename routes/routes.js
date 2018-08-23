@@ -246,6 +246,7 @@ router.get('/api/current_user', authenticate, (req, res) => {
 });
 
 router.get('/api/homepage', authenticate, (req, res) => {
+  console.log('inside API HOMEPAGE')
   let user = require('../models/user.class');
   let id = req.currentUser[0].user_id;
   console.log(id);

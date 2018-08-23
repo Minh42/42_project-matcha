@@ -129,6 +129,18 @@
     border: none;
 }
 
+.buttonLikesViews {
+    margin-top: 5%;
+    color: #E52A6F;
+    border: solid 1px #E52A6F;
+}
+
+.buttonLikesViews:hover {
+    margin-top: 5%;
+    background-color: rgba(229, 42, 111, 0.461);
+    border: solid 1px #E52A6F;
+}
+
 .round-button:hover {
     background: #262626;
 }

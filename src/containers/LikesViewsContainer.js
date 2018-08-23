@@ -1,22 +1,95 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
-import { selectUser } from '../actions/actionUsers';
 import { bindActionCreators } from 'redux';
+import { fetchUsers } from '../actions/actionFetch';
+
+import LikesComponent from '../components/LikesComponent';
+import ViewsComponent from '../components/ViewsComponent';
 
 class LikesViewsContainer extends Component {
+
+	constructor(props) {
+		super(props);
+		this.state = {
+			EditLikes: false,
+			EditViews: false
+		};
+		this.toggleLikes =this.toggleLikes.bind(this);
+		this.toggleViews = this.toggleViews.bind(this);
+	}
+
+	componentDidMount() {
+		this.props.fetchUsers();
+    }
+
+	toggleLikes() {
+		document.getElementById('likes').style.backgroundColor = "rgba(229, 42, 111, 0.461)";
+		document.getElementById('views').style.backgroundColor = "white";
+		this.setState({
+			EditLikes: !this.state.EditLikes,
+			EditViews: false
+		})
+	}
+
+	toggleViews() {
+		document.getElementById('views').style.backgroundColor = "rgba(229, 42, 111, 0.461)";
+		document.getElementById('likes').style.backgroundColor = "white";
+		this.setState({
+			EditViews: !this.state.EditViews,
+			EditLikes: false
+		})
+	}
+
+	showLikesOrViews() {
+		if (this.state.EditLikes) {
+			return (
+				<LikesComponent 
+				
+				/>
+			)
+		} else {
+			return (
+				<ViewsComponent 
+				
+				/>
+			)
+		}
+	}
+
 	render() {
 		return (
+		<div>
 			<div className="columns is-mobile">
 				<div className="column is-6">
-					<a className="button is-small is-fullwidth" onClick={this.toggleEditProfilePicture}>Likes</a>
+					<a id="likes" className="button is-small is-fullwidth buttonLikesViews" onClick={this.toggleLikes}>Likes</a>
 				</div>
 				<div className="column is-6">
-					<a className="button is-small is-fullwidth" onClick={this.toggleEditPersonnalInfo}>Views</a>
+					<a id="views" className="button is-small is-fullwidth buttonLikesViews" onClick={this.toggleViews}>Views</a>
 				</div>
 			</div>
+			<div className="columns is-mobile">
+				<div className="column is-12 is-fullwidth">
+					{this.showLikesOrViews()}
+				</div>
+			</div>
+		</div>
 		)
 	}
 }
 
-export default LikesViewsContainer
+function mapStateToProps(state) {
+    return {
+        users: state.users.users,
+        loading: state.users.loading,
+        error: state.users.error
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators({ 
+        fetchUsers: fetchUsers
+    }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(LikesViewsContainer)
