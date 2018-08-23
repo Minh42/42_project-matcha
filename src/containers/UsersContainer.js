@@ -20,6 +20,7 @@ class UsersContainer extends Component {
             <div className="column is-half">
                 <UserProfile
                     key={user.user_id}
+                    id={user.user_id}
                     user={user.username}
                     age={user.birth_date}
                     src={user.picture}
