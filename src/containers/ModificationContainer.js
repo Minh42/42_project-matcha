@@ -6,6 +6,13 @@ import axios from 'axios';
 
 class ModificationContainer extends React.Component{
 
+	constructor() {
+        super()
+        this.state = {
+            messagesSuccess : ""
+        }
+    }
+
 	componentDidMount() {
 		this.handleInitialize();
 	}
@@ -22,6 +29,11 @@ class ModificationContainer extends React.Component{
 
 	async onSubmit (values){
 		const res = await axios.post(`/api/modifData`, values);
+		if (res.data === "success") {
+			this.setState({
+				messagesSuccess: 'modifications changed'
+			})
+		}
 	}
 
 	render () {
@@ -58,6 +70,7 @@ class ModificationContainer extends React.Component{
 				component= {renderField}
 				placeholder="Email"
 			/>
+			<p className="help is-success">{this.state.messagesSuccess}</p>
 			<Button type="submit" className="button is-small is-fullwidth buttonOnboarding" title="Change these informations"/>
 			</form>
 	)}

@@ -22,12 +22,12 @@ class HomePage extends Component {
 	render () {
 		return (
 		<div className="columns" id="mail-app">
-			<aside className="column is-2 aside">
+			<aside className="column is-4 aside">
 				<div className="compose">
 					Hello
 				</div>
 			</aside>
-			<div className="column is-10 messages hero is-fullheight" id="message-feed">
+			<div className="column is-8 messages hero is-fullheight" id="message-feed">
 				<UsersContainer />
 			</div>
 		</div>

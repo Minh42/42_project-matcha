@@ -22,7 +22,7 @@ class TagsComponent extends React.Component{
         };
         this.handleDelete = this.handleDelete.bind(this);
 		this.handleAddition = this.handleAddition.bind(this);
-		this.onSubmit = this.onSubmit.bind(this);
+		// this.onSubmit = this.onSubmit.bind(this);
   }
 
   async componentDidMount(){
@@ -80,16 +80,15 @@ class TagsComponent extends React.Component{
 	}
 
 	handleAddition(tag) {
-        this.setState(state => ({ tags: [...state.tags, tag] }));
-	}
-
-	onSubmit (){
-		console.log(this.state.tags)
-		axios.post(`/api/addTags`, this.state.tags)
-			.then((res) => {
-				if (res) {
+		console.log(tag)
+		axios.post(`/api/addTags`, tag)
+		.then((res) => {
+			if (res) {
+				axios.post('/api/searchTags')
+					.then((ret) => {
+					console.log("ret", ret.data)
 					if (document.getElementById("disabled")) {
-							if (this.state.tags.length === 0) {
+							if (ret.tag === 0) {
 								document.getElementById("disabled").disabled = true;
 								this.setState({
 									message: 'at least one tag',
@@ -108,8 +107,11 @@ class TagsComponent extends React.Component{
 								messageSuccess: 'tags added'
 							});
 						}
-				}
-			})	
+					})
+			}
+		})		
+
+        this.setState(state => ({ tags: [...state.tags, tag] }));
 	}
 
 	render () {
@@ -127,7 +129,6 @@ class TagsComponent extends React.Component{
 					<p className='help is-danger'>{this.state.message}</p>
 					<p className='help is-success'>{this.state.messageSuccess}</p>
 			</div>
-				<div className="button is-small buttonOnboarding" onClick={this.onSubmit}>Add</div>
 			</div>
 		)
 	}

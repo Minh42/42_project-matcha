@@ -22,6 +22,13 @@ const renderRelationshipSelector = ({ input , meta: { touched, error } }) => (
 
 class NewInfoUserContainer extends React.Component{
 
+	constructor() {
+        super()
+        this.state = {
+            messagesSuccess : ""
+        }
+    }
+
 	renderFieldArea(field) {
 		const { meta: { touched, error } } = field;
 		const className= `input is-small ${touched && error ? 'is-danger' : ''}`;
@@ -66,6 +73,13 @@ class NewInfoUserContainer extends React.Component{
 		.then((ret) => {
 			if (ret)
 				axios.post('/api/addRelationshipBDD', values)
+				 	.then((res) => {
+						if (res.data === "success" && ret.data === "success") {
+							this.setState({
+								messagesSuccess: 'modifications changed'
+							})
+						}
+					 })
 		})
 	}
 
@@ -159,6 +173,7 @@ class NewInfoUserContainer extends React.Component{
 					component={this.renderFieldArea}
 					type="text"
 					/>
+			<p className="help is-success">{this.state.messagesSuccess}</p>
 			<Button type="submit" className="button is-small is-fullwidth buttonOnboarding" title="Change these informations"/>
 		</form>
 	)}

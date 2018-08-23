@@ -281,13 +281,9 @@ router.get('/api/onboarding', authenticate, (req, res) => {
 router.post('/api/addTags', authenticate, (req, res) => {
   let user = require('../models/user.class');
   const user_id = req.currentUser[0].user_id
-  // console.log(user_id)
 
-  function processArray(tags, user_id) 
+  function processArray(tag, user_id) 
   {
-    tags.forEach((element) => { 
-      var tag = element.text
-      // console.log(tag)
       user.findOneTag("name", tag)
         .then((ret) => {
           console.log("tag exist")
@@ -327,9 +323,8 @@ router.post('/api/addTags', authenticate, (req, res) => {
               })
           }
         })
-    })
   }
-  processArray(req.body, user_id);
+  processArray(req.body.text, user_id);
   res.send("success")
 })
 
@@ -767,6 +762,67 @@ router.post('/api/changePassword', authenticate, (req, res) => {
         res.sendStatus(401);
       }
     });
+})
+
+router.get('/api/otherProfile', async (req, res) => {
+  let user = require('../models/user.class');
+  var id = req.param('user_id');
+  async function getData() {
+    const infos = JSON.parse(JSON.stringify(await user.selectAllUserInfos(id)));
+    console.log(infos[0])
+    const photos = await user.selectAllUserPhotos(id);
+    const tags = await user.selectAllUserTags(id);
+    const interest = await user.selectNameGenders(id);
+    const relationship = await user.selectNameRelationship(id)
+  
+    const customData = {
+      infos: infos[0],
+      photos: photos,
+      tags: tags,
+      interest: interest,
+      relationship: relationship
+    };
+    console.log('im here2')
+    console.log(customData)
+    console.log('im here2')
+    return customData;
+  }
+
+  var promise = await getData();
+  res.json(promise);
+});
+
+// LIKES
+router.post('/api/addLike', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  const id_actual_user = req.currentUser[0].user_id
+  const user_like = req.body.user_id
+  user.findLikeUser(id_actual_user, user_like)
+    .then((ret) => {
+      if (ret === false) {
+        user.addLikeBDD(id_actual_user, user_like)
+          .then((ret1) => {
+            res.send("add")
+          })
+    }
+    else {
+        user.deleteLikeBDD(id_actual_user, user_like)
+          .then((ret) => {
+            res.send("delete")
+          })
+    }
+  })
+})
+
+router.post('/api/searchLikeProfileUser', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  const id_actual_user = req.currentUser[0].user_id
+  user.searchUserWhoLike(id_actual_user)
+    .then((ret) => {
+      console.log(ret)
+      res.json(ret)
+    })
+
 })
 
 module.exports = router 

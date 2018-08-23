@@ -229,7 +229,7 @@ class User {
         } 
     }
 
-    //RANDOM USERNAME
+    //-----------------------------RANDOM USERNAME--------------------------------
     static makeid() {
         var text = "";
         var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -240,7 +240,7 @@ class User {
         return text;
       }
 
-    // ONBOARDING
+    //---------------------------------ONBOARDING---------------------------------
     static async onboardingState(user_id) {
         try {
             let ret = await pool.query("SELECT `onboardingDone` FROM `users` WHERE `user_id` = ?", [user_id]);
@@ -264,7 +264,7 @@ class User {
 
 
 
-    // TABLE TAGS
+    // --------------------------------TABLE TAGS--------------------------------
     static async findOneTag(colName, value) {
         try {
             let ret = await pool.query("SELECT count(*) as value_exists FROM `tags` WHERE "+ colName +" = ?", [value]);
@@ -349,7 +349,7 @@ class User {
         } 
     }
 
-    //FIND TAGS FROM TAGS
+    //---------------------------FIND TAGS FROM TAGS------------------------------
     static async findTagName(tag_id) {
         try {
             let ret = await pool.query("SELECT `name` FROM `tags` WHERE `tag_id` = ?", [tag_id]);
@@ -360,7 +360,7 @@ class User {
         } 
     }
 
-    //DELETE TAG FROM USER_TAGS
+    //--------------------------DELETE TAG FROM USER_TAGS-------------------------
     static async deleteTagInsideUserTags(user_id, tag_id) {
         try {
             let ret = await pool.query("DELETE FROM `user_tags` WHERE `user_id` = ? AND `tag_id` = ?", [user_id, tag_id])
@@ -376,7 +376,7 @@ class User {
         } 
     }
 
-    //LOCALISATION
+    //------------------------------LOCALISATION---------------------------------
     static async addLatLng(lat, lng, user_id) {
         try {
             console.log(lat)
@@ -404,7 +404,7 @@ class User {
         } 
     }
 
-    //INSERT NEW INFO FROM ONBOARDING
+    //-----------------------INSERT NEW INFO FROM ONBOARDING-------------------------
 
     static async addNewinfoUser(birthdate, gender, occupation, bio, user_id) {
         try {
@@ -421,7 +421,7 @@ class User {
         } 
     }
 
-    //CHANGE INFO GEOLOCALISATION ALLOW
+    //-------------------CHANGE INFO GEOLOCALISATION ALLOW-----------------------
 
     static async changeGeolocalisationAllow(user_id, geolocalisationAllow) {
         try {
@@ -438,7 +438,7 @@ class User {
         } 
     }
 
-    //add IP BDD
+    //--------------------add IP BDD-----------------------
 
     static async addIP(user_id, ip) {
         try {
@@ -455,7 +455,7 @@ class User {
         } 
     }
 
-    //ADD INTEREST INSIDE BDD
+    //------------------------ADD INTEREST INSIDE BDD---------------------------
 
     static async searchIdGenders(interest) {
         try {
@@ -503,7 +503,7 @@ class User {
         } 
     }
 
-    //ADD RELATIONSHIP INSIDE BDD
+    //---------------------ADD RELATIONSHIP INSIDE BDD--------------------
 
     static async searchRelationshipId(relationship) {
         try {
@@ -564,7 +564,7 @@ class User {
         } 
     }
 
-    //FIND NAME GENDERS AND RELATIONSHIP USER
+    //--------------FIND NAME GENDERS AND RELATIONSHIP USER------------------
     static async selectNameGenders(user_id) {
         try {
             let ret = await pool.query("SELECT `name` FROM `genders` INNER JOIN `interested_in_gender` ON interested_in_gender.gender_id = genders.gender_id INNER JOIN `users` ON users.user_id = interested_in_gender.user_id WHERE users.user_id = ?", [user_id]);
@@ -587,7 +587,62 @@ class User {
         } 
     }
 
-    // MODIF PROFILE
+    // -------------------------LIKE---------------------------
+
+    static async findLikeUser(id_actual_user, user_like) {
+        try {
+            let ret = await pool.query("SELECT count(*) as id_exists FROM `likes` WHERE `from_user_id` = ? AND `to_user_id` = ?" , [id_actual_user, user_like]);
+            console.log(ret)
+            if (ret[0].id_exists > '0')
+                return true;
+            else
+                return false;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async addLikeBDD(id_actual_user, user_like) {
+        try {
+            let ret = await pool.query("INSERT INTO `likes` SET `from_user_id` = ?, `to_user_id` = ? ", [id_actual_user, user_like]);
+                if (ret) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async deleteLikeBDD(id_actual_user, user_like) {
+        try {
+            let ret = await pool.query("DELETE FROM `likes` WHERE `from_user_id` = ? AND `to_user_id` = ? ", [id_actual_user, user_like]);
+                if (ret) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async searchUserWhoLike(user_id) {
+        try {
+            let ret = await pool.query("SELECT `to_user_id` FROM `likes` WHERE `from_user_id` = ? ",[user_id]);
+            console.log(ret)
+            return ret;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
 
     
 

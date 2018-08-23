@@ -7,6 +7,7 @@ import { getMaeva } from '../selectors/index';
 import { getAllUsers } from '../selectors/index';
 import PropTypes from 'prop-types';
 
+
 class UsersContainer extends Component {
     componentDidMount() {
         this.props.fetchUsers();
@@ -16,12 +17,14 @@ class UsersContainer extends Component {
         console.log(this.props)
         return this.props.users.map((user) => {
             return (
+            <div className="column is-half">
                 <UserProfile
                     key={user.user_id}
                     user={user.username}
                     age={user.birth_date}
                     src={user.picture}
                 />
+            </div>
             );
         });
     }

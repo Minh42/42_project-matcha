@@ -32,12 +32,12 @@ class UserProfileContainer extends Component {
     render () {
         return (
         <div className="container is-fluid">
-            <div className="card">
+            {/* <div className="card"> */}
                 <div className="header">
                     <div className="media">
-                        <div className="media-content">
+                        <div className="media-content labelProfile">
                             {this.showTitle()}
-                            <p className="subtitle is-6">@{this.props.user.username}</p>
+                            <p className="subtitle is-6 labelProfile">@{this.props.user.username}</p>
                         </div>
                     </div>
                 </div>
@@ -49,37 +49,37 @@ class UserProfileContainer extends Component {
                 <div className="card-content">
                     <div className="content">
                         <div className="field">
-                            <label className="label">Bio</label>
+                            <label className="label labelProfile">Bio</label>
                             <div className="control">
                                 {this.props.user.bio}
                             </div>
                         </div>
                         <div className="field">
-                            <label className="label">Occupation</label>
+                            <label className="label labelProfile">Occupation</label>
                             <div className="control">
                                 I work as a "{this.props.user.occupation}"
                             </div>
                         </div>  
                         <div className="field">
-                            <label className="label">I'm interested in</label>
+                            <label className="label labelProfile">I'm interested in</label>
                             <div className="control">
                                 {this.props.interest[0].name}
                             </div>
                         </div>
                         <div className="field">
-                            <label className="label">I'm looking for</label>
+                            <label className="label labelProfile">I'm looking for</label>
                             <div className="control">
                                 {this.props.relationship[0].name}
                             </div>
                         </div>
                         <div className="field">
-                            <label className="label">Interests</label>
+                            <label className="label labelProfile">Interests</label>
                             <div className="control">
                                 {this.showInterests()}
                             </div>
                         </div>                    
                     </div>
-                </div>
+                {/* </div> */}
             </div>
         </div>
     )};
