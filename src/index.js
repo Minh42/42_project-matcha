@@ -14,7 +14,8 @@ const store = configureStore();
 store.subscribe(throttle(() => {
     saveState({
         auth: store.getState().auth,
-        selectedUser: store.getState().selectedUser
+        selectedUser: store.getState().selectedUser,
+        users: store.getState().users
     });
 }, 1000));
 

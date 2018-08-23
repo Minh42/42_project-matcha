@@ -16,6 +16,7 @@ import ResetPassword from './containers/ResetPasswordContainer';
 import UserProfile from './layout/UserProfile';
 // import ModifProfile from './layout/ModifProfile';
 import Onboarding from './components/Onboarding/wizardForm';
+import NotFound from './components/NotFound';
 
 setAuthorizationToken(localStorage.jwtToken);
 
@@ -26,11 +27,9 @@ class App extends Component {
     }
 
     render() {
-        // const isHeaderRoute = (!window.location.pathname.includes('onboarding'))
         return (
             <Router>
                 <div>
-                    {/* {isHeaderRoute && <Header/>} */}
                     <Header/>
                     <Switch>
                         <Route exact path="/" component={LandingPage} />
@@ -40,7 +39,7 @@ class App extends Component {
                         <Route path="/resetPassword/:login" component={ResetPassword} />
                         <Route path="/profile" component={UserProfile} />
                         <Route path="/onboarding" component={Onboarding} />
-                        {/* <Route component={NotFound} /> */}
+                        <Route component={NotFound} />
                     </Switch>
                     <Footer />
                 </div>

@@ -32,7 +32,7 @@ class User {
 
     static async selectAllUsers() {
         try {
-            let requete = "SELECT users.user_id, username, birth_date, image_path FROM `users` JOIN (SELECT user_id, image_path from `user_photos` WHERE `photo_id` in (SELECT max(photo_id) from user_photos GROUP BY user_id)) as most_recent_user_photo ON users.user_id = most_recent_user_photo.user_id";
+            let requete = "SELECT users.user_id, users.firstname, users.lastname, users.username, GROUP_CONCAT(name) AS tags, users.birth_date, users.gender, users.latitude, users.longitude, users.occupation, users.popularity FROM `users` INNER JOIN `user_tags` ON user_tags.user_id = users.user_id INNER JOIN `tags` ON tags.tag_id = user_tags.tag_id GROUP BY users.user_id";
             let ret = await pool.query(requete);
             return ret;
         } catch(err) {

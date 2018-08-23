@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { setUnOnboarding } from '../actions/actionUsers';
 import { bindActionCreators } from 'redux';
 import { withRouter } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 
 class HomePage extends Component {
@@ -33,9 +34,13 @@ class HomePage extends Component {
 	)};
 }
 
+HomePage.propTypes = {
+	setUnOnboarding: PropTypes.func.isRequired
+};
+
 function mapDispatchToProps(dispatch) {
-	return bindActionCreators({ 
-	  setUnOnboarding: setUnOnboarding
+	return bindActionCreators({
+	  	setUnOnboarding: setUnOnboarding
 	}, dispatch);
   }
 

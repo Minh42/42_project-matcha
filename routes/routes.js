@@ -251,6 +251,7 @@ router.get('/api/homepage', authenticate, (req, res) => {
   console.log(id);
   user.selectAllUsers().then(function(ret) {
     if (ret) {
+      console.log(ret);
       // console.log(ret);
       // users = JSON.parse(JSON.stringify(ret));
       // console.log(users);
