@@ -14,18 +14,15 @@ class UsersContainer extends Component {
     }
 
     renderList() {
-        console.log(this.props)
         return this.props.users.map((user) => {
             return (
-            <div className="column is-half">
+            <div key={user.user_id} className="column is-half">
                 <UserProfile
-                    key={user.user_id}
                     id={user.user_id}
                     user={user.username}
                     age={user.birth_date}
                     src={user.picture}
                 />
-                
             </div>
             );
         });

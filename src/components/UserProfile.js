@@ -52,7 +52,7 @@ class UserProfile extends Component {
     }
 
     render() {
-        const { id, user, age, src } = this.props;
+        const { user, age, src } = this.props;
         return (
             // <div className="column ">
                 <div className="cardProfile">
@@ -75,7 +75,8 @@ class UserProfile extends Component {
                         </div>
                     </div>
                     {/* <footer className="card-footer"> */}
-                        <a className="card-footer-item">
+                    <div>
+                        <div className="card-footer-item">
                             <div className="field is-grouped">
                                 <p className="control">
                                     <a className="button is-rounded round-button buttonLike">
@@ -99,7 +100,8 @@ class UserProfile extends Component {
                                     </a>
                                 </p>
                             </div>
-                        </a>
+                        </div>
+                    </div>
                     {/* </footer> */}
                 </div>
             // </div>

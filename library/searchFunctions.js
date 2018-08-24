@@ -16,11 +16,34 @@ function filterByProperty(array, prop, value) {
     return filtered;
 }
 
-// function match(user, users) {
+function multiFilter(users, filters){
+    const filterKeys = Object.keys(filters); // return "user_id"
+    return users.filter(eachObj => {
+      return filterKeys.every(eachKey => {
+        if (!filters[eachKey].length) {
+          return true; // passing an empty filter means that filter is ignored.
+        }
+        return filters[eachKey].includes(eachObj[eachKey]);
+      });
+    });
+  };
 
+function filterByLikesProfile(user, users) {
 
+    var likedByUsers = user[0].likes.split(',');
+    var likes = []
+    likedByUsers.forEach(function(elt) {
+        var item = parseInt(elt)
+        likes.push(item)
+    })
 
-// }
+    let filters = {
+        user_id: likes
+    };
+
+    var filtered = multiFilter(users, filters);
+    return filtered;
+}
 
 function validateInput(users, callback) {
     assert.strictEqual(typeof (users), 'object', "argument 'users' must be a string");
@@ -196,6 +219,7 @@ function getScore(person1, person2) {
 
 module.exports = {
     filterByProperty : filterByProperty,
+    filterByLikesProfile: filterByLikesProfile,
     groupByGender: groupByGender,
     validateInput: validateInput,
     getScore : getScore

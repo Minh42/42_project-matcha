@@ -1,11 +1,20 @@
 import { createSelector } from 'reselect';
-import { filterByProperty, groupByGender, validateInput, getScore } from '../../library/searchFunctions';
+import { filterByProperty, filterByLikesProfile, groupByGender, validateInput, getScore } from '../../library/searchFunctions';
 
 const getUsers = (state) => state.users.items
+const getCurrentUser = (state) => state.auth.currentUser
 
 export const getAllUsers = createSelector([getUsers], users => {
     return users;
 });
+
+export const getLikesUser = createSelector([getAllUsers, getCurrentUser], (users, currentUser) => {
+    console.log(users)
+    const user = filterByProperty(users, "user_id", currentUser.user_id)
+    const result = filterByLikesProfile(user, users)
+    console.log("FINAL", result)
+    return result;
+})
 
 // export const getMatchedProfiles = createSelector([getAllUsers], users => {
 

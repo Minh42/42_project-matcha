@@ -3,7 +3,7 @@ import { FETCH_CURRENT_USER, AUTHENTICATED, UNAUTHENTICATED, AUTHENTICATION_ERRO
 export default function(state = null, action) {
   switch(action.type) {
     case AUTHENTICATED:
-      return { ...state, authenticated: true };
+      return { ...state, authenticated: true, currentUser: action.payload };
     case UNAUTHENTICATED:
       return { ...state, authenticated: false };
     case AUTHENTICATION_ERROR:
