@@ -14,10 +14,9 @@ export const getAllUsers = createSelector([getUsers], users => {
 
 export const getMaeva = createSelector([getAllUsers], users => {
     if (users.length != 0) {
-
-        match(users[0], users);
-
-        const result = filterByProperty(users, "username", "Maeva16");
+        console.log(users);
+        const result = match(users[1], users);
+        
         return result;
     } else {
         return users;

@@ -18,48 +18,45 @@ function filterByProperty(array, prop, value) {
 }
 
 function match(user, users) {
-    console.log(user["username"]);
-    // console.log(users);
-    var scoring_list = {};
+    var scoring_list = new Array();
     const res = validateInput(users, function(err, data) {
         if (err) {
             console.log(err);
         } 
     });
-    // console.log(res)
 
+    // split by groups
     var groups = groupByGender(users);
     var men = groups["men"];
-    // console.log(men)
     var women = groups["women"];
-    console.log(women)
     var both = groups["both"];
 
-    // get user interested_in_relation
-
-    // for (var i = 0; i < men.length; i++) {
-    //     scoring_list[men[i]["user_id"]] = getScore(user, men[i]);
-    //     console.log(scoring_list);
-    // }
-
-    for (var j = 0; j < women.length; j++) {
-        scoring_list[women[j]["user_id"]] = getScore(user, women[j]);
-        console.log(scoring_list);
+    if (user["interested_in"] === "man") {
+        for (var i = 0; i < men.length; i++) {
+            var value = Object.assign({"user_id": men[i]["user_id"], "score": getScore(user, men[i], users)})
+            scoring_list.push(value);
+        }
+    } else if (user["interested_in"] === "woman") {
+        for (var j = 0; j < women.length; j++) {
+            var value = Object.assign({"user_id": women[j]["user_id"], "score": getScore(user, women[j], users)})
+            scoring_list.push(value);
+        }
+    } else {
+        for (var k = 0; k < both.length; k++) {
+            var value = Object.assign({"user_id": both[k]["user_id"], "score": getScore(user, both[k], users)})
+            scoring_list.push(value);
+        }
     }
-
-    // for (var k = 0; k < both.length; k++) {
-    //     scoring_list[both[k]["user_id"]] = getScore(user, both[k]);
-    //     console.log(scoring_list);
-    // }
-
+    console.log(scoring_list)
+    return scoring_list;
 }
 
-function getScore(person1, person2) {
+function getScore(person1, person2, users) {
     const weights =  {
-        "interests": 1.0,
-        "popularity": 5.0,
-        "age": 0.5,
-        "coordinates": 0.005
+        "interests": 0.3,
+        "popularity": 0.2,
+        "age": 0.1,
+        "coordinates": 0.4
     }
     var stemmer = require('stemmer');
     var getAge = require('get-age');
@@ -70,26 +67,48 @@ function getScore(person1, person2) {
     var interest_list2 = person2["tags"].split(',');
 
     for (var i = 0; i < interest_list1.length; i++) {
-        for (var j = 0; j < interest_list2 .length; j++) {
+        for (var j = 0; j < interest_list2.length; j++) {
             var stem1 = stemmer(interest_list1[i].toLowerCase());
             var stem2 = stemmer(interest_list2[j].toLowerCase());
             if (stem1 === stem2) {
-                score += weights["interests"];
+                score += Math.round(20 * weights["interests"]);
             }
         }
     }
 
+    var max_age = Math.max(...users.map(elt => getAge(elt.birth_date)));
+    var min_age = Math.min(...users.map(elt => getAge(elt.birth_date)));
     if (person1["birth_date"] && person2["birth_date"]) {
         var age1 = getAge(person1["birth_date"]);
         var age2 = getAge(person2["birth_date"]);
-        score -= Math.abs(age1 - age2) * weights["age"];
+        score += Math.round((100 - (Math.abs(age1 - age2) * 100 / (max_age - min_age))) * weights["age"]);
     }
+
+    var max_popularity = Math.max(...users.map(elt => elt.popularity));
+    var min_popularity = Math.min(...users.map(elt => elt.popularity));
 
     if (person1["popularity"] && person2["popularity"]) {
         var popularity1 = person1["popularity"];
         var popularity2 = person2["popularity"];
-        score -= Math.abs(popularity1 - popularity2) * weights["popularity"];
+        score += Math.round((100 - (Math.abs(popularity1 - popularity2) * 100 / (max_popularity - min_popularity))) * weights["popularity"]);
     }
+
+    var distance_array = new Array();
+    for (var k = 0; k < users.length; k++) {
+        var lon1 = person1["longitude"];
+        var lat1 = person1["latitude"];
+        var from = turf.point([lon1, lat1]);
+        var lon2 = users[k]["longitude"];
+        var lat2 = users[k]["latitude"];
+        var to = turf.point([lon2, lat2]);
+
+        var options = {units: 'kilometers'};
+        var distance = turf.distance(from, to, options);
+        distance_array.push(distance);
+    }
+
+    var max_distance = Math.max(...distance_array);
+    var min_distance = Math.min(...distance_array);
 
     if (person1["longitude"] && person1["latitude"] && person2["longitude"] && person2["latitude"]) {
         var lon1 = person1["longitude"];
@@ -101,10 +120,8 @@ function getScore(person1, person2) {
         var to = turf.point([lon2, lat2]);
         var options = {units: 'kilometers'};
         var distance = turf.distance(from, to, options);
-        score -= distance * weights["coordinates"];
+        score += Math.round((100 - (distance * 100 / (max_distance - min_distance))) * weights["coordinates"]);
     }
-
-    // match = ($points/$total)*100;
     return score;
 }
 
