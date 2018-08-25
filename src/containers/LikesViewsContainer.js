@@ -4,6 +4,8 @@ import axios from 'axios';
 import { bindActionCreators } from 'redux';
 import { fetchUsers } from '../actions/actionFetch';
 
+import { getLikesUser } from '../selectors/index'
+
 import LikesComponent from '../components/LikesComponent';
 import ViewsComponent from '../components/ViewsComponent';
 
@@ -42,12 +44,20 @@ class LikesViewsContainer extends Component {
 	}
 
 	showLikesOrViews() {
+		console.log(this.props.likesUser)
 		if (this.state.EditLikes) {
-			return (
-				<LikesComponent 
-				
-				/>
-			)
+			console.log(this.props.likesUser)
+			if (this.props.likesUser != null) {
+				return (
+					<LikesComponent 
+						likes={this.props.likesUser}
+					/>
+				)
+			} else if (this.props.likesUser === null){
+				return (
+					<div>no likes</div>
+				)
+			}
 		} else {
 			return (
 				<ViewsComponent 
@@ -68,7 +78,7 @@ class LikesViewsContainer extends Component {
 					<a id="views" className="button is-small is-fullwidth buttonLikesViews" onClick={this.toggleViews}>Views</a>
 				</div>
 			</div>
-			<div className="columns is-mobile">
+			<div className="columns is-multiline">
 				<div className="column is-12 is-fullwidth">
 					{this.showLikesOrViews()}
 				</div>
@@ -80,9 +90,10 @@ class LikesViewsContainer extends Component {
 
 function mapStateToProps(state) {
     return {
-        users: state.users.users,
+        likesUser: getLikesUser(state),
         loading: state.users.loading,
-        error: state.users.error
+		error: state.users.error,
+		currentUser: state.auth.currentUser
     }
 }
 

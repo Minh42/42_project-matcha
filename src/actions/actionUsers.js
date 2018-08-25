@@ -25,7 +25,8 @@ export function fetchCurrentUser() {
 		}
 		else {
 			dispatch({ 
-				type: AUTHENTICATED
+				type: AUTHENTICATED,
+				payload: res.data
 			});
 		}
 	}
