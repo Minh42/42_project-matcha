@@ -37,7 +37,7 @@ class Header extends Component {
     if (this.props.auth) {
         if (!this.props.auth.authenticated && this.props.auth.onboarding === undefined) {
             return [
-                <Button key="login" className="button is-rounded" title="Sign In" action={this.showModal}/>
+                <Button key="login" className="button is-rounded btn btn-login" title="Sign In" action={this.showModal}/>
             ];
         } else if (this.props.auth.authenticated && this.props.auth.onboarding) {
             return;
@@ -47,7 +47,7 @@ class Header extends Component {
                     return;
                 case false:
                     return [
-                        <Button key="login" className="button is-rounded" title="Sign In" action={this.showModal}/>
+                        <Button key="login" className="button is-rounded btn btn-login" title="Sign In" action={this.showModal}/>
                     ];
                 default:
                     return [
@@ -68,7 +68,7 @@ class Header extends Component {
             }
         } else {
             return [
-                <Button key="login" className="button is-rounded" title="Sign In" action={this.showModal}/>
+                <Button key="login" className="button is-rounded btn btn-login" title="Sign In" action={this.showModal}/>
             ];  
         }
     }
@@ -79,7 +79,7 @@ class Header extends Component {
                 <div className="navbar-brand">
 
                     <a className="navbar-item" id="logo">
-                       <span> MATCHA </span>
+                       {/* <span> MATCHA </span> */}
                     </a>
 
                     <div className="navbar-burger burger" data-target="mobile-app">

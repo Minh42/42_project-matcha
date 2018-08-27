@@ -3,10 +3,9 @@ import { Field, reduxForm } from 'redux-form'
 import validate from './validate'
 import FilesUploadContainer from '../FilesUploadContainer'
 
-class WizardFormFourPage extends Component{
-  	render() {
+class WizardFormFourPage extends Component {
+	render() {
 	const { handleSubmit, previousPage } = this.props
-
 	return (
 		<form onSubmit={handleSubmit}>
 			<h2 className="has-text-centered titleOnboarding">Maybe a picture...</h2>

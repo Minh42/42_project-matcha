@@ -53,7 +53,7 @@ class User {
 
     static async selectAllUserPhotos(userId) {
         try {
-            let requete = "SELECT image_path from `users` INNER JOIN `user_photos` ON user_photos.user_id = users.user_id WHERE users.user_id = ?";
+            let requete = "SELECT image_path, date_created from `user_photos` WHERE user_id = ?";
             let ret = await pool.query(requete, [userId]);
             return ret;
         } catch(err) {
@@ -644,10 +644,19 @@ class User {
         } 
     }
 
+    static async addProfilePicture(user_id, path) {
+        try {
+            let ret = await pool.query("UPDATE `users` SET imageProfile_path = ? WHERE `user_id` = ? ", [path, user_id]);
+            console.log(ret)
+            return ret;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
     
 
 }
-
-
 
 module.exports = User

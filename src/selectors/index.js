@@ -22,9 +22,9 @@ export const getLikesUser = createSelector([getAllUsers, getCurrentUser], (users
 
 export const getMaeva = createSelector([getAllUsers], users => {
     if (users.length != 0) {
-        console.log(users);
-        const result = match(users[1], users);
-        return result;
+        // console.log(users);
+        // const result = match(users[1], users);
+        return users;
     } else {
         return users;
     }

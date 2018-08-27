@@ -7,12 +7,7 @@ import { getMaeva } from '../selectors/index';
 import { getAllUsers } from '../selectors/index';
 import PropTypes from 'prop-types';
 
-
 class UsersContainer extends Component {
-    componentDidMount() {
-        this.props.fetchUsers();
-    }
-
     renderList() {
         return this.props.users.map((user) => {
             return (
@@ -21,7 +16,7 @@ class UsersContainer extends Component {
                     id={user.user_id}
                     user={user.username}
                     age={user.birth_date}
-                    src={user.picture}
+                    src={user.imageProfile_path}
                 />
             </div>
             );
