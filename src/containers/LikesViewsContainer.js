@@ -46,11 +46,18 @@ class LikesViewsContainer extends Component {
 	showLikesOrViews() {
 		console.log(this.props.likesUser)
 		if (this.state.EditLikes) {
-			return (
-				<LikesComponent 
-					likes={this.props.likesUser}
-				/>
-			)
+			console.log(this.props.likesUser)
+			if (this.props.likesUser != null) {
+				return (
+					<LikesComponent 
+						likes={this.props.likesUser}
+					/>
+				)
+			} else if (this.props.likesUser === null){
+				return (
+					<div>no likes</div>
+				)
+			}
 		} else {
 			return (
 				<ViewsComponent 

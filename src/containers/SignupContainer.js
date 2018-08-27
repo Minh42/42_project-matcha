@@ -18,7 +18,8 @@ import FacebookLoginButton from "react-social-login-buttons/lib/buttons/Facebook
 const buttonStyle = {
 	fontFamily: 'Lato',
 	borderRadius: '30px',
-	opacity:'0.9'
+	opacity:'0.9',
+	whiteSpace: 'nowrap'
   };
 
 class SignupContainer extends Component{
@@ -56,19 +57,26 @@ class SignupContainer extends Component{
 	
 	render () {
 	return (
-		<div className="column ">
+	<div>
+		<div className="column main">
+			<div className="column">
+				<h1 className="text-box">
+					<span className="heading-primary">Matcha</span>
+					<span className="heading-secondary">Meet genuine people</span>
+				</h1>
+			</div>
 
 			<div className="column">
-				<h1 className="column is-12 is-size-4 has-text-centered teaserText">
-					Discover another way to travel<br />
-					Choose a destination<br />
-					Meet new peoples<br />
-					Share your passion<br />
-					And Enjoy your trip!
-				</h1>
-				<Button className="button is-medium is-fullwidth is-rounded buttonregister" id="button" title="Create your account" action={this.showModal} />
-			</div>
-			
+				<div className="button-box">
+					<Button className="button is-medium is-fullwidth is-rounded btn btn-register" title="Create your account" action={this.showModal} />
+					<span className="button-box-sub">Or</span>
+					<GoogleLoginButton onClick={this.onSubmitGoogle} className="btn btn-google" style={buttonStyle} iconSize={"23px"}/>
+					<FacebookLoginButton onClick={this.onSubmitFacebook} className="btn btn-facebook" style={buttonStyle} iconSize={"23px"}/>
+				</div>
+			</div>	
+		</div>
+
+		<div className="column">
 			<div className="modal" id="modalForm">
 				<div className="modal-background"></div>
 				<div className="modal-card">
@@ -81,10 +89,7 @@ class SignupContainer extends Component{
 					</section>
 				</div>
 			</div>
-			<div>
-				<GoogleLoginButton onClick={this.onSubmitGoogle} style={buttonStyle} iconSize={"23px"}/>
-				<FacebookLoginButton onClick={this.onSubmitFacebook} style={buttonStyle} iconSize={"23px"}/>
-			</div>
+
 			<div className="modal" id="modalEmail">
 				<div className="modal-background"></div>
 				<div className="modal-card">
@@ -96,8 +101,8 @@ class SignupContainer extends Component{
 					</section>
 				</div>
 			</div>
-			
 		</div>
+	</div>
 	)}
 }
 

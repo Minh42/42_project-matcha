@@ -9,8 +9,9 @@ import FlashMessagesList from './FlashMessagesList';
 import { addFlashMessage } from '../actions/actionMessages';
 
 class FilesUploadContainer extends Component {
-    constructor() {
-      super()
+    constructor(props) {
+      super(props)
+
       this.state = { 
         uploadStatus: false,
         files: [] 
@@ -34,9 +35,12 @@ class FilesUploadContainer extends Component {
       }
     }
 
-    componentDidUpdate() {
-      if (this.state.files[0])
+    async componentDidUpdate() {
+      if (this.state.files[0]) {
+        var file = this.state.files[0];
+        const res = await axios.post('/api/savePicture', {picture: file});
         document.getElementById("next").disabled = false; 
+      }
       else 
         document.getElementById("next").disabled = true;
     }

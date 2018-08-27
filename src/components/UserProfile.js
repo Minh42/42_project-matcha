@@ -53,12 +53,14 @@ class UserProfile extends Component {
 
     render() {
         const { user, age, src } = this.props;
+        if (src)
+            var path = 'http://localhost:8080/' + src;
         return (
             // <div className="column ">
                 <div className="cardProfile">
                     <div className="card-image">
                         <figure className="image is-3by2">
-                            <img className="imageCard" src={src} alt=""/>
+                            <img className="imageCard" src={path} alt=""/>
                         </figure>
                         <div className="card-content is-overlay is-clipped">
                         {/* <input id="hiddenID" type="hidden">{id}</input> */}

@@ -253,7 +253,6 @@ router.get('/api/homepage', authenticate, (req, res) => {
   user.selectAllUsers().then(function(ret) {
     if (ret) {
       console.log(ret);
-
       res.json(ret);
     } else {
     res.sendStatus(404);
@@ -264,7 +263,8 @@ router.get('/api/homepage', authenticate, (req, res) => {
 //ONBOARDING
 router.get('/api/onboarding', authenticate, (req, res) => {
   let user = require('../models/user.class');
-  const user_id = req.currentUser[0].user_id
+  const user_id = req.currentUser[0].user_id;
+  console.log(user_id);
   user.onboardingState(user_id).then((ret) => {
     if (ret === 0) {
       res.send(true);
@@ -812,13 +812,22 @@ router.post('/api/addLike', authenticate, (req, res) => {
 
 router.post('/api/searchLikeProfileUser', authenticate, (req, res) => {
   let user = require('../models/user.class');
-  const id_actual_user = req.currentUser[0].user_id
-  user.searchUserWhoLike(id_actual_user)
+  var user_id = req.currentUser[0].user_id
+  user.searchUserWhoLike(user_id)
     .then((ret) => {
       console.log(ret)
       res.json(ret)
     })
 
+})
+
+router.post('/api/savePicture', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  var user_id = req.currentUser[0].user_id;
+  var path = req.body.picture.replace('http://localhost:8080/', '');
+  user.addProfilePicture(user_id, path).then((ret) => {
+    res.send("success");
+  })
 })
 
 module.exports = router 

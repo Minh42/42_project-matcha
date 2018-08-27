@@ -1,12 +1,191 @@
-.background{
-    background-image:linear-gradient(60deg, #E52A6F, #67AECA);
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-#logo {
+body {
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.2;
+    color: black;
+    // padding: 30px;
+}
+
+$color-primary: #E52A6F;
+
+.navbar {
+    border: none !important;
+    background-color: #E52A6F;
+}
+
+.landing {
+    position: relative;
+}
+
+.hero-body {
+    height: 95vh;
+    background: url(../img/test.jpg);
+    background-size: cover;
+    background-position: top;
+    &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    opacity: .4; 
+    background-image: linear-gradient(to right, rgba(229, 42, 111, 0.9), rgba(103, 174, 202, 0.9));
+    }
+}
+
+.main {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.responsive-image {
+    width: 100%;
+    height: auto;
+    display : table-cell;
+    vertical-align : middle;
+    text-align:center;
+}
+
+.text-box {
+    backface-visibility: hidden;
+}
+
+.heading-primary {
+    display: block;
+    color: white;
+    font-size: 40px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 10px;
+    text-align: center;
+    animation: moveInLeft 1s ease-out;
+}
+
+.heading-secondary {
+    display: block;
+    color: white;
+    font-size: 22px;
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 10px;
+    animation: moveInRight 1s ease-out;
+}
+
+.button-box {
+    line-height: 2;
+    justify-content: space-between;
+    animation: moveInUp 0.5s ease-out 0.75s;
+    animation-fill-mode: backwards;
+}
+
+.button-box-sub {
+    display: block;
+    color: white;
+    font-size: 20px;
+    opacity: 0.4;
+    font-weight: 500;
+    text-align: center;
+}
+
+@keyframes moveInLeft {
+    0% {
+        opacity: 0;
+        transform: translateX(-100px);
+    }
+    80% {
+        transform: translateX(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0px);
+    }
+}
+
+@keyframes moveInRight {
+    0% {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+    80% {
+        transform: translateX(-10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0px);
+    }
+}
+
+@keyframes moveInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(100px);
+    }
+    80% {
+        transform: translateY(-10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+}
+
+.btn {
     font-family: 'Lato', sans-serif;
     font-weight: bold;
-    color: #E52A6F;
-    font-size: 30px;
+    opacity: 0.4;
+    display: inline-block;
+    border-radius: 100px;
+    transition: all .2s;
+    position: relative;
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, .2); 
+}
+
+.btn:active {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, .2); 
+}
+
+.btn::after {
+    content: "";
+    height: 100%;
+    width: 100%;
+    border-radius: 100px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    transition: all .4s;
+}
+
+.btn:hover::after {
+    transform: scaleX(1.4) scaleY(1.6);
+    opacity: 0;
+}
+
+.btn-register {
+    background-color: white;
+}
+
+.btn-login::after {
+    background-color: white;
+}
+
+.btn-login {
+    background-color: white;
 }
 
 .labelSign {
@@ -49,16 +228,6 @@
     font-weight: bold;
     color: black;
     opacity: 0.3;
-    padding-left: 30px;
-    padding-right: 30px;
-}
-
-.buttonregister {
-    font-family: 'Lato', sans-serif;
-    background-color: white;
-    font-weight: bold;
-    color: black;
-    opacity: 0.4;
     padding-left: 30px;
     padding-right: 30px;
 }
@@ -115,10 +284,6 @@
     margin-top: 8%;
 }
 
-.button {
-    font-family: 'Lato', sans-serif;
-}
-
 .buttonProfile {
     background-color: rgb(255, 255, 255);
     opacity: 0.8;
@@ -145,10 +310,7 @@
     background: #262626;
 }
 
-.teaserText {
-    font-family: 'Lato', sans-serif;
-    color: white;
-}
+
 
 // USER PROFILE PAGE
 
