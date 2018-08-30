@@ -12,9 +12,6 @@ class ImagesUploader extends React.Component{
 	}
 
 	async handleUploadImage() {
-		console.log('here upload')
-		console.log(this.uploadInput.files[0])
-
 		// var formData = {
 		// 	name: 	this.uploadInput.files[0].name,
 		// 	type:	this.uploadInput.files[0].type
@@ -22,9 +19,7 @@ class ImagesUploader extends React.Component{
 
 		const data = new FormData();
 		data.append('file', this.uploadInput.files[0]);
-		console.log(data)
 		const res = await axios.post('/api/uploadProfilePicture', data)
-		console.log(res.data)
 	}
 
 	render() {

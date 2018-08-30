@@ -50,7 +50,6 @@ class WizardFormFivePage extends Component{
 const selector = formValueSelector('wizard') // <-- same as form name
 WizardFormFivePage = connect(
   state => {
-	  console.log(state.form.wizard.values)
 	axios.post('/api/addNewinfoBDD', state.form.wizard.values)
 		.then((ret) => {
 			if (ret)

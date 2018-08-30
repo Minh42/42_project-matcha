@@ -10,7 +10,7 @@ import axios from 'axios';
 
 class HomePage extends Component {
 
-	async componentDidMount(){
+	async componentDidMount() {
 		const res = await axios.get('/api/onboarding');
 		if(res.data) {
 			this.props.history.push('/onboarding');

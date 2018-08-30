@@ -32,7 +32,6 @@ class UserProfileContainer extends Component {
     render () {
         return (
         <div className="container is-fluid">
-            {/* <div className="card"> */}
                 <div className="header">
                     <div className="media">
                         <div className="media-content labelProfile">
@@ -42,7 +41,8 @@ class UserProfileContainer extends Component {
                     </div>
                 </div>
                 <div className="card-image">
-                    <CarouselContainer 
+                    <CarouselContainer
+                        user={this.props.user}
                         photos={this.props.photos}
                     />
                 </div>
@@ -79,7 +79,6 @@ class UserProfileContainer extends Component {
                             </div>
                         </div>                    
                     </div>
-                {/* </div> */}
             </div>
         </div>
     )};

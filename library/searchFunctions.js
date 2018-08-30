@@ -47,7 +47,6 @@ function match(user, users) {
             scoring_list.push(value);
         }
     }
-    console.log(scoring_list)
     return scoring_list;
 }
 
@@ -138,7 +137,6 @@ function multiFilter(users, filters){
   };
 
 function filterByLikesProfile(user, users) {
-
     if (user[0].likes !=  null) {
         var likedByUsers = user[0].likes.split(',');
         var likes = []
@@ -149,6 +147,26 @@ function filterByLikesProfile(user, users) {
 
         let filters = {
             user_id: likes
+        };
+
+        var filtered = multiFilter(users, filters);
+        return filtered;
+    } else {
+        return null;
+    }
+}
+
+function filterByViewsProfile(user, users) {
+    if (user[0].views !=  null) {
+        var viewedByUsers = user[0].views.split(',');
+        var views = []
+        viewedByUsers.forEach(function(elt) {
+            var item = parseInt(elt)
+            views.push(item)
+        })
+
+        let filters = {
+            user_id: views
         };
 
         var filtered = multiFilter(users, filters);
@@ -284,6 +302,7 @@ function groupByGender(users) {
 module.exports = {
     filterByProperty : filterByProperty,
     filterByLikesProfile: filterByLikesProfile,
+    filterByViewsProfile: filterByViewsProfile,
     groupByGender: groupByGender,
     validateInput: validateInput,
     getScore : getScore,

@@ -52,7 +52,7 @@ class Header extends Component {
                 default:
                     return [
                         <p key="homepage" className="control">
-                            <Link to="/homepage"><Button className="button is-rounded buttonProfile" title=" homepage"/></Link>
+                            <Link to="/homepage"><Button className="button is-rounded buttonProfile" title=" Homepage"/></Link>
                         </p>,
                         <p key = "messages" className="control">
                             <Link to="/messages"><Button className="button is-rounded buttonProfile" title="My messages"/></Link>

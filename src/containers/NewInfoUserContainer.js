@@ -54,7 +54,6 @@ class NewInfoUserContainer extends React.Component{
 	}
 	
 	async handleInitialize() {
-		console.log(this.props.user)
 		const birthdate = this.props.user.infos.birth_date
 		const birthdateSplit = birthdate.substring(0, 10);
 		const initData = {

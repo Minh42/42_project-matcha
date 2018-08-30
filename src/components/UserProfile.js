@@ -3,80 +3,101 @@ import { withRouter } from 'react-router';
 import axios from 'axios';
 
 class UserProfile extends Component {
-
     constructor(props) {
         super(props)
 
         this.state = {
-            icon : ""
+            isMounted: false,
+            like : false
         }
         this.showProfile = this.showProfile.bind(this)
         this.handleLike = this.handleLike.bind(this)
     }
 
-    async componentDidMount() {
-        const user_like = this.props.id
-        const res = await axios.post('/api/searchLikeProfileUser')
-        var i = 0;
-        while (i < res.data.length) {
-            if (res.data[i].to_user_id === user_like) {
-                this.setState ({
-                    icon: this.props.id
-                })
-                document.getElementById(this.props.id).style.color = "red";
-            }
-            i++;
-        }
+    componentDidMount() {
+        this.setState({ isMounted: true }, () => {
+            axios.get('/api/searchLikeProfileUser').then(res => {
+                for (var i = 0; i < res.data.length; i++) {
+                    if (res.data[i].to_user_id === this.props.id) {
+                        if (this.state.isMounted) {
+                            this.setState({like : true})
+                        }
+                    }
+                }
+            })
+            .catch(function (error) {
+                this.setState({like : false})
+            });
+        });
+      }
+
+    componentWillUnmount() {
+        this.setState({ isMounted: false });
     }
 
-    showProfile() {
-        const user_id = this.props.id
-        this.props.history.push('/profileOtherUser/' + user_id);
+    async showProfile() {
+        const res = await axios.post('/api/addUserViews', {user_id : this.props.id});
+        this.props.history.push('/otherProfile/' + this.props.id);
     }
 
     async handleLike() {
         var data = { user_id : this.props.id}
-        const res = await axios.post('/api/addLike', data)
-        if (res.data === "add") {
-            this.setState ({
-                icon: this.props.id
-            })
-            document.getElementById(this.props.id).style.color = "red";
+        const res = await axios.post('/api/addLike', data);
+        if (res.data) {
+            if (res.data === "add") {
+                document.getElementById(this.props.id).style.color = "red";
+            }
+            else if (res.data === "delete") {
+                document.getElementById(this.props.id).style.color = "grey";
+            }
         }
-        else if (res.data === "delete") {
-            this.setState ({
-                icon: this.props.id
-            })
-            document.getElementById(this.props.id).style.color = "grey";
+    }
+
+    renderLike(id) {
+        if (this.state.like) {
+            return (
+                <span id={id} className="icon" onClick={this.handleLike} style={{color: "red"}}>
+                    <i className="fas fa-heart"></i>
+                </span>
+            )
+        } else {
+            return (
+                <span id={id} className="icon" onClick={this.handleLike} style={{color: "grey"}}>
+                    <i className="fas fa-heart"></i>
+                </span>
+            )
         }
     }
 
     render() {
-        const { user, age, src } = this.props;
-        if (src)
-            var path = 'http://localhost:8080/' + src;
+        const { id, firstname, lastname, age, src } = this.props;
+        var getAge = require('get-age');
+        if (src) {
+			if (src.includes("cloudinary")) {
+				var path = src;
+			} else {
+				var path = 'http://localhost:8080/' + src;
+            }
+        }
         return (
-            // <div className="column ">
                 <div className="cardProfile">
                     <div className="card-image">
                         <figure className="image is-3by2">
                             <img className="imageCard" src={path} alt=""/>
                         </figure>
                         <div className="card-content is-overlay is-clipped">
-                        {/* <input id="hiddenID" type="hidden">{id}</input> */}
                         <div className="columns">
                             <div className="homepageInfo">
-                                {user}
+                                {firstname} {lastname}
                             </div>
                         </div>
                         <div className="columns">
                             <div className="homepageInfo">
-                                {age}
+                                {getAge(age)}
                             </div> 
                         </div>        
                         </div>
                     </div>
-                    {/* <footer className="card-footer"> */}
                     <div>
                         <div className="card-footer-item">
                             <div className="field is-grouped">
@@ -89,9 +110,7 @@ class UserProfile extends Component {
                                 </p>
                                 <p className="control">
                                     <a className="button is-rounded round-button buttonLike">
-                                        <span id={this.state.icon} className="icon" onClick={this.handleLike}>
-                                            <i className="fas fa-heart"></i>
-                                        </span>
+                                        {this.renderLike(id)}
                                     </a>
                                 </p>
                                 <p className="control">
@@ -104,9 +123,7 @@ class UserProfile extends Component {
                             </div>
                         </div>
                     </div>
-                    {/* </footer> */}
                 </div>
-            // </div>
         )
     }
 }

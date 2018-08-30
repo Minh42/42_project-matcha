@@ -4,16 +4,25 @@ import Slider from 'react-slick';
 class CarouselContainer extends Component {
   
   renderPhotos() {
-    return this.props.photos.map(photo => {
-      const uuidv4 = require('uuid/v4');
-      var id = uuidv4();
-      var src = 'http://localhost:8080/' + photo.image_path;
+    if (this.props.photos[0].image_path === null || this.props.photos === undefined || this.props.photos === '' || this.props.photos.length <= 0) {
+      var src = this.props.user.imageProfile_path;
       return (
-        <div key={id}>
+        <div>
           <img src={src}/>
         </div>
       );
-    })
+    } else {
+      return this.props.photos.map(photo => {
+        const uuidv4 = require('uuid/v4');
+        var id = uuidv4();
+        var src = 'http://localhost:8080/' + photo.image_path;
+        return (
+          <div key={id}>
+            <img src={src}/>
+          </div>
+        );
+      })
+    }
   }
   
   render() {

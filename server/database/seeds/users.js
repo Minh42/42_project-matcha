@@ -5,6 +5,9 @@ const util = require('util');
 const readFile = util.promisify(fs.readFile);
 const gender = require('gender');
 const randomLocation = require('random-location');
+const keys = require('../../config/keys');
+const cloudinary = require('cloudinary');
+const shuffle = require('shuffle-array');
 
 function pickRand(arr) {
 	return arr[Math.floor(Math.random() * arr.length)];
@@ -16,15 +19,20 @@ function getRandomIntInclusive(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive 
 }
 
-let createUser = (knex, id, bio, occupations) => {
+function pickPhoto(photos) {
+	return photos.length 
+		? photos.pop().secure_url  
+		: 'https://bulma.io/images/placeholders/128x128.png';	
+}
 
-  const P = { latitude: 48.861014, longitude: 2.341155 }; // Paris center
-  const R = 1000 * 30; // within a circle of 30 km
-  const { latitude, longitude } = randomLocation.randomCirclePoint(P, R);
-  const identity = faker.helpers.userCard();
-  var arrayName = identity.name.split(' ');
-  var firstname = arrayName[0];
-  var lastname = arrayName[1];
+let createUser = (knex, id, bio, occupations, female, male) => {
+    const P = { latitude: 48.861014, longitude: 2.341155 }; // Paris center
+    const R = 1000 * 30; // within a circle of 30 km
+    const { latitude, longitude } = randomLocation.randomCirclePoint(P, R);
+    const identity = faker.helpers.userCard();
+    var arrayName = identity.name.split(' ');
+    var firstname = arrayName[0];
+    var lastname = arrayName[1];
 	const guessedGender = gender.guess(identity.name).gender == 'male' ? 'man' : 'woman';
 
   return {
@@ -40,6 +48,7 @@ let createUser = (knex, id, bio, occupations) => {
     latitude: latitude,
     longitude: longitude,
     bio: pickRand(bio),
+    imageProfile_path: pickPhoto(guessedGender == 'man' ? male : female),
     occupation: pickRand(occupations),
     ip_address: faker.internet.ip(),
     geolocalisationAllowed: true,
@@ -58,7 +67,7 @@ let createUserPhoto = (knex, id) => {
     return {
         user_id: id,
         details: null,
-        image_path: faker.image.imageUrl(640, 480, "people"),
+        image_path: null,
         active: true,
         date_created: new Date(),
         date_updated: new Date()
@@ -86,6 +95,23 @@ let createUserRelationshipInterest = (knex, id) => {
     }
 }
 
+async function getCloudinaryPhotos(gender) {
+    cloudinary.config({ 
+        cloud_name: keys.CLOUD_NAME, 
+        api_key: keys.CLOUDINARY_API_KEY,
+        api_secret: keys.CLOUDINARY_API_SECRET
+    });
+
+    try {
+        const res = await cloudinary.v2.api.resources({ type: 'upload', prefix: 'matcha/' + gender + '/', max_results: 250 });
+        const photos = res.resources;
+        return photos;
+    } catch(e) {
+        console.log(e);
+    }
+
+
+}
 
 exports.seed = function(knex, Promise) {
   // Deletes ALL existing entries
@@ -109,25 +135,29 @@ exports.seed = function(knex, Promise) {
             async function getData() {
                 const bioPromise = readFile('./seeds/bio', 'ascii');
                 const occupationsPromise = readFile('./seeds/occupations', 'ascii');
-      
-                const [bioJSON, occupationsJSON] = await Promise.all([bioPromise, occupationsPromise]);
+                const femalePromise = getCloudinaryPhotos('female');
+                const malePromise = getCloudinaryPhotos('male');
+
+                const [bioJSON, occupationsJSON, femaleJSON, maleJSON] = await Promise.all([bioPromise, occupationsPromise, femalePromise, malePromise]);
                 const customData = {
                     bio: JSON.parse(bioJSON),
-                    occupations: JSON.parse(occupationsJSON)
+                    occupations: JSON.parse(occupationsJSON),
+                    female: shuffle(femaleJSON),
+                    male: shuffle(maleJSON)
                 };
                 return customData;
             }
     
             var promise = await getData();
-            const { bio, occupations } = promise;
-            for (let id = 1; id <= 10; id++) {
-                users.push(createUser(knex, id, bio, occupations))
+            const { bio, occupations, female, male } = promise;
+            for (let id = 1; id <= 500; id++) {
+                users.push(createUser(knex, id, bio, occupations, female, male))
             }
             return knex("users").insert(users);
         })
         .then(function () {
             let usersPhotos = [];
-            for (let id = 1; id <= 10; id++) {
+            for (let id = 1; id <= 500; id++) {
                 for (var i = 0; i < 5; i++) {
                     usersPhotos.push(createUserPhoto(knex, id))
                 }
@@ -136,7 +166,7 @@ exports.seed = function(knex, Promise) {
         })
         .then(() => {
             let usersTags = [];
-            for (let id = 1; id <= 10; id++) {
+            for (let id = 1; id <= 500; id++) {
                 for (var i = 0; i < 5; i++) {
                     usersTags.push(createUserTag(knex, id))
                 }
@@ -145,14 +175,14 @@ exports.seed = function(knex, Promise) {
         })
         .then(() => {
             let usersGenderInterest = [];
-            for (let id = 1; id <= 10; id++) {
+            for (let id = 1; id <= 500; id++) {
                 usersGenderInterest.push(createUserGenderInterest(knex, id))
             }
             return knex("interested_in_gender").insert(usersGenderInterest);
         })
         .then(() => {
             let usersRelationshipInterest = [];
-            for (let id = 1; id <= 10; id++) {
+            for (let id = 1; id <= 500; id++) {
                 usersRelationshipInterest.push(createUserRelationshipInterest(knex, id))
             }
             return knex("interested_in_relation").insert(usersRelationshipInterest);

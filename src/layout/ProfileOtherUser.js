@@ -9,17 +9,16 @@ import UserProfileContainer from '../containers/UserProfileContainer';
 class ProfileOtherUser extends Component {
 
 	async componentDidMount() {
-		console.log('here')
-		const user_id = this.props.match.params.id
-		console.log(user_id)
+		var user_id = this.props.match.params.id;
 		const res = await axios.get('/api/otherProfile/?user_id=' + user_id);
-        this.props.selectUser(res);
+		console.log(res.data)
+        this.props.selectUser({data: res.data});
 	}
 
-	render () {
-		return (
-		<div className="columns background">
-			<div className="column is-6 is-offset-3 message hero is-fullheight" id="message-pane">
+	renderProfile() {
+		console.log(this.props.selectedUser)
+		if (this.props.selectedUser) {
+			return (
 				<UserProfileContainer 
 					user={this.props.selectedUser.data.infos}	
 					photos={this.props.selectedUser.data.photos}
@@ -27,6 +26,15 @@ class ProfileOtherUser extends Component {
 					interest={this.props.selectedUser.data.interest}
 					relationship={this.props.selectedUser.data.relationship}	
 				/>
+			)
+		}
+	}
+ 
+	render () {
+		return (
+		<div className="columns background">
+			<div className="column is-6 is-offset-3 message hero is-fullheight" id="message-pane">
+				{this.renderProfile()}
 			</div>
 		</div>
 	)};
@@ -34,7 +42,6 @@ class ProfileOtherUser extends Component {
 
 function mapStateToProps(state) {
     return { 
-		errorMessage: state.auth.error,
 		selectedUser: state.selectedUser
     };
 }

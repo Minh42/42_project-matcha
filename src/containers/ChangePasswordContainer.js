@@ -16,7 +16,6 @@ class ResetPassword extends Component {
    async onSubmit(values) {
         const res = await axios.post('/api/changePassword', values)
         const success = res.data.success
-        console.log(success)
         this.setState({
             messagesSuccess : success
         })
