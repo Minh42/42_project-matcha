@@ -1,6 +1,9 @@
 const assert = require('assert');
 const empty = require('is-empty');
 const isFloat = require('is-float-nodejs');
+var getAge = require('get-age');
+var turf = require('@turf/turf');
+var stemmer = require('stemmer');
 
 function filterByProperty(array, prop, value) {
     var filtered = new Array();
@@ -16,6 +19,199 @@ function filterByProperty(array, prop, value) {
     } 
     return filtered;
 }
+
+function filterByAge(array, prop, min, max) {
+    console.log(array)
+    var filtered = new Array();
+    for (var i = 0; i < array.length; i++) {
+        var obj = array[i];
+        for (var key in obj) {
+            var item = getAge(obj[prop]);
+            console.log(item)
+            if (item <= max && item >= min) {
+                filtered.push(obj);
+                break
+            }
+        }
+    }
+    return filtered
+}
+
+function filterByPopularity(array, prop, min, max) {
+    console.log(array)
+    var filtered = new Array();
+    for (var i = 0; i < array.length; i++) {
+        var obj = array[i];
+        for (var key in obj) {
+            var item = obj[prop];
+            console.log(item)
+            if (item <= max && item >= min) {
+                filtered.push(obj);
+                break
+            }
+        }
+    }
+    return filtered
+}
+
+function filterByDistance(array, currentUser, min, max) {
+    console.log(array)
+    var filtered = new Array();
+    var latitudeCurrent = currentUser.latitude;
+    var longitudeCurrent = currentUser.longitude;
+    for (var i = 0; i < array.length; i++) {
+        var obj = array[i];
+        for (var key in obj) {
+            var latitudeUser = obj["latitude"];
+            var longitudeUser = obj["longitude"]
+            var from = turf.point([latitudeCurrent, longitudeCurrent]);
+            var to = turf.point([latitudeUser, longitudeUser]);
+            var options = {units: 'kilometers'};
+            var distance = turf.distance(from, to, options);
+            console.log(distance)
+            if (distance <= max && distance >= min) {
+                filtered.push(obj);
+                break
+            }
+        }
+    }
+    return filtered
+}
+
+
+//SORT BY AGE
+
+function findAge(array, prop) {
+    var age = new Array();
+    for (var i = 0; i < array.length; i++) {
+        age.push(getAge(array[i][prop]))
+    }
+    return age
+}
+
+function check(filtered, line) {
+    var i = 0;
+    while (i < filtered.length) 
+    {
+        if (line.user_id === filtered[i].user_id)
+        {
+            return true
+        }
+        i++;
+    }
+    return false
+}
+
+function sortByAge(array, newArray, prop) {
+    var filtered = new Array();
+    var i = 0;
+    while (i < newArray.length) 
+    {
+        var y = 0;
+         while (y < array.length) 
+         {
+            if (filtered.length != 0 && check(filtered, array[y]) === true) { }
+            else if (newArray[i] === getAge(array[y][prop])) {
+                filtered.push(array[y])
+            }
+            y++;
+        }
+        i++;
+    }
+    return filtered
+}
+
+// SORT BY POPULARITY
+
+function findPop(array, prop) {
+    var pop = new Array();
+    for (var i = 0; i < array.length; i++) {
+        pop.push(array[i][prop])
+    }
+    return pop
+}
+
+function sortByPop(array, newArray, prop) {
+    var filtered = new Array();
+    var i = 0;
+    while (i < newArray.length) 
+    {
+        var y = 0;
+         while (y < array.length) 
+         {
+            if (filtered.length != 0 && check(filtered, array[y]) === true) { }
+            else if (newArray[i] === array[y][prop]) {
+                filtered.push(array[y])
+            }
+            y++;
+        }
+        i++;
+    }
+    return filtered
+}
+
+// SORT BY DISTANCE
+
+function findDistance(array, currentUser) {
+    var arrayDistance = new Array();
+    var latitudeCurrent = currentUser.latitude;
+    var longitudeCurrent = currentUser.longitude;
+    for (var i = 0; i < array.length; i++) {
+        var latitudeUser = array[i].latitude
+        var longitudeUser = array[i].longitude
+        var from = turf.point([latitudeCurrent, longitudeCurrent]);
+        var to = turf.point([latitudeUser, longitudeUser]);
+        var options = {units: 'kilometers'};
+        var distance = turf.distance(from, to, options);
+        arrayDistance.push(distance)
+    }
+    return arrayDistance
+}
+
+function sortByDistance(array, newArray, currentUser) {
+    var filtered = new Array();
+    var latitudeCurrent = currentUser.latitude;
+    var longitudeCurrent = currentUser.longitude;
+    var i = 0;
+    while (i < newArray.length) 
+    {
+        var y = 0;
+         while (y < array.length) 
+         {
+            var latitudeUser = array[y].latitude
+            var longitudeUser = array[y].longitude
+            var from = turf.point([latitudeCurrent, longitudeCurrent]);
+            var to = turf.point([latitudeUser, longitudeUser]);
+            var options = {units: 'kilometers'};
+            var distance = turf.distance(from, to, options);
+            if (filtered.length != 0 && check(filtered, array[y]) === true) { }
+            else if (newArray[i] === distance) {
+                filtered.push(array[y])
+            }
+            y++;
+        }
+        i++;
+    }
+    return filtered
+}
+
+// SEARCH TAGS
+
+function searchTag(users, tag) {
+    var filtered = new Array();
+    for (var i = 0; i < users.length; i++) {
+        var tags = users[i].tags
+        var tagSplit = tags.split(',')
+        for (var y = 0; y < tagSplit.length; y++) {
+            if (tagSplit[y] === tag) {
+                filtered.push(users[i])
+            }
+        }
+    }
+    return filtered
+}
+
+// ALGO MATCHING
 
 function match(user, users) {
     var scoring_list = new Array();
@@ -58,9 +254,9 @@ function getScore(person1, person2, users) {
         "age": 0.1,
         "coordinates": 0.4
     }
-    var stemmer = require('stemmer');
-    var getAge = require('get-age');
-    var turf = require('@turf/turf');
+    // var stemmer = require('stemmer');
+    // var getAge = require('get-age');
+    // var turf = require('@turf/turf');
     var score = 0.0;
 
     var interest_list1 = person1["tags"].split(',');
@@ -284,6 +480,16 @@ function groupByGender(users) {
 module.exports = {
     filterByProperty : filterByProperty,
     filterByLikesProfile: filterByLikesProfile,
+    filterByAge: filterByAge,
+    filterByPopularity: filterByPopularity,
+    filterByDistance: filterByDistance,
+    findAge: findAge,
+    sortByAge: sortByAge,
+    findPop: findPop,
+    sortByPop: sortByPop,
+    findDistance: findDistance,
+    sortByDistance: sortByDistance,
+    searchTag: searchTag,
     groupByGender: groupByGender,
     validateInput: validateInput,
     getScore : getScore,

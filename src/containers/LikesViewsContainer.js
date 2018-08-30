@@ -91,8 +91,6 @@ class LikesViewsContainer extends Component {
 function mapStateToProps(state) {
     return {
         likesUser: getLikesUser(state),
-        loading: state.users.loading,
-		error: state.users.error,
 		currentUser: state.auth.currentUser
     }
 }

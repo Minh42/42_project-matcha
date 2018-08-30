@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 // import SearchBar from '../components/SearchBar';
 import UsersContainer from '../containers/UsersContainer';
+import Filters from '../containers/Filters';
+import SortBy from '../containers/SortBy';
+import SearchTags from '../containers/SearchTags';
 import { connect } from 'react-redux';
 import { setUnOnboarding } from '../actions/actionUsers';
 import { bindActionCreators } from 'redux';
@@ -21,10 +24,16 @@ class HomePage extends Component {
 	
 	render () {
 		return (
-		<div className="columns" id="mail-app">
+		<div className="columns">
 			<aside className="column is-4 aside">
-				<div className="compose">
-					Hello
+				<div className="column">
+					<SortBy />
+				</div>
+				<div className="column">
+					<Filters />
+				</div>
+				<div className="column">
+					<SearchTags />
 				</div>
 			</aside>
 			<div className="column is-8 messages hero is-fullheight" id="message-feed">

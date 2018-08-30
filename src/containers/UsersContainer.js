@@ -3,12 +3,19 @@ import UserProfile from '../components/UserProfile';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { fetchUsers } from '../actions/actionFetch';
+import { getFilterUsers } from '../selectors/index';
 import { getMaeva } from '../selectors/index';
 import { getAllUsers } from '../selectors/index';
 import PropTypes from 'prop-types';
 
 class UsersContainer extends Component {
+
+    componentDidMount() {
+		this.props.fetchUsers();
+    }
+    
     renderList() {
+        console.log("filterUsers:", this.props.users)
         return this.props.users.map((user) => {
             return (
             <div key={user.user_id} className="column is-half">
@@ -52,9 +59,7 @@ UsersContainer.propTypes = {
 
 function mapStateToProps(state) {
     return {
-        users: getMaeva(state),
-        loading: state.users.loading,
-        error: state.users.error
+        users: getFilterUsers(state)
     }
 }
 
