@@ -4,8 +4,15 @@
     box-sizing: border-box;
 }
 
+#logo {
+    color: white;
+    font-family: 'Lato', sans-serif; 
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
 .background{
-    background-image:linear-gradient(60deg, #E52A6F, #67AECA);
+    background: rgb(216, 3, 81);
 }
 
 body {
@@ -19,9 +26,27 @@ body {
 
 $color-primary: #E52A6F;
 
-.navbar {
-    border: none !important;
-    background-color: #E52A6F;
+// Landing page
+button:active{
+    border:none;
+}
+
+.buttonHeader {
+    border: none;
+    background-color: rgb(216, 3, 81);
+    color: white;
+}
+
+.buttonHeader:hover {
+    border: none;
+    background-color: rgba(255, 255, 255, 0.399);
+    color: rgb(216, 3, 81);
+}
+
+.buttonHeader:active {
+    border: none;
+    background-color: rgba(216, 109, 148, 0.482);
+    color: rgb(61, 174, 176);
 }
 
 .landing {
@@ -151,6 +176,7 @@ $color-primary: #E52A6F;
     border-radius: 100px;
     transition: all .2s;
     position: relative;
+    border: none;
 }
 
 .btn:hover {
@@ -299,9 +325,9 @@ $color-primary: #E52A6F;
 }
 
 .buttonLikesViews {
-    margin-top: 5%;
+    background-color: #7777;
     color: #E52A6F;
-    border: solid 1px #E52A6F;
+    border: solid 1px white;
 }
 
 .buttonLikesViews:hover {
@@ -422,13 +448,13 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
 }
 
 .navbar {
-    border-bottom: 1px solid #DEDEDE; 
+    background-color: rgb(216, 3, 81);
 }
 
 .aside {
     display:block;
-    background-color: #E52A6F;
-    border-right: 1px solid #DEDEDE;
+    background-color: #7d7a7b20;
+    box-shadow: -10px 0px 10px 1px #aaaaaa;
 }
 
 .messages {
@@ -446,6 +472,10 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
     height: 95px;
     margin:0 -10px;
     padding: 25px 30px;
+}
+
+.image-small {
+    border-radius: 500px;
 }
 
 
@@ -578,8 +608,8 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    background: #3f51b5;
-    border: 1px solid #3f51b5;
+    background: rgb(216, 3, 81);
+    border: 1px solid rgb(216, 3, 81);
     border-radius: 100%;
     cursor: pointer;
     display: block;
@@ -595,26 +625,15 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
     transition: transform 0.3s ease-out, box-shadow 0.3s ease-out, -webkit-transform 0.3s ease-out;
     width: 1rem;
     }
-    .input-range__slider:active {
-      -webkit-transform: scale(1.3);
-              transform: scale(1.3); }
-    .input-range__slider:focus {
-      box-shadow: 0 0 0 5px rgba(63, 81, 181, 0.2); }
-    .input-range--disabled .input-range__slider {
-      background: #cccccc;
-      border: 1px solid #cccccc;
-      box-shadow: none;
-      -webkit-transform: none;
-              transform: none; }
+    
   
   .input-range__slider-container {
     -webkit-transition: left 0.3s ease-out;
     transition: left 0.3s ease-out; }
   
   .input-range__label {
-    /* color: #aaaaaa; */
     font-family: "Helvetica Neue", san-serif;
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
     white-space: nowrap;
@@ -644,7 +663,7 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
 //       left: 50%; }
   
   .input-range__track {
-    background: #eeeeee;
+    background: rgb(216, 3, 81);
     border-radius: 0.3rem;
     /* cursor: pointer; */
     display: block;
@@ -654,7 +673,7 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
     transition: left 0.3s ease-out, width 0.3s ease-out;
     }
     .input-range--disabled .input-range__track {
-      background: #eeeeee; }
+      background: rgb(216, 3, 81); }
   
   .input-range__track--background {
     left: 0;
@@ -665,7 +684,7 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
     }
   
   .input-range__track--active {
-    background: #3f51b5; }
+    background: white; }
   
   .input-range {
     height: 1rem;
@@ -678,3 +697,10 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
         margin-bottom: 15%;
     }
   
+
+// SORT BY
+
+.sortByButton {
+    font-family: 'Lato', sans-serif;
+    margin-top: 5%;
+}

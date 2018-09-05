@@ -4,6 +4,8 @@ import { SearchTagsAction } from '../actions/actionFilter';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
+var newTags = new Array();
+
 const KeyCodes = {
 	comma: 188,
 	enter: 13,
@@ -26,27 +28,46 @@ class SearchTags extends Component {
 		this.handleSearch = this.handleSearch.bind(this);
 	}
 
+	componentDidMount() {
+		const i = 0
+		console.log("tags did mount:", newTags)
+
+		this.setState(state => ({ 
+			tags: (newTags.length > 0) ? addTag(i, newTags) : []
+		}));
+
+		function addTag(i, newTags) {
+			var array = []
+			while (i < newTags.length) {
+			  array[i] = newTags[i]
+			  i++
+			}
+			return array
+		}
+	}
+
 	handleDeleteSearch(i) {
-		const { tags } = this.state;
-		console.log(this.state.tags)
+		const { tags } = this.state
+		newTags.splice(i, 1)
         this.setState({
          tags: tags.filter((tag, index) => index !== i),
 		});
-		// this.props.DeleteTagsAction(tags, this.props.history)
+		this.props.SearchTagsAction(newTags, this.props.history)
     }
 
 	handleSearch(tag) {
+		newTags.push(tag)
 		this.setState(state => ({ 
 			tags: [...state.tags, tag] 
 		}));
-		this.props.SearchTagsAction(tag, this.props.history)
+		this.props.SearchTagsAction(newTags, this.props.history)
     }
 
 	render () {
 		const { tags } = this.state;
 
 		return (
-			<div>
+			<div className="column is-offset-2">
 			<div className="field">
 				<label className="label">Tags</label>
 					<ReactTags tags={tags}

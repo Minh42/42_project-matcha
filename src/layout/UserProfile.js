@@ -8,7 +8,7 @@ import EditUserProfileContainer from '../containers/EditUserProfileContainer';
 import EditUserOtherInfoContainer from '../containers/EditUserOtherInfoContainer';
 import UserProfileContainer from '../containers/UserProfileContainer';
 import FilesUploadContainer from '../components/FilesUploadContainer';
-import LikesViews from '../containers/LikesViewsContainer';
+import LikesViewsContainer from '../containers/LikesViewsContainer';
 
 class UserProfile extends Component {
 	constructor(props, context) {
@@ -26,7 +26,7 @@ class UserProfile extends Component {
 
 	async componentDidMount() {
 		const res = await axios.get('/api/profile');
-        this.props.selectUser(res);
+		this.props.selectUser(res);
 	}
 
 	toggleEditPersonnalInfo() {
@@ -50,7 +50,6 @@ class UserProfile extends Component {
 	async toggleBack() {
 		const ret = await axios.get('/api/profile')
 		this.props.selectUser(ret);
-		console.log(ret)
 		this.setState({
 			isEditingProfilePicture: false,
 			isEditingPersonnalInfo: false,
@@ -59,7 +58,6 @@ class UserProfile extends Component {
 	}
 
 	showEditFeature() {
-		console.log(this.props.selectedUser)
 		if(this.props.selectedUser) {
 			if (this.state.isEditingPersonnalInfo) {
 				return (
@@ -124,12 +122,12 @@ class UserProfile extends Component {
 		return (
 		<div className="columns" id="mail-app">
 			<aside className="column is-2 aside backgroundInfoUser">
-				<div className="compose">
+				<div className="column">
 					{this.showEditButtons()}
 				</div>
 			</aside>
 			<div className="column is-3 messages hero is-fullheight" id="message-feed">
-				<LikesViews />
+				<LikesViewsContainer />
 			</div>
 			<div className="column is-7 message hero is-fullheight" id="message-pane">
 				{this.showEditFeature()}
@@ -140,7 +138,6 @@ class UserProfile extends Component {
 
 function mapStateToProps(state) {
     return { 
-		errorMessage: state.auth.error,
 		selectedUser: state.selectedUser
     };
 }

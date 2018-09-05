@@ -1,5 +1,6 @@
 import { createSelector } from 'reselect';
-import { filterByProperty, filterByLikesProfile, filterByAge, filterByPopularity, filterByDistance, findAge, sortByAge, findPop, sortByPop, findDistance, sortByDistance, searchTag, groupByGender, validateInput, getScore, match } from '../../library/searchFunctions';
+import { filterByProperty, filterByLikesProfile, filterByAge, filterByPopularity, filterByDistance, findAge, sortByAge, findPop, sortByPop, findDistance, sortByDistance, searchTag, deleteTag, filterByViewsProfile, groupByGender, validateInput, getScore, match } from '../../library/searchFunctions';
+// import { filterByProperty, filterByLikesProfile, filterByViewsProfile, groupByGender, validateInput, getScore, match } from '../../library/searchFunctions';
 
 const getUsers = (state) => state.users.items
 const getCurrentUser = (state) => state.auth.currentUser
@@ -9,11 +10,15 @@ export const getAllUsers = createSelector([getUsers], users => {
     return users;
 });
 
-export const getLikesUser = createSelector([getAllUsers, getCurrentUser], (users, currentUser) => {
-    console.log(users)
+export const getLikesUsers = createSelector([getAllUsers, getCurrentUser], (users, currentUser) => {
     const user = filterByProperty(users, "user_id", currentUser.user_id)
     const result = filterByLikesProfile(user, users)
-    console.log("FINAL", result)
+    return result;
+})
+
+export const getViewsUsers = createSelector([getAllUsers, getCurrentUser], (users, currentUser) => {
+    const user = filterByProperty(users, "user_id", currentUser.user_id)
+    const result = filterByViewsProfile(user, users)
     return result;
 });
 
@@ -22,13 +27,10 @@ export const getFilterUsers = createSelector([getAllUsers, getCurrentUser, getFi
         var users = filterByAge(users, "birth_date", filter.ageFilter.min, filter.ageFilter.max)
     }
     if (filter.popularityChange === true) {
-        console.log("newUsers after age:", users)
         var users = filterByPopularity(users, "popularity", filter.popularityFilter.min, filter.popularityFilter.max)
-        console.log("newUsers after popularity:", users)
     }
     if (filter.distanceChange === true) {
         var users = filterByDistance(users, currentUser, filter.distanceFilter.min, filter.distanceFilter.max)
-        console.log("newUsers after distance:", users)
     }
     if (filter.sortbyChange === true) {
         if (filter.sortby === "age") {
@@ -49,9 +51,8 @@ export const getFilterUsers = createSelector([getAllUsers, getCurrentUser, getFi
             var users = sortByDistance(users, newArray, currentUser) 
         }
     }
-    if (filter.searchTag === true) {
-        console.log(filter)
-        var tag = filter.tag.text
+    if (filter.searchTag === true && filter.tag.length > 0) {
+        var tag = filter.tag
         var users = searchTag(users, tag)
     }
     else if (filter.ageChange === false && filter.distanceChange === false && filter.popularityChange === false && filter.searchTag === false) {

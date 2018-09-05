@@ -13,7 +13,7 @@ import axios from 'axios';
 
 class HomePage extends Component {
 
-	async componentDidMount(){
+	async componentDidMount() {
 		const res = await axios.get('/api/onboarding');
 		if(res.data) {
 			this.props.history.push('/onboarding');
@@ -26,13 +26,13 @@ class HomePage extends Component {
 		return (
 		<div className="columns">
 			<aside className="column is-4 aside">
-				<div className="column">
+				<div className="columns">
 					<SortBy />
 				</div>
-				<div className="column">
+				<div className="columns">
 					<Filters />
 				</div>
-				<div className="column">
+				<div className="columns">
 					<SearchTags />
 				</div>
 			</aside>

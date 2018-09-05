@@ -8,20 +8,36 @@ class SortBy extends Component {
 	constructor(props) {
 		super(props);
 
+		this.state = {
+			sortby : "Sort by..."
+		}
+
 		this.handleSort = this.handleSort.bind(this);
 	}
 
+	componentDidMount() {
+		console.log(this.props.sort)
+		this.setState({
+			sortby: this.props.sort
+		})
+	}
+
 	handleSort(event) {
+		// document.getElementById("select").value = event.target.value
+		this.setState({
+			sortby: event.target.value
+		})
 		this.props.SortByAction(event.target.value, this.props.history)
 	}
 
 	render() {
 		return (
+		<div className="column is-6 is-offset-6 sortByButton">
 			<div className="field">
 				<div className="control">
-					<div className="select is-primary">
-						<select name="sortby" onChange={this.handleSort}>
-							<option value="">Sort by...</option>
+					<div className="select">
+						<select id="select" name="sortby" onChange={this.handleSort} value={this.state.sortby}>
+							<option value="sort">SortBy...</option>
 							<option value="age">Age</option>
 							<option value="popularity">Popularity</option>
 							<option value="distance">Distance</option>
@@ -29,9 +45,17 @@ class SortBy extends Component {
 					</div>
 				</div>
 			</div>
+		</div>
 		)
 	}
 }
+
+function mapStateToProps(state) {
+    return {
+        sort: state.filterUsers.sortby
+    }
+}
+
 
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({ 
@@ -39,4 +63,4 @@ function mapDispatchToProps(dispatch) {
 	}, dispatch);
 }
 
-export default connect(null, mapDispatchToProps)(SortBy);
+export default connect(mapStateToProps, mapDispatchToProps)(SortBy);

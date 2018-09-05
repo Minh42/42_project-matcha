@@ -32,7 +32,7 @@ class User {
 
     static async selectAllUsers() {
         try {
-            let requete = "SELECT users.user_id, users.firstname, users.lastname, users.username, users.imageProfile_path, GROUP_CONCAT(DISTINCT tags.name) AS tags, users.birth_date, users.gender, users.latitude, users.longitude, users.occupation, users.popularity, GROUP_CONCAT(DISTINCT from_user_id) AS likes, GROUP_CONCAT(DISTINCT genders.name) AS genders, GROUP_CONCAT(DISTINCT relationships_type.name) AS relationships_type FROM `users` INNER JOIN `user_tags` ON user_tags.user_id = users.user_id LEFT JOIN `tags` ON tags.tag_id = user_tags.tag_id LEFT JOIN `likes` ON likes.to_user_id = users.user_id INNER JOIN `interested_in_gender` ON interested_in_gender.user_id = users.user_id LEFT JOIN `genders` ON genders.gender_id = interested_in_gender.gender_id INNER JOIN `interested_in_relation` ON interested_in_relation.user_id = users.user_id LEFT JOIN `relationships_type` ON relationships_type.relationship_type_id = interested_in_relation.relationship_type_id GROUP BY users.user_id";
+            let requete = "SELECT users.user_id, users.firstname, users.lastname, users.username, users.imageProfile_path, GROUP_CONCAT(DISTINCT tags.name) AS tags, users.birth_date, users.gender, users.latitude, users.longitude, users.occupation, users.popularity, GROUP_CONCAT(DISTINCT likes.from_user_id) AS likes, GROUP_CONCAT(DISTINCT views.from_user_id) AS views, GROUP_CONCAT(DISTINCT genders.name) AS genders, GROUP_CONCAT(DISTINCT relationships_type.name) AS relationships_type FROM `users` INNER JOIN `user_tags` ON user_tags.user_id = users.user_id LEFT JOIN `tags` ON tags.tag_id = user_tags.tag_id LEFT JOIN `likes` ON likes.to_user_id = users.user_id LEFT JOIN `views` ON views.to_user_id = users.user_id INNER JOIN `interested_in_gender` ON interested_in_gender.user_id = users.user_id LEFT JOIN `genders` ON genders.gender_id = interested_in_gender.gender_id INNER JOIN `interested_in_relation` ON interested_in_relation.user_id = users.user_id LEFT JOIN `relationships_type` ON relationships_type.relationship_type_id = interested_in_relation.relationship_type_id GROUP BY users.user_id";
             let ret = await pool.query(requete);
             return ret;
         } catch(err) {
@@ -655,7 +655,15 @@ class User {
         } 
     }
 
-    
+    static async addUserViews(current_user, user_id) {
+        try {
+            let ret = await pool.query("INSERT INTO `views` SET `from_user_id` = ?, `to_user_id` = ? ", [current_user, user_id]);
+            return true;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
 
 }
 

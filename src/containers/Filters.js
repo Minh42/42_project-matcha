@@ -26,7 +26,25 @@ class Filters extends Component {
 		this.handleAge =this.handleAge.bind(this);
 		this.handleDistance =this.handleDistance.bind(this);
 		this.handlePopularity =this.handlePopularity.bind(this);
-	  }
+		}
+		
+		componentDidMount() {
+			console.log(this.props.ageRange)
+			this.setState ({
+				valueAge: {
+				min: (this.props.ageRange === undefined) ? 0 : this.props.ageRange.min,
+				max: (this.props.ageRange === undefined) ? 100 : this.props.ageRange.max,
+				},
+				valueDistance: {
+				min: (this.props.distanceRange === undefined) ? 0 : this.props.distanceRange.min,
+				max: (this.props.distanceRange === undefined) ? 60 : this.props.distanceRange.max,
+				},
+				valuePopularity: {
+				min: (this.props.popularityRange === undefined) ? 0 : this.props.popularityRange.min,
+				max: (this.props.popularityRange === undefined) ? 100 : this.props.popularityRange.max,
+				},
+			})
+		}
 
 	  handleAge(values) {
 		  console.log(values)
@@ -34,17 +52,18 @@ class Filters extends Component {
 	  }
 
 	  handleDistance(values) {
-		console.log(values)
-		this.props.FilterDistanceAction(values, this.props.history);
+			console.log(values)
+			this.props.FilterDistanceAction(values, this.props.history);
 	  }
 
 	  handlePopularity(values) {
-		console.log(values)
-		this.props.FilterPopularityAction(values, this.props.history);
+			console.log(values)
+			this.props.FilterPopularityAction(values, this.props.history);
 	  }
 	
 	  render() {
 		return (
+			<div className="column">
 	<div className="formRange">
 		<div>Age</div>
 		<div >
@@ -76,8 +95,17 @@ class Filters extends Component {
 			  value={this.state.valuePopularity} />
 		</div>
 	</div>
+	</div>
 		);
 	  }
+}
+
+function mapStateToProps(state) {
+	return {
+			ageRange: state.filterUsers.ageFilter,
+			popularityRange: state.filterUsers.popularityFilter,
+			distanceRange: state.filterUsers.distanceFilter
+	}
 }
 
 function mapDispatchToProps(dispatch) {
@@ -88,4 +116,4 @@ function mapDispatchToProps(dispatch) {
 	}, dispatch);
 }
 
-export default connect(null, mapDispatchToProps)(Filters);
+export default connect(mapStateToProps, mapDispatchToProps)(Filters);

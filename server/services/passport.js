@@ -28,7 +28,6 @@ passport.use(new FacebookStrategy({
         var email = profile._json.email;
 
         try {
-            console.log("passport")
             user.findOne("fb_id", facebookID).then(function(ret) {
                 if (ret) {
                     user.searchByColName("fb_id", facebookID).then(function(user) { 

@@ -26,10 +26,16 @@ class FilesUploadContainer extends Component {
             files: this.state.files.concat(`http://localhost:8080/${file.image_path}`),
           });
         })
-        if (this.state.files[0])
-          document.getElementById("next").disabled = false;
-        else 
-          document.getElementById("next").disabled = true;
+        if (this.state.files[0]) {
+          if (document.getElementById("next")) {
+            document.getElementById("next").disabled = false;
+          }
+        }
+        else {
+          if (document.getElementById("next")) {
+            document.getElementById("next").disabled = true;
+          }
+        }
       } else {
         return;
       }
@@ -39,10 +45,15 @@ class FilesUploadContainer extends Component {
       if (this.state.files[0]) {
         var file = this.state.files[0];
         const res = await axios.post('/api/savePicture', {picture: file});
-        document.getElementById("next").disabled = false; 
+        if (document.getElementById("next")) {
+          document.getElementById("next").disabled = false;
+        }
       }
-      else 
-        document.getElementById("next").disabled = true;
+      else {
+        if (document.getElementById("next")) {
+          document.getElementById("next").disabled = true;
+        }
+      }
     }
    
     onDrop = async (files) => {

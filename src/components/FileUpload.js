@@ -15,7 +15,6 @@ class FileUpload extends Component {
   async handleUploadImage(e) {
     e.preventDefault();
     const data = new FormData();
-    console.log( this.uploadInput.files[0]);
     data.append('file', this.uploadInput.files[0]);
     data.append('filename', this.fileName.value);
 

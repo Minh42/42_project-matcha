@@ -83,9 +83,6 @@ router.post('/api/signup', checkSignupValidation, function(req, res) {
 router.get('/api/activationMail', function(req, res) {
   var login = req.param('login');
   var token = req.param('token');
-  console.log(login)
-  console.log(token)
-
   let user = require('../models/user.class');
 
   try {
@@ -197,7 +194,6 @@ router.post('/api/sendNewPassword', function(req, res) {
   let messages= {};
 
   hashNewPassword = check.isHash(req.body.newPasswordReset);
-  console.log(hashNewPassword);
 
   user.sendNewPasswordBDD(hashNewPassword, req.body.user_id).then (function(ret){
     if (ret) {
@@ -246,13 +242,10 @@ router.get('/api/current_user', authenticate, (req, res) => {
 });
 
 router.get('/api/homepage', authenticate, (req, res) => {
-  console.log('inside API HOMEPAGE')
   let user = require('../models/user.class');
   let id = req.currentUser[0].user_id;
-  console.log(id);
   user.selectAllUsers().then(function(ret) {
     if (ret) {
-      console.log(ret);
       res.json(ret);
     } else {
     res.sendStatus(404);
@@ -264,7 +257,6 @@ router.get('/api/homepage', authenticate, (req, res) => {
 router.get('/api/onboarding', authenticate, (req, res) => {
   let user = require('../models/user.class');
   const user_id = req.currentUser[0].user_id;
-  console.log(user_id);
   user.onboardingState(user_id).then((ret) => {
     if (ret === 0) {
       res.send(true);
@@ -326,10 +318,8 @@ router.post('/api/addTags', authenticate, (req, res) => {
 
 // FIND TAGS USER BDD
 router.post('/api/findTags', authenticate, (req, res) => {
-  // console.log("here")
   let user = require('../models/user.class');
   const user_id = req.currentUser[0].user_id
-  // console.log(user_id)
 
   var array = [];
   var i = 0;
@@ -344,7 +334,6 @@ router.post('/api/findTags', authenticate, (req, res) => {
             array.push(name)
             i++;
             if (i === ret.length) {
-              // console.log("array", array)
               res.json(array)
             }
           })
@@ -378,7 +367,6 @@ router.post('/api/searchTags', authenticate, (req, res) => {
 
   user.findUserId("user_tags", user_id)
     .then((ret) => {
-      console.log(ret)
       res.json(ret)
     })
 })
@@ -420,7 +408,6 @@ router.post('/api/upload', upload.single('file'), authenticate, function(req, re
 
     if(image.isValid(buffer, mimetype, size)) {
       let id = req.currentUser[0].user_id;
-      console.log(id);
       let oldPath = req.file.path;
       let targetPath = `public/img/profile/${id}/${req.file.filename}`;
     
@@ -487,11 +474,7 @@ router.get('/api/profile', authenticate, async (req, res) => {
   let user = require('../models/user.class');
   async function getData() {
     const id = req.currentUser[0].user_id;
-    console.log('im here')
-    console.log(req.currentUser[0])
-    console.log('im here')
     const infos = JSON.parse(JSON.stringify(await user.selectAllUserInfos(id)));
-    console.log(infos[0])
     const photos = await user.selectAllUserPhotos(id);
     const tags = await user.selectAllUserTags(id);
     const interest = await user.selectNameGenders(id);
@@ -504,9 +487,6 @@ router.get('/api/profile', authenticate, async (req, res) => {
       interest: interest,
       relationship: relationship
     };
-    console.log('im here2')
-    console.log(customData)
-    console.log('im here2')
     return customData;
   }
 
@@ -581,7 +561,6 @@ router.post('/api/localisationAllowedORnot', authenticate, (req, res) => {
   const user_id = req.currentUser[0].user_id
   user.findLatLngBDD(user_id)
     .then((ret) => {
-      console.log(req.currentUser[0])
       const localisationAllowed = ret[0].geolocalisationAllowed
       res.json(localisationAllowed)
     })
@@ -592,12 +571,10 @@ router.post('/api/localisationAllowed', authenticate, (req, res) => {
   const lat = req.body.lat
   const lng = req.body.lng
   const user_id = req.currentUser[0].user_id
-  console.log(req.body)
   user.changeGeolocalisationAllow(user_id, 1)
     .then((ret) => {
       user.addIP(user_id, req.body.ip)
         .then ((ret) => {
-          console.log("here")
           user.addLatLng(lat, lng, user_id) 
             .then((ret) => {
               res.json("success")
@@ -609,12 +586,10 @@ router.post('/api/localisationAllowed', authenticate, (req, res) => {
 router.post('/api/localisationDisable', authenticate, (req, res) => {
   let user = require('../models/user.class');
   const user_id = req.currentUser[0].user_id
-  console.log(req.body)
   user.changeGeolocalisationAllow(user_id, 0)
     .then((ret) => {
       user.addIP(user_id, req.body.ip)
         .then ((ret) => {
-          console.log("disable")
           user.addLatLng(req.body.lat, req.body.lng, user_id) 
             .then((ret) => {
               res.json("success")
@@ -629,7 +604,6 @@ router.post('/api/addNewinfoBDD', authenticate, (req, res) => {
   let user = require('../models/user.class');
   const user_id = req.currentUser[0].user_id
 
-  console.log(req.body)
   const birthdate = req.body.birthdate
   const gender = req.body.sex
   const occupation = req.body.occupation
@@ -668,18 +642,15 @@ router.post('/api/addRelationshipBDD', authenticate, (req, res) => {
   const relationship = req.body.relationship
   user.searchRelationshipId(relationship)
     .then((ret) => {
-    console.log(ret)
     var relationship_id = ret[0].relationship_type_id
     user.findUserId("interested_in_relation", user_id)
     .then((ret) => {
-      console.log(ret)
       if (ret) {
         user.updateInterestedInRelation(user_id, relationship_id)
         .then((ret) => {
           res.send("success")
         })
       } else {
-      console.log(relationship_id)
       user.addInsideinterestedInRelation(relationship_id, user_id)
         .then((ret) => {
           res.send("success")
@@ -726,7 +697,6 @@ router.post('/api/changeOnboardingStatus', authenticate, (req, res) => {
 
 //CHANGE BASIC INFO USER
 router.post('/api/modifData', authenticate, (req, res) => {
-  console.log(req.currentUser[0])
   let user = require('../models/user.class');
   const user_id = req.currentUser[0].user_id
   const login = req.body.login
@@ -765,7 +735,6 @@ router.get('/api/otherProfile', async (req, res) => {
   var id = req.param('user_id');
   async function getData() {
     const infos = JSON.parse(JSON.stringify(await user.selectAllUserInfos(id)));
-    console.log(infos[0])
     const photos = await user.selectAllUserPhotos(id);
     const tags = await user.selectAllUserTags(id);
     const interest = await user.selectNameGenders(id);
@@ -778,9 +747,6 @@ router.get('/api/otherProfile', async (req, res) => {
       interest: interest,
       relationship: relationship
     };
-    console.log('im here2')
-    console.log(customData)
-    console.log('im here2')
     return customData;
   }
 
@@ -810,12 +776,11 @@ router.post('/api/addLike', authenticate, (req, res) => {
   })
 })
 
-router.post('/api/searchLikeProfileUser', authenticate, (req, res) => {
+router.get('/api/searchLikeProfileUser', authenticate, (req, res) => {
   let user = require('../models/user.class');
   var user_id = req.currentUser[0].user_id
   user.searchUserWhoLike(user_id)
     .then((ret) => {
-      console.log(ret)
       res.json(ret)
     })
 
@@ -827,6 +792,17 @@ router.post('/api/savePicture', authenticate, (req, res) => {
   var path = req.body.picture.replace('http://localhost:8080/', '');
   user.addProfilePicture(user_id, path).then((ret) => {
     res.send("success");
+  })
+})
+
+router.post('/api/addUserViews', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  var current_user = req.currentUser[0].user_id;
+  var user_id = req.body.user_id;
+  user.addUserViews(current_user, user_id).then((ret) => {
+    if(ret) {
+      res.send("success");
+    }
   })
 })
 

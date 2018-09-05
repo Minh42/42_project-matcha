@@ -4,7 +4,8 @@ const initialState = {
     ageChange: false,
     distanceChange: false,
 	popularityChange: false,
-	SortByChange: false
+	sortByChange: false,
+	searchTag: false
   };
 
 export default function (state = initialState, action) {

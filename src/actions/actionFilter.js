@@ -11,7 +11,7 @@ export const SORTBY_CHANGE = 'SORTBY_CHANGE';
 export const SORTBY_NOTCHANGE = 'SORTBY_NOTCHANGE';
 
 export const SEARCH_TAGS = 'SEARCH_TAGS';
-export const NO_TAGS= 'NO_TAGS';
+export const NO_TAGS = 'NO_TAGS';
 
 export function FilterAgeAction(values) {
 	return (dispatch) => {
@@ -83,17 +83,6 @@ export function SearchTagsAction(values) {
 		} else {
 			dispatch({ 
 				type: NO_TAGS
-			});
-		}
-	}
-}
-
-export function DeleteTagsAction(values) {
-	return (dispatch) => {
-		if (values != null) {
-			dispatch({ 
-				type: DELETE_TAGS,
-				payload: values
 			});
 		}
 	}

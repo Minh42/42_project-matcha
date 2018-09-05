@@ -42,7 +42,6 @@ class LocationComponent extends React.Component {
 		async handleFormSubmit() {
 			const address = document.getElementById("address").value;
 			const res = await axios.get('/api/geocoder/?address=' + address)
-			console.log(res.data)
 			const lat = res.data.lat
 			const lng = res.data.lng
 			var error = res.data.error
@@ -74,11 +73,8 @@ class LocationComponent extends React.Component {
 							message = "Disable localisation"
 							axios.get('https://ipinfo.io')
 								.then((res) => {
-									console.log(res.data)
 									var loc = res.data.loc
-									console.log(location)
-									var locationSplit = loc.split(',')
-									console.log(locationSplit)							
+									var locationSplit = loc.split(',')						
 									var lat = locationSplit[0]
 									var lng = locationSplit[1]
 									const data = {
@@ -88,7 +84,6 @@ class LocationComponent extends React.Component {
 									}
 									axios.post('/api/localisationAllowed', data)
 										.then((ret) => {
-											console.log("allow")
 											location.showLocation(lat, lng)
 											this.setState({
 												allow: message
@@ -104,7 +99,6 @@ class LocationComponent extends React.Component {
 							}
 							axios.post('/api/localisationDisable', data)
 								.then((ret) => {
-									console.log("disable")
 									location.showLocation(null, null)
 									this.setState({
 										allow: message

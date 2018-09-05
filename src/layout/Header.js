@@ -52,16 +52,16 @@ class Header extends Component {
                 default:
                     return [
                         <p key="homepage" className="control">
-                            <Link to="/homepage"><Button className="button is-rounded buttonProfile" title=" homepage"/></Link>
+                            <Link to="/homepage"><Button className="button buttonHeader" title=" Homepage"/></Link>
                         </p>,
                         <p key = "messages" className="control">
-                            <Link to="/messages"><Button className="button is-rounded buttonProfile" title="My messages"/></Link>
+                            <Link to="/messages"><Button className="button buttonHeader" title="My messages"/></Link>
                         </p>,
                         <p key = "profile" className="control">
-                            <LinkButton to='/profile' className="button is-rounded buttonProfile">My profile</LinkButton>
+                            <LinkButton to='/profile' className="button buttonHeader">My profile</LinkButton>
                         </p>,
                         <p key = "logout" className="control">
-                            <LinkButton to='/' onClick={this.handleLogout} className="button is-rounded buttonProfile">Signout</LinkButton>
+                            <LinkButton to='/' onClick={this.handleLogout} className="button buttonHeader">Signout</LinkButton>
                         </p>
                     ];
                 }
@@ -79,7 +79,7 @@ class Header extends Component {
                 <div className="navbar-brand">
 
                     <a className="navbar-item" id="logo">
-                       {/* <span> MATCHA </span> */}
+                       <span> MATCHA </span>
                     </a>
 
                     <div className="navbar-burger burger" data-target="mobile-app">
@@ -89,7 +89,7 @@ class Header extends Component {
                     </div>
                 </div>
 
-                <div id="mobile-app" className="navbar-menu">
+                <div >
                     <div className="navbar-start">
                     </div>
                 </div>

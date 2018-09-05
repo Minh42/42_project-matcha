@@ -11,7 +11,6 @@ export function fetchUsers() {
                 type: FETCH_USERS_REQUEST
             })
             const res = await axios.get('/api/homepage');        
-            // var usersData = JSON.stringify(res.data);
             dispatch({
                 type: FETCH_USERS_SUCCESS,
                 payload: res.data

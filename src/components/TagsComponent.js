@@ -27,7 +27,6 @@ class TagsComponent extends React.Component{
 
   async componentDidMount(){
 		const ret = await axios.post('/api/searchTags'); //search tag by user_id
-		console.log(ret.data)
 		if (document.getElementById("disabled")) {
 			if (ret.data === false) {
 				document.getElementById("disabled").disabled = true; 
@@ -60,10 +59,8 @@ class TagsComponent extends React.Component{
   async handleDelete(i) {
 	const { tags } = this.state
 	const currentTag = this.state.tags[i]
-	console.log(currentTag)
 	const res = await axios.post('/api/deleteTags', currentTag)
 	const ret = await axios.post('/api/searchTags');
-	console.log(ret.data)
 
 	if (document.getElementById("disabled")) {
 		if (ret.data === false) {
@@ -80,13 +77,11 @@ class TagsComponent extends React.Component{
 	}
 
 	handleAddition(tag) {
-		console.log(tag)
 		axios.post(`/api/addTags`, tag)
 		.then((res) => {
 			if (res) {
 				axios.post('/api/searchTags')
 					.then((ret) => {
-					console.log("ret", ret.data)
 					if (document.getElementById("disabled")) {
 							if (ret.tag === 0) {
 								document.getElementById("disabled").disabled = true;

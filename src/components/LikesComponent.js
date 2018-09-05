@@ -17,22 +17,26 @@ class LikesComponent extends Component {
 	}
 	
 	render() {
-		const { likes } = this.props
-		console.log(likes)
-		var src = 'http://localhost:8080/public/img/australie.jpg';
-		return likes.map(users => {
-			var birthDate = getAge(users.birth_date)
+		const { users } = this.props;
+		return this.props.users.map(user => {
+			if (user.imageProfile_path.includes("cloudinary")) {
+				var src = user.imageProfile_path;
+			} else {
+				var src = 'http://localhost:8080/' + user.imageProfile_path;
+			}
 			return (
-				<div key={ users.user_id } className="columns">
-					<div className="column is-5">
-						<figure className="image is-96x96">
-							<img src={ src } id="imageLike" className="imageLike" alt={ users.user_id } onClick={this.showProfile}/>
+				<div key={user.user_id}>
+					<article className="media">
+						<figure className="media-left">
+							<p className="image is-96x96">
+								<img src={src} alt="userLikes"/>
+							</p>
 						</figure>
-					</div>
-					<div className="column is-5 is-offset-1">
-						<p className="labelLike"> { users.username } </p>
-						<p className="labelLike"> { birthDate } </p>
-					</div>
+						<div className="media-content">
+							<p> {user.firstname} {user.lastname}, {getAge(user.birth_date)}</p>
+							<p> {user.occupation} </p>
+						</div>
+					</article>
 				</div>
 			)
 		})

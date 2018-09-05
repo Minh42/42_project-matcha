@@ -26,9 +26,9 @@ class LandingPage extends Component {
                                 {/* <div className="column is-4 is-offset-1">
                                     <img src={image} alt="image" class="responsive-image"/>
                                 </div> */}
-                                {/* <div className="column is-5 is-offset-1"> */}
+                                <div className="column">
                                     <SignupContainer />
-                                {/* </div> */}
+                                </div>
                             </div>
                         </div>
                     </div>
