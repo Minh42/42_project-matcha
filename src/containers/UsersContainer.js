@@ -15,7 +15,6 @@ class UsersContainer extends Component {
     }
 
     renderList() {
-        console.log(this.props.users)
         return this.props.users.map((user) => {
             return (
             <div key={user.user_id} className="column is-half">

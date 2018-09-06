@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS `users` (
     `google_id` VARCHAR(255),
     `token_reset` VARCHAR(255),
     `alert_notification` BOOLEAN DEFAULT TRUE NOT NULL,
+    `last_login` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `date_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `date_updated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -130,6 +131,14 @@ CREATE TABLE IF NOT EXISTS `block_user` (
     `user_id_blocked` BIGINT UNSIGNED,
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (user_id_blocked) REFERENCES users(user_id)
+);
+
+CREATE TABLE IF NOT EXISTS `report_user` (
+    `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `user_id` BIGINT UNSIGNED,
+    `user_id_reported` BIGINT UNSIGNED,
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (user_id_reported) REFERENCES users(user_id)
 );
 
 CREATE TABLE IF NOT EXISTS `notification_object` (

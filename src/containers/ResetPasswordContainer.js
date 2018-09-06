@@ -14,7 +14,6 @@ class ResetPassword extends Component {
            user_id : this.props.match.params.id,
            messagesSuccess : ""
         }
-        console.log(this.props.match.params.id);
     }
 
    async onSubmit(values) {

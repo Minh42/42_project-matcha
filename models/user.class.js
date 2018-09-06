@@ -74,7 +74,7 @@ class User {
 
     static async addUser(firstname, lastname, login, email, password,  activation_code) {
         try {
-            const values = {username: login, firstname: firstname, lastname: lastname, password: password, email: email,  activation_code:  activation_code};
+            const values = {username: login, firstname: firstname, lastname: lastname, password: password, email: email, activation_code: activation_code, popularity: Math.floor(Math.random() * 100)};
             const requete = 'INSERT INTO `users` SET ?'
        
             let ret = await pool.query(requete, values)
@@ -92,7 +92,7 @@ class User {
 
     static async addUserFacebook(firstname, lastname, email, facebookID) {
     try {
-        const values = {firstname: firstname, lastname: lastname, email : email, fb_id : facebookID};
+        const values = {firstname: firstname, lastname: lastname, email : email, fb_id : facebookID, popularity: Math.floor(Math.random() * 100)};
         const requete = 'INSERT INTO `users` SET ?'
        
         let ret = await pool.query(requete, values)
@@ -110,7 +110,7 @@ class User {
     
     static async addUserGoogle(username, firstname, lastname, email, googleID) {
         try {
-            const values = {username: username, firstname: firstname, lastname: lastname, email : email, google_id : googleID};
+            const values = {username: username, firstname: firstname, lastname: lastname, email : email, google_id : googleID, popularity: Math.floor(Math.random() * 100)};
             const requete = 'INSERT INTO `users` SET ?'
        
             let ret = await pool.query(requete, values)
@@ -124,6 +124,21 @@ class User {
         catch(err) {
             throw new Error(err)
         } 
+    } 
+
+    static async updateLastLogin(user_id) {
+        try {
+            let ret = await pool.query("UPDATE `users` SET `last_login` = ? WHERE `user_id` = ?", [new Date(), user_id]);
+                if (ret) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+        }
+        catch(err) {
+            throw new Error(err)
+        }         
     }
 
     static async compareToken(login,  activation_code) {
@@ -244,8 +259,6 @@ class User {
     static async onboardingState(user_id) {
         try {
             let ret = await pool.query("SELECT `onboardingDone` FROM `users` WHERE `user_id` = ?", [user_id]);
-            console.log('onboardingState')
-            console.log(ret[0].onboardingDone)
             return ret[0].onboardingDone
         }
         catch(err) {
@@ -568,7 +581,6 @@ class User {
     static async selectNameGenders(user_id) {
         try {
             let ret = await pool.query("SELECT `name` FROM `genders` INNER JOIN `interested_in_gender` ON interested_in_gender.gender_id = genders.gender_id INNER JOIN `users` ON users.user_id = interested_in_gender.user_id WHERE users.user_id = ?", [user_id]);
-            console.log("name:", ret)
             return ret;
         }
         catch(err) {
@@ -579,7 +591,6 @@ class User {
     static async selectNameRelationship(user_id) {
         try {
             let ret = await pool.query("SELECT `name` FROM `relationships_type` INNER JOIN `interested_in_relation` ON interested_in_relation.relationship_type_id = relationships_type.relationship_type_id INNER JOIN `users` ON users.user_id = interested_in_relation.user_id WHERE users.user_id = ?", [user_id]);
-            console.log("name:", ret)
             return ret;
         }
         catch(err) {
@@ -662,6 +673,57 @@ class User {
         }
         catch(err) {
             throw new Error(err)
+        } 
+    }
+
+    static async searchBlockedUser(current_user) {
+        try {
+            let ret = await pool.query("SELECT user_id_blocked FROM `block_user` WHERE `user_id` = ?", [current_user]);
+            return ret;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async searchReportedUser(user_id) {
+        try {
+            let ret = await pool.query("SELECT count(*) as value_exists FROM `report_user` WHERE `user_id_reported` = ?", [user_id]);
+            if (ret[0].value_exists > '0')
+                return true;
+            else
+                return false;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async reportUser(current_user, user_id) {
+        try {
+            let ret = await pool.query("INSERT INTO `report_user` SET `user_id` = ?, `user_id_reported` = ? ", [current_user, user_id]);
+            return true;
+        }
+        catch(err) {
+            console.log(err);
+            return false;
+        } 
+    }
+
+    static async blockUser(current_user, user_id) {
+        try {
+            let ret = await pool.query("SELECT count(*) as value_exists FROM `block_user` WHERE `user_id` = ? AND `user_id_blocked` = ?", [current_user, user_id]);
+            if (ret[0].value_exists > '0') {
+                let ret = await pool.query("DELETE FROM `block_user` WHERE `user_id` = ? AND `user_id_blocked` = ?", [current_user, user_id]);
+                return "unblocked";
+            } else {
+                let ret = await pool.query("INSERT INTO `block_user` SET `user_id` = ?, `user_id_blocked` = ? ", [current_user, user_id]);
+                return "blocked";
+            }
+        }
+        catch(err) {
+            console.log(err);
+            return false;
         } 
     }
 

@@ -1,7 +1,7 @@
 const path = require('path')
 const express = require('express')
 const routes = require('./routes/routes.js')
-const cors = require('cors');
+const cors = require('cors')
 const bodyParser = require('body-parser')
 const session = require('express-session')
 const mustacheExpress = require('mustache-express')
@@ -12,7 +12,9 @@ const passport = require('passport')
 const cookieSession = require('cookie-session')
 const keys = require('./server/config/keys')
 
-const app = express()
+const app = express();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 const PORT = process.env.PORT || 8080;
 
 app.set('views', path.join(__dirname, 'views'))
@@ -53,6 +55,22 @@ app.use((err, req, res, next) => {
   res.status(500).send('Something broke!')
 })
 
-app.listen(PORT, () => {
+http.listen(PORT, () => {
     console.log('App running at http://localhost:8080')
 })
+
+io.on('connection',function(socket){
+  console.log('We have user connected !');
+      // This event will be emitted from Client when some one add comments.
+  // socket.on('comment added',function(data){
+              // Add the comment in database.
+      // db.addComment(data.user,data.comment,mysql,pool,function(error,result){
+      //     if (error) {
+      //         io.emit('error');
+      //     } else {
+      //         // On successful addition, emit event for client.
+      //         socket.broadcast.emit("notify everyone",{user : data.user,comment : data.comment});
+      //     }
+      // });
+  // });
+});

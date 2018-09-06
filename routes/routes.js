@@ -235,10 +235,14 @@ router.get('/api/signout', (req, res) => {
 });
 
 router.get('/api/current_user', authenticate, (req, res) => {
+  let user = require('../models/user.class');
   if (req.currentUser === null) 
     res.send(req.currentUser);
-  else 
+  else {
+    user.updateLastLogin(req.currentUser[0].user_id).then(function(ret) {
+    })
     res.send(req.currentUser[0]);
+  }
 });
 
 router.get('/api/homepage', authenticate, (req, res) => {
@@ -363,8 +367,6 @@ router.post('/api/deleteTags', authenticate, (req, res) => {
 router.post('/api/searchTags', authenticate, (req, res) => {
   let user = require('../models/user.class');
   const user_id = req.currentUser[0].user_id
-  console.log("inside search tags")
-
   user.findUserId("user_tags", user_id)
     .then((ret) => {
       res.json(ret)
@@ -805,5 +807,61 @@ router.post('/api/addUserViews', authenticate, (req, res) => {
     }
   })
 })
+
+router.get('/api/showBlockProfile', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  var current_user = req.currentUser[0].user_id;
+  var id = req.param('user_id');
+  user.searchBlockedUser(current_user).then((ret) => {
+    var result = JSON.parse(JSON.stringify(ret));
+    var count = 0; 
+    for (var i = 0; i < result.length; i++) {
+      if (result[i]['user_id_blocked'] == id) {
+        count += 1;
+      } 
+    }
+    if (count > 1) {
+      res.send('blocked');
+    } else {
+      res.send('unblocked');
+    }
+  });
+});
+
+router.get('/api/showReportProfile', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  var user_id = req.param('user_id');
+  user.searchReportedUser(user_id).then((ret) => {
+    if (ret) {
+      res.send('reported');
+    } else {
+      res.send('unreported');
+    }
+  });
+});
+
+router.post('/api/blockProfile', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  var current_user = req.currentUser[0].user_id;
+  var user_id = req.param('user_id');
+  user.blockUser(current_user, user_id).then((ret) => {
+    if (ret === "blocked") {
+      res.send('blocked');
+    } else if (ret === "unblocked") {
+      res.send('unblocked')
+    }
+  })
+});
+
+router.post('/api/reportProfile', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  var current_user = req.currentUser[0].user_id;
+  var user_id = req.param('user_id');
+  user.reportUser(current_user, user_id).then((ret) => {
+    if (ret) {
+      res.send('reported')
+    }
+  })
+});
 
 module.exports = router 
