@@ -16,14 +16,12 @@ class SortBy extends Component {
 	}
 
 	componentDidMount() {
-		console.log(this.props.sort)
 		this.setState({
 			sortby: this.props.sort
 		})
 	}
 
 	handleSort(event) {
-		// document.getElementById("select").value = event.target.value
 		this.setState({
 			sortby: event.target.value
 		})

@@ -63,7 +63,6 @@ UsersContainer.propTypes = {
 function mapStateToProps(state) {
     return {
         users: getFilterUsers(state),
-        // users: getAllUsers(state),
         loading: state.users.loading,
         error: state.users.error
     }

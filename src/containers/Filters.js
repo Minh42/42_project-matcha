@@ -47,17 +47,14 @@ class Filters extends Component {
 		}
 
 	  handleAge(values) {
-		  console.log(values)
 		  this.props.FilterAgeAction(values, this.props.history);
 	  }
 
 	  handleDistance(values) {
-			console.log(values)
 			this.props.FilterDistanceAction(values, this.props.history);
 	  }
 
 	  handlePopularity(values) {
-			console.log(values)
 			this.props.FilterPopularityAction(values, this.props.history);
 	  }
 	

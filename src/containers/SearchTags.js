@@ -30,8 +30,6 @@ class SearchTags extends Component {
 
 	componentDidMount() {
 		const i = 0
-		console.log("tags did mount:", newTags)
-
 		this.setState(state => ({ 
 			tags: (newTags.length > 0) ? addTag(i, newTags) : []
 		}));
