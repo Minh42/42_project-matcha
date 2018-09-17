@@ -1,15 +1,20 @@
 import { createSelector } from 'reselect';
-import { filterByProperty, filterByLikesProfile, filterByAge, filterByPopularity, filterByDistance, findAge, sortByAge, findPop, sortByPop, findDistance, sortByDistance, searchTag, deleteTag, filterByViewsProfile, groupByGender, validateInput, getScore, match } from '../../library/searchFunctions';
+import { filterByProperty, filterByLikesProfile, filterByAge, filterByPopularity, filterByDistance, findAge, sortByAge, findPop, sortByPop, findDistance, sortByDistance, searchTag, filterByViewsProfile, profileWhoMatch, findUserByID, AllUsersExceptCurrentUser, groupByGender, validateInput, getScore, match } from '../../library/searchFunctions';
 // import { filterByProperty, filterByLikesProfile, filterByViewsProfile, groupByGender, validateInput, getScore, match } from '../../library/searchFunctions';
 
 const getUsers = (state) => state.users.items
 const getCurrentUser = (state) => state.auth.currentUser
 const getFilter = (state) => state.filterUsers
+const getLikes = (state) => state.profileLikes // personnes que le current user a like
+const getConversationProfileID = (state) => state.profileConversation // tous les user avec qui le current user a une conversation en cours
 
 export const getAllUsers = createSelector([getUsers], users => {
     return users;
 });
 
+/*
+** les personnes qui ont like le profile actuel
+ */
 export const getLikesUsers = createSelector([getAllUsers, getCurrentUser], (users, currentUser) => {
     const user = filterByProperty(users, "user_id", currentUser.user_id)
     const result = filterByLikesProfile(user, users)
@@ -21,6 +26,28 @@ export const getViewsUsers = createSelector([getAllUsers, getCurrentUser], (user
     const result = filterByViewsProfile(user, users)
     return result;
 });
+
+export const getAllUsersExceptCurrentUser = createSelector([getAllUsers, getCurrentUser], (users, currentUser) => {
+    //   console.log('all:', users)
+    //   console.log('current:', currentUser)
+      const AllUsersExcept = AllUsersExceptCurrentUser(users, currentUser.user_id)
+      return AllUsersExcept;
+    })
+    
+    export const getActualUser = createSelector([getAllUsers, getCurrentUser], (users, currentUser) => {
+        console.log('all1:', users)
+        const result = filterByProperty(users, "user_id", currentUser.user_id)
+        console.log('actual', result)
+        return result;
+    });
+    
+    export const getMatchedProfiles = createSelector([getAllUsersExceptCurrentUser, getActualUser], (users, actual_user) => {
+        console.log(users)
+        console.log(actual_user)
+        var result = match(actual_user, users);
+        console.log('RESULT:', result)
+        return result
+    });
 
 export const getFilterUsers = createSelector([getAllUsers, getCurrentUser, getFilter], (users, currentUser, filter) => {
     if (filter.ageChange === true) {
@@ -61,16 +88,28 @@ export const getFilterUsers = createSelector([getAllUsers, getCurrentUser, getFi
     return users;
 });
 
-// export const getMatchedProfiles = createSelector([getAllUsers], users => {
+// TCHAT/MESSAGES/CONVERSATION
 
-// });
-
-export const getMaeva = createSelector([getAllUsers], users => {
-    if (users.length != 0) {
-        // console.log(users);
-        // const result = match(users[1], users);
-        return users;
-    } else {
-        return users;
+export const getConversationProfileUser = createSelector([getAllUsers, getConversationProfileID], (users, id_users) => {
+    if (id_users !== null) {
+        var profileUserConvers = findUserByID(users, id_users.profileConversation)
     }
-});
+    return profileUserConvers;
+})
+
+export const getMatchProfile = createSelector([getLikes, getLikesUsers, getConversationProfileID], (likesByCurrentUser, userWhoLikedMe, id_users) => {
+    if (likesByCurrentUser !== null && id_users !== null) {
+        var WhoMatch1 = profileWhoMatch(likesByCurrentUser.profileLikes, userWhoLikedMe)
+    }
+    return WhoMatch1
+})
+
+// export const getMaeva = createSelector([getAllUsers], users => {
+//     if (users.length != 0) {
+//         // console.log(users);
+//         // const result = match(users[1], users);
+//         return users;
+//     } else {
+//         return users;
+//     }
+// });

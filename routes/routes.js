@@ -806,8 +806,38 @@ router.post('/api/addUserViews', authenticate, (req, res) => {
   })
 })
 
-// MATCH TCHAT
+// TCHAT/CONVERSATION
 
+router.post('/api/createConversationParticipant', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  var current_user = req.currentUser[0].user_id;
+  var user_match = req.body.id_user_match;
+  user.addNewConversation(current_user).then((ret) => {
+    var id_conversation = ret.insertId
+    user.addParticipant(current_user, id_conversation).then((ret1) => {
+      user.addParticipant(user_match, id_conversation).then((ret2) => {
+        if(ret2) {
+          res.send("success");
+        }
+      })
+    })
+  })
+})
 
+router.post('/api/findAllConversation', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  var current_user = req.currentUser[0].user_id;
+  user.findAllConversation(current_user).then( async (ret) => {
+    if(ret) {
+      var allUserID = new Array();
+      for(var i = 0; i < ret.length; i++) {
+        var ret1 = await user.findIdParticipantConversation(ret[i].conversation_id, current_user)
+        allUserID.push(ret1[0].participant_id)
+      }
+      console.log(allUserID)
+      res.json(allUserID) // tous les user avec qui le current user a une conversation en cours
+    }
+  })
+})
 
 module.exports = router 

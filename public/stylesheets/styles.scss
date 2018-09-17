@@ -4,6 +4,10 @@
     box-sizing: border-box;
 }
 
+.columns {
+    margin:0;
+}
+
 #logo {
     color: white;
     font-family: 'Lato', sans-serif; 
@@ -53,7 +57,7 @@ button:active{
     position: relative;
 }
 
-.hero-body {
+.firstPage{
     height: 95vh;
     background: url(../img/test.jpg);
     background-size: cover;
@@ -455,6 +459,7 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
     display:block;
     background-color: #7d7a7b20;
     box-shadow: -10px 0px 10px 1px #aaaaaa;
+    padding: 0;
 }
 
 .messages {
@@ -710,8 +715,8 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
 .labelTchat {
     font-family: 'Lato', sans-serif;
     background-color: rgba(103, 174, 202, 0.694);
-    margin-right: -4%;
-    padding: 5%;
+    // margin-right: -4%;
+    padding: 3%;
     letter-spacing: 2px;
     color: white;
     font-size: 3vh;
@@ -720,4 +725,38 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
 
 .columnTchat {
     height: 40%;
+    overflow:auto;
 }
+
+.size_image {
+    max-width: 50%;
+    height: auto;
+}
+
+.tchatRoom {
+    font-family: 'Lato', sans-serif;
+    color: white;
+    margin: 3%;
+    // border: solid 1px white;
+    background-color: rgba(103, 174, 202, 0.44);
+    box-shadow: 0 5px 5px rgba(0, 0, 0, .2); 
+}
+
+.sectionTchat {
+    margin: 0;
+    padding:0;
+}
+
+.input_msg_write input {
+    background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
+    border: medium none;
+    color: #4c4c4c;
+    font-size: 15px;
+    min-height: 48px;
+    width: 100%;
+  }
+
+  .msg_send_btn {
+    background: #05728f ;
+  }
+

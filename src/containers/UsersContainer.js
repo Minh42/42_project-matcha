@@ -3,10 +3,8 @@ import UserProfile from '../components/UserProfile';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { fetchUsers } from '../actions/actionFetch';
-import { getFilterUsers } from '../selectors/index';
+import { getFilterUsers, getMatchedProfiles, getActualUser } from '../selectors/index';
 import { fetchCurrentUser } from '../actions/actionUsers';
-import { getMaeva } from '../selectors/index';
-import { getAllUsers } from '../selectors/index';
 import PropTypes from 'prop-types';
 
 class UsersContainer extends Component {

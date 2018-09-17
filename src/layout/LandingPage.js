@@ -19,7 +19,7 @@ class LandingPage extends Component {
         return (
             <div className="landing">
                 <section className="hero is-fullheight">
-                    <div className="hero-body">
+                    <div className="hero-body firstPage">
                         <div className="container">
                             <FlashMessagesList />
                             <div className="columns">

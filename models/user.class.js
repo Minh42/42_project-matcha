@@ -665,6 +665,48 @@ class User {
         } 
     }
 
+   // ----------------------------CONVERSATION-----------------------------------
+
+   static async addNewConversation(user_id) {
+        try {
+            let ret = await pool.query("INSERT INTO `conversation` SET `user_id` = ?", [user_id]);
+            return ret;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async addParticipant(user_id, id_conversation) {
+        try {
+            let ret = await pool.query("INSERT INTO `participant` SET `conversation_id` = ?, `participant_id` = ?", [id_conversation, user_id]);
+            return true;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async findAllConversation(current_user) {
+        try {
+            let ret = await pool.query("SELECT `conversation_id` FROM `participant` WHERE `participant_id` = ? ",[current_user]);
+            return ret;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async findIdParticipantConversation(conversation, current_user) {
+        try {
+            let ret = await pool.query("SELECT `participant_id` FROM `participant` WHERE `conversation_id` = ? AND `participant_id` != ?",[conversation, current_user]);
+            return ret;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
 }
 
 module.exports = User

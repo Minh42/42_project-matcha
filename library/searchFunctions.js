@@ -218,9 +218,25 @@ function searchTag(users, tag) {
     return filtered
 }
 
+// trouver Users by ID
+
+function findUserByID(users, id_users) {
+    var userConversation = new Array();
+    for (var y = 0; y < id_users.length; y++) {
+        for (var i = 0; i < users.length; i++) {
+            if (id_users[y] === users[i].user_id) {
+                userConversation.push(users[i])
+            }
+        }
+    }
+    return userConversation
+}
+
+
 // ALGO MATCHING
 
 function match(user, users) {
+    console.log('USERS', users)
     var scoring_list = new Array();
     const res = validateInput(users, function(err, data) {
         if (err) {
@@ -229,24 +245,28 @@ function match(user, users) {
     });
 
     // split by groups
-    var groups = groupByGender(users);
+    const groups = groupByGender(users);
+    console.log('GROUPS', groups)
     var men = groups["men"];
     var women = groups["women"];
     var both = groups["both"];
+    console.log(user[0].genders)
+    console.log('length :', men)
 
-    if (user["interested_in"] === "man") {
+    if (user[0].genders === "man") {
         for (var i = 0; i < men.length; i++) {
-            var value = Object.assign({"user_id": men[i]["user_id"], "score": getScore(user, men[i], users)})
+            var value = Object.assign(men[i], {"score": getScore(user, men[i], users)})
             scoring_list.push(value);
         }
-    } else if (user["interested_in"] === "woman") {
+    } else if (user[0].genders === "woman") {
         for (var j = 0; j < women.length; j++) {
-            var value = Object.assign({"user_id": women[j]["user_id"], "score": getScore(user, women[j], users)})
+            // var value = women[j];
+            var value = Object.assign(women[j], {"score": getScore(user, women[j], users)})
             scoring_list.push(value);
         }
     } else {
         for (var k = 0; k < both.length; k++) {
-            var value = Object.assign({"user_id": both[k]["user_id"], "score": getScore(user, both[k], users)})
+            var value = Object.assign(both[k], {"score": getScore(user, both[k], users)})
             scoring_list.push(value);
         }
     }
@@ -264,8 +284,7 @@ function getScore(person1, person2, users) {
     // var getAge = require('get-age');
     // var turf = require('@turf/turf');
     var score = 0.0;
-
-    var interest_list1 = person1["tags"].split(',');
+    var interest_list1 = person1[0].tags.split(',');
     var interest_list2 = person2["tags"].split(',');
 
     for (var i = 0; i < interest_list1.length; i++) {
@@ -280,8 +299,8 @@ function getScore(person1, person2, users) {
 
     var max_age = Math.max(...users.map(elt => getAge(elt.birth_date)));
     var min_age = Math.min(...users.map(elt => getAge(elt.birth_date)));
-    if (person1["birth_date"] && person2["birth_date"]) {
-        var age1 = getAge(person1["birth_date"]);
+    if (person1[0].birth_date && person2["birth_date"]) {
+        var age1 = getAge(person1[0].birth_date);
         var age2 = getAge(person2["birth_date"]);
         score += Math.round((100 - (Math.abs(age1 - age2) * 100 / (max_age - min_age))) * weights["age"]);
     }
@@ -289,16 +308,16 @@ function getScore(person1, person2, users) {
     var max_popularity = Math.max(...users.map(elt => elt.popularity));
     var min_popularity = Math.min(...users.map(elt => elt.popularity));
 
-    if (person1["popularity"] && person2["popularity"]) {
-        var popularity1 = person1["popularity"];
+    if (person1[0].popularity && person2["popularity"]) {
+        var popularity1 = person1[0].popularity;
         var popularity2 = person2["popularity"];
         score += Math.round((100 - (Math.abs(popularity1 - popularity2) * 100 / (max_popularity - min_popularity))) * weights["popularity"]);
     }
 
     var distance_array = new Array();
     for (var k = 0; k < users.length; k++) {
-        var lon1 = person1["longitude"];
-        var lat1 = person1["latitude"];
+        var lon1 = person1[0].longitude;
+        var lat1 = person1[0].latitude;
         var from = turf.point([lon1, lat1]);
         var lon2 = users[k]["longitude"];
         var lat2 = users[k]["latitude"];
@@ -312,9 +331,9 @@ function getScore(person1, person2, users) {
     var max_distance = Math.max(...distance_array);
     var min_distance = Math.min(...distance_array);
 
-    if (person1["longitude"] && person1["latitude"] && person2["longitude"] && person2["latitude"]) {
-        var lon1 = person1["longitude"];
-        var lat1 = person1["latitude"];
+    if (person1[0].longitude && person1[0].latitude && person2["longitude"] && person2["latitude"]) {
+        var lon1 = person1[0].longitude;
+        var lat1 = person1[0].latitude;
         var lon2 = person2["longitude"];
         var lat2 = person2["latitude"];
 
@@ -379,15 +398,15 @@ function filterByViewsProfile(user, users) {
     }
 }
 
-function validateInput(users, callback) {
+async function validateInput(users, callback) {
     assert.strictEqual(typeof (users), 'object', "argument 'users' must be a string");
     assert.strictEqual(typeof (callback), 'function');
 
-    var groups = groupByGender(users);
+    const groups = groupByGender(users);
     var men = groups["men"];
     var women = groups["women"];
     var both = groups["both"];
-   
+
     // check if arrays are empty or null
     if ((!Array.isArray(men) || !men.length) && (!Array.isArray(women) || !women.length) && (!Array.isArray(both) || !both.length)) {
         callback(new Error('Please provide groups by gender'));
@@ -453,7 +472,7 @@ function validateInput(users, callback) {
     for (var j = 0; j < women.length; j++) {
         if (empty(women[j]["user_id"]) || empty(women[j]["gender"]) || empty(women[j]["tags"]) || empty(women[j]["popularity"]) 
         || empty(women[j]["birth_date"]) || empty(women[j]["longitude"]) || empty(women[j]["latitude"])) {
-            callback(new Error('Please provide valid data for all men')); 
+            callback(new Error('Please provide valid data for all women')); 
             return false;
         } else if (!Array.isArray(women[j]["tags"].split(',')) || !women[j]["tags"].length) {
             callback(new Error("Please provide a list of interests for each person."));  
@@ -487,9 +506,11 @@ function validateInput(users, callback) {
 }
 
 function groupByGender(users) {
+    console.log('users', users)
     var men = filterByProperty(users, "gender", "man");
     var women = filterByProperty(users, "gender", "woman");
     var both = users;
+    console.log('MEN', men.length)
 
     const groups = {
         men: men,
@@ -501,6 +522,47 @@ function groupByGender(users) {
         return groups;
     }
 }
+
+// PROFILE WHO MATCH
+
+function profileWhoMatch(likesByCurrentUser, WhoLikedMe) {
+    console.log("likesByCurrentUser:", likesByCurrentUser)
+    console.log("id_user", WhoLikedMe)
+    var match = new Array();
+
+    for (var i = 0; i < likesByCurrentUser.length; i++) {
+        for (var y = 0; y < WhoLikedMe.length; y++) {
+            if (likesByCurrentUser[i].to_user_id === WhoLikedMe[y].user_id)
+            {
+                match.push(WhoLikedMe[y])
+            }
+        }
+    }
+    return match
+}
+
+function checkUserConversation(conversationUserID, id_user) {
+    for (var i = 0; i < conversationUserID.profileConversation.length; i++) {
+        if (conversationUserID.profileConversation[i] === id_user.id_user_match) {
+            return true;
+        }
+    }
+    return false
+}
+
+
+
+function AllUsersExceptCurrentUser(users, currentUserID) {
+    var usersExceptCurrent = new Array();
+    for (var i = 0; i < users.length; i++) {
+        if (users[i].user_id !== currentUserID) {
+            usersExceptCurrent.push(users[i])
+        }
+    }
+    return usersExceptCurrent
+}
+
+
 
 module.exports = {
     filterByProperty : filterByProperty,
@@ -516,8 +578,12 @@ module.exports = {
     sortByDistance: sortByDistance,
     searchTag: searchTag,
     filterByViewsProfile: filterByViewsProfile,
+    checkUserConversation : checkUserConversation,
     groupByGender: groupByGender,
+    findUserByID: findUserByID,
     validateInput: validateInput,
     getScore : getScore,
-    match: match
+    match: match,
+    profileWhoMatch: profileWhoMatch,
+    AllUsersExceptCurrentUser : AllUsersExceptCurrentUser 
 }
