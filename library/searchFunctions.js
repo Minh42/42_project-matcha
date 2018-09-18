@@ -1,49 +1,290 @@
+import { USER_SELECTED } from '../src/actions/actionUsers';
+
 const assert = require('assert');
 const empty = require('is-empty');
 const isFloat = require('is-float-nodejs');
+var getAge = require('get-age');
+var turf = require('@turf/turf');
+var stemmer = require('stemmer');
+
+// function removeUserFromArray(users, user_id) {
+//     for(var i = users.length; i--;) {
+//         if (users[i]["user_id"] === user_id) users.splice(i, 1);
+//     }
+//     return users;
+// }
+
+function removeUserFromArray(users, currentUserID) {
+    var usersExceptCurrent = new Array();
+    for (var i = 0; i < users.length; i++) {
+        if (users[i].user_id !== currentUserID) {
+            usersExceptCurrent.push(users[i])
+        }
+    }
+    return usersExceptCurrent
+}
 
 function filterByProperty(array, prop, value) {
+    var filtered = new Array();
+    array.filter(function (el, index, arr) {
+        if (el[prop] === value) {
+            filtered.push(el);
+        }
+    });
+    return filtered;
+}
+
+// function filterByProperty(array, prop, value) {
+//     var filtered = new Array();
+//     for (var i = 0; i < array.length; i++) {
+//         var obj = array[i];
+//         for (var key in obj) {
+//             var item = obj[prop];
+//             if (item === value) {
+//                 filtered.push(obj);
+//                 break;
+//             }
+//         }
+//     } 
+//     return filtered;
+// }
+
+function filterByAge(array, prop, min, max) {
+    var filtered = new Array();
+    for (var i = 0; i < array.length; i++) {
+        var obj = array[i];
+        for (var key in obj) {
+            var item = getAge(obj[prop]);
+            if (item <= max && item >= min) {
+                filtered.push(obj);
+                break
+            }
+        }
+    }
+    return filtered
+}
+
+function filterByPopularity(array, prop, min, max) {
     var filtered = new Array();
     for (var i = 0; i < array.length; i++) {
         var obj = array[i];
         for (var key in obj) {
             var item = obj[prop];
-            if (item === value) {
+            if (item <= max && item >= min) {
                 filtered.push(obj);
-                break;
+                break
             }
         }
-    } 
-    return filtered;
+    }
+    return filtered
 }
 
-function match(user, users) {
+function filterByDistance(array, currentUser, min, max) {
+    var filtered = new Array();
+    var latitudeCurrent = currentUser.latitude;
+    var longitudeCurrent = currentUser.longitude;
+    for (var i = 0; i < array.length; i++) {
+        var obj = array[i];
+        for (var key in obj) {
+            var latitudeUser = obj["latitude"];
+            var longitudeUser = obj["longitude"]
+            var from = turf.point([latitudeCurrent, longitudeCurrent]);
+            var to = turf.point([latitudeUser, longitudeUser]);
+            var options = {units: 'kilometers'};
+            var distance = turf.distance(from, to, options);
+            if (distance <= max && distance >= min) {
+                filtered.push(obj);
+                break
+            }
+        }
+    }
+    return filtered
+}
+
+
+//SORT BY AGE
+
+function findAge(array, prop) {
+    var age = new Array();
+    for (var i = 0; i < array.length; i++) {
+        age.push(getAge(array[i][prop]))
+    }
+    return age
+}
+
+function check(filtered, line) {
+    var i = 0;
+    while (i < filtered.length) 
+    {
+        if (line.user_id === filtered[i].user_id)
+        {
+            return true
+        }
+        i++;
+    }
+    return false
+}
+
+function sortByAge(array, newArray, prop) {
+    var filtered = new Array();
+    var i = 0;
+    while (i < newArray.length) 
+    {
+        var y = 0;
+         while (y < array.length) 
+         {
+            if (filtered.length != 0 && check(filtered, array[y]) === true) { }
+            else if (newArray[i] === getAge(array[y][prop])) {
+                filtered.push(array[y])
+            }
+            y++;
+        }
+        i++;
+    }
+    return filtered
+}
+
+// SORT BY POPULARITY
+
+function findPop(array, prop) {
+    var pop = new Array();
+    for (var i = 0; i < array.length; i++) {
+        pop.push(array[i][prop])
+    }
+    return pop
+}
+
+function sortByPop(array, newArray, prop) {
+    var filtered = new Array();
+    var i = 0;
+    while (i < newArray.length) 
+    {
+        var y = 0;
+         while (y < array.length) 
+         {
+            if (filtered.length != 0 && check(filtered, array[y]) === true) { }
+            else if (newArray[i] === array[y][prop]) {
+                filtered.push(array[y])
+            }
+            y++;
+        }
+        i++;
+    }
+    return filtered
+}
+
+// SORT BY DISTANCE
+
+function findDistance(array, currentUser) {
+    var arrayDistance = new Array();
+    var latitudeCurrent = currentUser.latitude;
+    var longitudeCurrent = currentUser.longitude;
+    for (var i = 0; i < array.length; i++) {
+        var latitudeUser = array[i].latitude
+        var longitudeUser = array[i].longitude
+        var from = turf.point([latitudeCurrent, longitudeCurrent]);
+        var to = turf.point([latitudeUser, longitudeUser]);
+        var options = {units: 'kilometers'};
+        var distance = turf.distance(from, to, options);
+        arrayDistance.push(distance)
+    }
+    return arrayDistance
+}
+
+function sortByDistance(array, newArray, currentUser) {
+    var filtered = new Array();
+    var latitudeCurrent = currentUser.latitude;
+    var longitudeCurrent = currentUser.longitude;
+    var i = 0;
+    while (i < newArray.length) 
+    {
+        var y = 0;
+         while (y < array.length) 
+         {
+            var latitudeUser = array[y].latitude
+            var longitudeUser = array[y].longitude
+            var from = turf.point([latitudeCurrent, longitudeCurrent]);
+            var to = turf.point([latitudeUser, longitudeUser]);
+            var options = {units: 'kilometers'};
+            var distance = turf.distance(from, to, options);
+            if (filtered.length != 0 && check(filtered, array[y]) === true) { }
+            else if (newArray[i] === distance) {
+                filtered.push(array[y])
+            }
+            y++;
+        }
+        i++;
+    }
+    return filtered
+}
+
+// SORT BY SCORE
+
+async function sortByScore(users) {
+    var usersList = await users;
+    var sortedUsers = await usersList.sort(mySorting);
+    return sortedUsers;
+}
+
+function mySorting(a,b) {
+    a = a.score;
+    b = b.score;
+    return a == b ? 0 : (a < b ? 1 : -1)
+}
+
+// SEARCH TAGS
+
+function searchTag(users, tag) {
+    var filtered = new Array();
+    for (var i = 0; i < users.length; i++) {
+        var tags = users[i].tags
+        var tagSplit = tags.split(',')
+        var bool = 0;
+        for (var k = 0; k < tag.length; k++) {
+            for (var y = 0; y < tagSplit.length; y++) {
+                if (tagSplit[y] === tag[k].text) {
+                    if (k + 1 === tag.length && k === bool) {
+                        filtered.push(users[i])
+                    }
+                    bool++
+                    break;
+                }
+            }
+        }
+    }
+    return filtered
+}
+
+// ALGO MATCHING
+
+async function match(user, users) {
     var scoring_list = new Array();
-    const res = validateInput(users, function(err, data) {
+    const res = await validateInput(users, function(err, data) {
         if (err) {
             console.log(err);
         } 
     });
 
     // split by groups
-    var groups = groupByGender(users);
+    const groups = await groupByGender(users);
     var men = groups["men"];
     var women = groups["women"];
     var both = groups["both"];
 
-    if (user["interested_in"] === "man") {
+    if (user[0].genders === "man") {
         for (var i = 0; i < men.length; i++) {
-            var value = Object.assign({"user_id": men[i]["user_id"], "score": getScore(user, men[i], users)})
+            var value = Object.assign(men[i], {"score": getScore(user, men[i], users)})
             scoring_list.push(value);
         }
-    } else if (user["interested_in"] === "woman") {
+    } else if (user[0].genders === "woman") {
         for (var j = 0; j < women.length; j++) {
-            var value = Object.assign({"user_id": women[j]["user_id"], "score": getScore(user, women[j], users)})
+            // var value = women[j];
+            var value = Object.assign(women[j], {"score": getScore(user, women[j], users)})
             scoring_list.push(value);
         }
     } else {
         for (var k = 0; k < both.length; k++) {
-            var value = Object.assign({"user_id": both[k]["user_id"], "score": getScore(user, both[k], users)})
+            var value = Object.assign(both[k], {"score": getScore(user, both[k], users)})
             scoring_list.push(value);
         }
     }
@@ -57,12 +298,11 @@ function getScore(person1, person2, users) {
         "age": 0.1,
         "coordinates": 0.4
     }
-    var stemmer = require('stemmer');
-    var getAge = require('get-age');
-    var turf = require('@turf/turf');
+    // var stemmer = require('stemmer');
+    // var getAge = require('get-age');
+    // var turf = require('@turf/turf');
     var score = 0.0;
-
-    var interest_list1 = person1["tags"].split(',');
+    var interest_list1 = person1[0].tags.split(',');
     var interest_list2 = person2["tags"].split(',');
 
     for (var i = 0; i < interest_list1.length; i++) {
@@ -77,8 +317,8 @@ function getScore(person1, person2, users) {
 
     var max_age = Math.max(...users.map(elt => getAge(elt.birth_date)));
     var min_age = Math.min(...users.map(elt => getAge(elt.birth_date)));
-    if (person1["birth_date"] && person2["birth_date"]) {
-        var age1 = getAge(person1["birth_date"]);
+    if (person1[0].birth_date && person2["birth_date"]) {
+        var age1 = getAge(person1[0].birth_date);
         var age2 = getAge(person2["birth_date"]);
         score += Math.round((100 - (Math.abs(age1 - age2) * 100 / (max_age - min_age))) * weights["age"]);
     }
@@ -86,16 +326,16 @@ function getScore(person1, person2, users) {
     var max_popularity = Math.max(...users.map(elt => elt.popularity));
     var min_popularity = Math.min(...users.map(elt => elt.popularity));
 
-    if (person1["popularity"] && person2["popularity"]) {
-        var popularity1 = person1["popularity"];
+    if (person1[0].popularity && person2["popularity"]) {
+        var popularity1 = person1[0].popularity;
         var popularity2 = person2["popularity"];
         score += Math.round((100 - (Math.abs(popularity1 - popularity2) * 100 / (max_popularity - min_popularity))) * weights["popularity"]);
     }
 
     var distance_array = new Array();
     for (var k = 0; k < users.length; k++) {
-        var lon1 = person1["longitude"];
-        var lat1 = person1["latitude"];
+        var lon1 = person1[0].longitude;
+        var lat1 = person1[0].latitude;
         var from = turf.point([lon1, lat1]);
         var lon2 = users[k]["longitude"];
         var lat2 = users[k]["latitude"];
@@ -109,9 +349,9 @@ function getScore(person1, person2, users) {
     var max_distance = Math.max(...distance_array);
     var min_distance = Math.min(...distance_array);
 
-    if (person1["longitude"] && person1["latitude"] && person2["longitude"] && person2["latitude"]) {
-        var lon1 = person1["longitude"];
-        var lat1 = person1["latitude"];
+    if (person1[0].longitude && person1[0].latitude && person2["longitude"] && person2["latitude"]) {
+        var lon1 = person1[0].longitude;
+        var lat1 = person1[0].latitude;
         var lon2 = person2["longitude"];
         var lat2 = person2["latitude"];
 
@@ -176,15 +416,15 @@ function filterByViewsProfile(user, users) {
     }
 }
 
-function validateInput(users, callback) {
+async function validateInput(users, callback) {
     assert.strictEqual(typeof (users), 'object', "argument 'users' must be a string");
     assert.strictEqual(typeof (callback), 'function');
 
-    var groups = groupByGender(users);
+    const groups = await groupByGender(users);
     var men = groups["men"];
     var women = groups["women"];
     var both = groups["both"];
-   
+
     // check if arrays are empty or null
     if ((!Array.isArray(men) || !men.length) && (!Array.isArray(women) || !women.length) && (!Array.isArray(both) || !both.length)) {
         callback(new Error('Please provide groups by gender'));
@@ -250,7 +490,7 @@ function validateInput(users, callback) {
     for (var j = 0; j < women.length; j++) {
         if (empty(women[j]["user_id"]) || empty(women[j]["gender"]) || empty(women[j]["tags"]) || empty(women[j]["popularity"]) 
         || empty(women[j]["birth_date"]) || empty(women[j]["longitude"]) || empty(women[j]["latitude"])) {
-            callback(new Error('Please provide valid data for all men')); 
+            callback(new Error('Please provide valid data for all women')); 
             return false;
         } else if (!Array.isArray(women[j]["tags"].split(',')) || !women[j]["tags"].length) {
             callback(new Error("Please provide a list of interests for each person."));  
@@ -283,9 +523,9 @@ function validateInput(users, callback) {
     return true;
 }
 
-function groupByGender(users) {
-    var men = filterByProperty(users, "gender", "man");
-    var women = filterByProperty(users, "gender", "woman");
+async function groupByGender(users) {
+    var men = await filterByProperty(users, "gender", "man");
+    var women = await filterByProperty(users, "gender", "woman");
     var both = users;
 
     const groups = {
@@ -302,9 +542,21 @@ function groupByGender(users) {
 module.exports = {
     filterByProperty : filterByProperty,
     filterByLikesProfile: filterByLikesProfile,
+    filterByAge: filterByAge,
+    filterByPopularity: filterByPopularity,
+    filterByDistance: filterByDistance,
+    findAge: findAge,
+    sortByAge: sortByAge,
+    findPop: findPop,
+    sortByPop: sortByPop,
+    findDistance: findDistance,
+    sortByDistance: sortByDistance,
+    searchTag: searchTag,
     filterByViewsProfile: filterByViewsProfile,
     groupByGender: groupByGender,
     validateInput: validateInput,
     getScore : getScore,
-    match: match
+    match: match,
+    removeUserFromArray: removeUserFromArray,
+    sortByScore: sortByScore
 }

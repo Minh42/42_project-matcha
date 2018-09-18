@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { fetchUsers } from '../actions/actionFetch';
 import { fetchCurrentUser } from '../actions/actionUsers';
-import { getMaeva } from '../selectors/index';
-import { getAllUsers } from '../selectors/index';
+import { getActualUser, getFilterUsers, getMatchedUsers } from '../selectors/index';
+import { MakeQuerablePromise } from '../../library/tools';
 import PropTypes from 'prop-types';
 
 class UsersContainer extends Component {
@@ -15,19 +15,62 @@ class UsersContainer extends Component {
     }
 
     renderList() {
-        return this.props.users.map((user) => {
-            return (
-            <div key={user.user_id} className="column is-half">
-                <UserProfile
-                    id={user.user_id}
-                    firstname={user.firstname}
-                    lastname={user.lastname}
-                    age={user.birth_date}
-                    src={user.imageProfile_path}
-                />
-            </div>
-            );
-        });
+        console.log(this.props.users)
+        // var myPromise = MakeQuerablePromise(this.props.users);
+        // if (myPromise === undefined) {
+        //     return;
+        // } else {
+        //     console.log(myPromise)
+        // }
+
+        // myPromise.isFulfilled().then(function(data) {
+        //     console.log('im here')
+        //     return data.map((user) => {
+        //         return (
+        //         <div key={user.user_id} className="column is-half">
+        //             <UserProfile
+        //                 id={user.user_id}
+        //                 firstname={user.firstname}
+        //                 lastname={user.lastname}
+        //                 age={user.birth_date}
+        //                 src={user.imageProfile_path}
+        //             />
+        //         </div>
+        //         );
+        //     });
+        // })
+        
+ 
+
+          
+               
+         
+             
+                // console.log("Final rejected:", myPromise.isRejected());//false
+                // console.log("Final pending:", myPromise.isPending());//false
+    
+  
+       
+       
+
+
+        // var users = await this.props.users;
+        // return this.props.users.map((user) => {
+        //     return (
+        //     <div key={user.user_id} className="column is-half">
+        //         <UserProfile
+        //             id={user.user_id}
+        //             firstname={user.firstname}
+        //             lastname={user.lastname}
+        //             age={user.birth_date}
+        //             src={user.imageProfile_path}
+        //         />
+        //     </div>
+        //     );
+        // });
+        return (
+            'hello'
+        )
     }
 
     render() {
@@ -60,8 +103,11 @@ UsersContainer.propTypes = {
 
 function mapStateToProps(state) {
     return {
-        users: getAllUsers(state),
+        // users: getFilterUsers(state),
+        // users: getMatchedUsers(state),
+        users: getMatchedUsers(state),
         loading: state.users.loading,
+        currentUser: state.auth.currentUser,
         error: state.users.error
     }
 }

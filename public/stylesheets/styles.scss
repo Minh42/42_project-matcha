@@ -4,6 +4,17 @@
     box-sizing: border-box;
 }
 
+#logo {
+    color: white;
+    font-family: 'Lato', sans-serif; 
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.background{
+    background: rgb(216, 3, 81);
+}
+
 body {
     font-family: 'Lato', sans-serif;
     font-weight: 400;
@@ -16,10 +27,26 @@ body {
 $color-primary: #E52A6F;
 
 // Landing page
+button:active{
+    border:none;
+}
 
-.navbar {
-    border: none !important;
-    background-color: #E52A6F;
+.buttonHeader {
+    border: none;
+    background-color: rgb(216, 3, 81);
+    color: white;
+}
+
+.buttonHeader:hover {
+    border: none;
+    background-color: rgba(255, 255, 255, 0.399);
+    color: rgb(216, 3, 81);
+}
+
+.buttonHeader:active {
+    border: none;
+    background-color: rgba(216, 109, 148, 0.482);
+    color: rgb(61, 174, 176);
 }
 
 .landing {
@@ -149,6 +176,7 @@ $color-primary: #E52A6F;
     border-radius: 100px;
     transition: all .2s;
     position: relative;
+    border: none;
 }
 
 .btn:hover {
@@ -420,13 +448,13 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
 }
 
 .navbar {
-    border-bottom: 1px solid #DEDEDE; 
+    background-color: rgb(216, 3, 81);
 }
 
 .aside {
     display:block;
-    background-color: #E52A6F;
-    border-right: 1px solid #DEDEDE;
+    background-color: #7d7a7b20;
+    box-shadow: -10px 0px 10px 1px #aaaaaa;
 }
 
 .messages {
@@ -560,3 +588,136 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
     font-family: 'Lato', sans-serif;
     font-size: 1em;
   }
+
+  // FILTERS RANGE
+
+  .formRange {
+    margin: 0 auto;
+    padding: 30px 0px 0;
+  
+    @media (min-width: 800px) {
+      max-width: 60%;
+    }
+  }
+  
+  .input-range {
+    margin-bottom: 50px;
+  }
+
+  .input-range__slider {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: rgb(216, 3, 81);
+    border: 1px solid rgb(216, 3, 81);
+    border-radius: 100%;
+    cursor: pointer;
+    display: block;
+    height: 1rem;
+    margin-left: -0.5rem;
+    margin-top: -0.65rem;
+    outline: none;
+    position: absolute;
+    top: 50%;
+    -webkit-transition: box-shadow 0.3s ease-out, -webkit-transform 0.3s ease-out;
+    transition: box-shadow 0.3s ease-out, -webkit-transform 0.3s ease-out;
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out, -webkit-transform 0.3s ease-out;
+    width: 1rem;
+    }
+    
+  
+  .input-range__slider-container {
+    -webkit-transition: left 0.3s ease-out;
+    transition: left 0.3s ease-out; }
+  
+  .input-range__label {
+    font-family: "Helvetica Neue", san-serif;
+    font-size: 0.7rem;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    white-space: nowrap;
+    }
+  
+  .input-range__label--min,
+  .input-range__label--max {
+    bottom: -2.8rem;
+    position: absolute;
+    }
+  
+  .input-range__label--min {
+    left: 0;
+    }
+  
+  .input-range__label--max {
+    right: 0; }
+  
+  .input-range__label--value {
+    position: absolute;
+    top: -1.8rem; }
+  
+//   .input-range__label-container {
+//     left: -50%;
+//     position: relative; }
+//     .input-range__label--max .input-range__label-container {
+//       left: 50%; }
+  
+  .input-range__track {
+    background: rgb(216, 3, 81);
+    border-radius: 0.3rem;
+    /* cursor: pointer; */
+    display: block;
+    height: 0.3rem;
+    position: relative;
+    -webkit-transition: left 0.3s ease-out, width 0.3s ease-out;
+    transition: left 0.3s ease-out, width 0.3s ease-out;
+    }
+    .input-range--disabled .input-range__track {
+      background: rgb(216, 3, 81); }
+  
+  .input-range__track--background {
+    left: 0;
+    margin-top: 1rem;
+    position: absolute;
+    right: 0;
+    top: 90%;
+    }
+  
+  .input-range__track--active {
+    background: white; }
+  
+  .input-range {
+    height: 1rem;
+    position: relative;
+    width: 100%; }
+
+    .labelRange {
+        font-family: 'Lato', sans-serif;
+        font-size: 1em;
+        margin-bottom: 15%;
+    }
+  
+
+// SORT BY
+
+.sortByButton {
+    font-family: 'Lato', sans-serif;
+    margin-top: 5%;
+}
+
+//TCHAT
+
+.labelTchat {
+    font-family: 'Lato', sans-serif;
+    background-color: rgba(103, 174, 202, 0.694);
+    margin-right: -4%;
+    padding: 5%;
+    letter-spacing: 2px;
+    color: white;
+    font-size: 3vh;
+    font-weight: bold;
+}
+
+.columnTchat {
+    height: 40%;
+}

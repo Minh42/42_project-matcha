@@ -74,7 +74,7 @@ class User {
 
     static async addUser(firstname, lastname, login, email, password,  activation_code) {
         try {
-            const values = {username: login, firstname: firstname, lastname: lastname, password: password, email: email, activation_code: activation_code, popularity: Math.floor(Math.random() * 100)};
+            const values = {username: login, firstname: firstname, lastname: lastname, password: password, email: email, activation_code: activation_code, popularity: Math.random() * (100 - 1) + 1};
             const requete = 'INSERT INTO `users` SET ?'
        
             let ret = await pool.query(requete, values)

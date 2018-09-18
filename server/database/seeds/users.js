@@ -53,7 +53,7 @@ let createUser = (knex, id, bio, occupations, female, male) => {
     ip_address: faker.internet.ip(),
     geolocalisationAllowed: true,
     onboardingDone: true,
-    popularity: Math.floor(Math.random() * 100),
+    popularity: getRandomIntInclusive(1, 100),
     fb_id: null,
     google_id: null,
     token_reset: null,
@@ -150,14 +150,14 @@ exports.seed = function(knex, Promise) {
     
             var promise = await getData();
             const { bio, occupations, female, male } = promise;
-            for (let id = 1; id <= 10; id++) {
+            for (let id = 1; id <= 100; id++) {
                 users.push(createUser(knex, id, bio, occupations, female, male))
             }
             return knex("users").insert(users);
         })
         .then(function () {
             let usersPhotos = [];
-            for (let id = 1; id <= 10; id++) {
+            for (let id = 1; id <= 100; id++) {
                 for (var i = 0; i < 5; i++) {
                     usersPhotos.push(createUserPhoto(knex, id))
                 }
@@ -166,7 +166,7 @@ exports.seed = function(knex, Promise) {
         })
         .then(() => {
             let usersTags = [];
-            for (let id = 1; id <= 10; id++) {
+            for (let id = 1; id <= 100; id++) {
                 for (var i = 0; i < 5; i++) {
                     usersTags.push(createUserTag(knex, id))
                 }
@@ -175,14 +175,14 @@ exports.seed = function(knex, Promise) {
         })
         .then(() => {
             let usersGenderInterest = [];
-            for (let id = 1; id <= 10; id++) {
+            for (let id = 1; id <= 100; id++) {
                 usersGenderInterest.push(createUserGenderInterest(knex, id))
             }
             return knex("interested_in_gender").insert(usersGenderInterest);
         })
         .then(() => {
             let usersRelationshipInterest = [];
-            for (let id = 1; id <= 10; id++) {
+            for (let id = 1; id <= 100; id++) {
                 usersRelationshipInterest.push(createUserRelationshipInterest(knex, id))
             }
             return knex("interested_in_relation").insert(usersRelationshipInterest);

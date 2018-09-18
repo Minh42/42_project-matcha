@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import axios from 'axios';
 import { bindActionCreators } from 'redux';
 import { getLikesUsers } from '../selectors/index';
 import { getViewsUsers } from '../selectors/index';

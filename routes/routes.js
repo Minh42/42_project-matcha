@@ -250,6 +250,7 @@ router.get('/api/homepage', authenticate, (req, res) => {
   let id = req.currentUser[0].user_id;
   user.selectAllUsers().then(function(ret) {
     if (ret) {
+      console.log(ret);
       res.json(ret);
     } else {
     res.sendStatus(404);

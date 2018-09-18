@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router';
+import { withRouter } from 'react-router-dom';
 import getAge from 'get-age';
 
 class LikesComponent extends Component {

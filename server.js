@@ -12,7 +12,7 @@ const passport = require('passport')
 const cookieSession = require('cookie-session')
 const keys = require('./server/config/keys')
 
-const app = express();
+const app = require('express')();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const PORT = process.env.PORT || 8080;
@@ -55,22 +55,15 @@ app.use((err, req, res, next) => {
   res.status(500).send('Something broke!')
 })
 
+io.on('connection', function(socket){
+  console.log('a user connected');
+  socket.on('disconnect', function(){
+    console.log('user disconnected');
+  });
+});
+
 http.listen(PORT, () => {
     console.log('App running at http://localhost:8080')
 })
 
-io.on('connection',function(socket){
-  console.log('We have user connected !');
-      // This event will be emitted from Client when some one add comments.
-  // socket.on('comment added',function(data){
-              // Add the comment in database.
-      // db.addComment(data.user,data.comment,mysql,pool,function(error,result){
-      //     if (error) {
-      //         io.emit('error');
-      //     } else {
-      //         // On successful addition, emit event for client.
-      //         socket.broadcast.emit("notify everyone",{user : data.user,comment : data.comment});
-      //     }
-      // });
-  // });
-});
+
