@@ -4,6 +4,7 @@ import getAge from 'get-age';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { profileConversationAction } from '../actions/actionConversation';
+import { profileTchatAction } from '../actions/actionOpenTchat';
 import { getConversationProfileUser} from '../selectors/index';
 
 class Conversation extends Component {
@@ -21,7 +22,7 @@ class Conversation extends Component {
 
 	openTchat(user_id) {
 		console.log(user_id)
-		
+		this.props.profileTchatAction(user_id)
 	}
 
 	render() {
@@ -58,7 +59,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({ 
-		profileConversationAction : profileConversationAction
+		profileConversationAction : profileConversationAction,
+		profileTchatAction : profileTchatAction
     }, dispatch);
 }
 

@@ -37,9 +37,7 @@ class HomePage extends Component {
 				</div>
 			</aside>
 			<div className="column is-8 messages hero is-fullheight" id="message-feed">
-				{/* <div className="columns"> */}
 					<UsersContainer />
-				{/* </div> */}
 			</div>
 		</div>
 	)};

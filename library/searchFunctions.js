@@ -221,14 +221,24 @@ function searchTag(users, tag) {
 // trouver Users by ID
 
 function findUserByID(users, id_users) {
+    console.log(users)
+    console.log(id_users)
     var userConversation = new Array();
-    for (var y = 0; y < id_users.length; y++) {
+    if (id_users.length > 0) {
+        for (var y = 0; y < id_users.length; y++) {
+            for (var i = 0; i < users.length; i++) {
+                if (id_users[y] === users[i].user_id) {
+                    userConversation.push(users[i])
+                }
+            }
+        }
+    } else {
         for (var i = 0; i < users.length; i++) {
-            if (id_users[y] === users[i].user_id) {
+            if (id_users === users[i].user_id) {
                 userConversation.push(users[i])
             }
         }
-    }
+    } 
     return userConversation
 }
 
@@ -529,15 +539,19 @@ function profileWhoMatch(likesByCurrentUser, WhoLikedMe) {
     console.log("likesByCurrentUser:", likesByCurrentUser)
     console.log("id_user", WhoLikedMe)
     var match = new Array();
-
-    for (var i = 0; i < likesByCurrentUser.length; i++) {
-        for (var y = 0; y < WhoLikedMe.length; y++) {
-            if (likesByCurrentUser[i].to_user_id === WhoLikedMe[y].user_id)
-            {
-                match.push(WhoLikedMe[y])
+    if (likesByCurrentUser && WhoLikedMe) {
+        for (var i = 0; i < likesByCurrentUser.length; i++) {
+            for (var y = 0; y < WhoLikedMe.length; y++) {
+                if (likesByCurrentUser[i].to_user_id === WhoLikedMe[y].user_id)
+                {
+                    match.push(WhoLikedMe[y])
+                }
             }
         }
+    } else {
+        match.push('false')
     }
+    console.log(match)
     return match
 }
 

@@ -34,24 +34,36 @@ class Match extends Component {
 	}
 
 	render() {
+		console.log(this.props.matchProfile)
 		if (this.props.matchProfile != undefined) {
-			return this.props.matchProfile.map((user) => {
+			console.log(this.props.matchProfile[0])
+			if (this.props.matchProfile != 'false') { 
+				return this.props.matchProfile.map((user) => {
+					return (
+						<div key={user.user_id} className="columns">
+							<div className="column is-4 is-offset-1">
+								<figure onClick={() => this.openConversation(user.user_id)}>
+									<img className="size_image" src={user.imageProfile_path} height="20px"/>
+								</figure>
+							</div>
+							<div className="column is-6 ">
+								<p>{user.firstname} {user.lastname}, {getAge(user.birth_date)}</p>
+							</div>
+							<div className="column is-4 is-offset-1">
+								
+							</div>
+						</div>
+					)
+				})
+			} else {
 				return (
-					<div key={user.user_id} className="columns">
-						<div className="column is-4 is-offset-1">
-							<figure onClick={() => this.openConversation(user.user_id)}>
-								<img className="size_image" src={user.imageProfile_path} height="20px"/>
-							</figure>
-						</div>
-						<div className="column is-6 ">
-							<p>{user.firstname} {user.lastname}, {getAge(user.birth_date)}</p>
-						</div>
-						<div className="column is-4 is-offset-1">
-							
+					<div className="columns">
+						<div className="column is-10 is-offset-1">
+							No match
 						</div>
 					</div>
 				)
-			})
+			}
 		} else {
 			return (
 				<div className="columns">

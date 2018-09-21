@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { filterByProperty, filterByLikesProfile, filterByAge, filterByPopularity, filterByDistance, findAge, sortByAge, findPop, sortByPop, findDistance, sortByDistance, searchTag, filterByViewsProfile, profileWhoMatch, findUserByID, AllUsersExceptCurrentUser, groupByGender, validateInput, getScore, match } from '../../library/searchFunctions';
+import { AllUsersExceptCurrentUser, filterByProperty, filterByLikesProfile, filterByAge, filterByPopularity, filterByDistance, findAge, sortByAge, findPop, sortByPop, findDistance, sortByDistance, searchTag, filterByViewsProfile, profileWhoMatch, findUserByID, groupByGender, validateInput, getScore, match } from '../../library/searchFunctions';
 // import { filterByProperty, filterByLikesProfile, filterByViewsProfile, groupByGender, validateInput, getScore, match } from '../../library/searchFunctions';
 
 const getUsers = (state) => state.users.items
@@ -7,11 +7,15 @@ const getCurrentUser = (state) => state.auth.currentUser
 const getFilter = (state) => state.filterUsers
 const getLikes = (state) => state.profileLikes // personnes que le current user a like
 const getConversationProfileID = (state) => state.profileConversation // tous les user avec qui le current user a une conversation en cours
+const getRemitteeUserID = (state) => state.profileTchatID
 
 export const getAllUsers = createSelector([getUsers], users => {
     return users;
 });
 
+export const getCurrentUser1 = createSelector([getCurrentUser], currentUsers => {
+    return currentUsers;
+});
 /*
 ** les personnes qui ont like le profile actuel
  */
@@ -28,28 +32,27 @@ export const getViewsUsers = createSelector([getAllUsers, getCurrentUser], (user
 });
 
 export const getAllUsersExceptCurrentUser = createSelector([getAllUsers, getCurrentUser], (users, currentUser) => {
-    //   console.log('all:', users)
-    //   console.log('current:', currentUser)
       const AllUsersExcept = AllUsersExceptCurrentUser(users, currentUser.user_id)
       return AllUsersExcept;
     })
     
-    export const getActualUser = createSelector([getAllUsers, getCurrentUser], (users, currentUser) => {
-        console.log('all1:', users)
-        const result = filterByProperty(users, "user_id", currentUser.user_id)
-        console.log('actual', result)
-        return result;
-    });
+export const getActualUser = createSelector([getAllUsers, getCurrentUser], (users, currentUser) => {
+    console.log('all1:', users)
+    const result = filterByProperty(users, "user_id", currentUser.user_id)
+    console.log('actual', result)
+    return result;
+});
     
-    export const getMatchedProfiles = createSelector([getAllUsersExceptCurrentUser, getActualUser], (users, actual_user) => {
-        console.log(users)
-        console.log(actual_user)
-        var result = match(actual_user, users);
-        console.log('RESULT:', result)
-        return result
-    });
+export const getMatchedProfiles = createSelector([getAllUsersExceptCurrentUser, getActualUser], (users, actual_user) => {
+    console.log(users)
+    console.log(actual_user)
+    var result = match(actual_user, users);
+    console.log('RESULT:', result)
+    return result
+});
 
 export const getFilterUsers = createSelector([getAllUsers, getCurrentUser, getFilter], (users, currentUser, filter) => {
+    console.log(users)
     if (filter.ageChange === true) {
         var users = filterByAge(users, "birth_date", filter.ageFilter.min, filter.ageFilter.max)
     }
@@ -104,12 +107,13 @@ export const getMatchProfile = createSelector([getLikes, getLikesUsers, getConve
     return WhoMatch1
 })
 
-// export const getMaeva = createSelector([getAllUsers], users => {
-//     if (users.length != 0) {
-//         // console.log(users);
-//         // const result = match(users[1], users);
-//         return users;
-//     } else {
-//         return users;
-//     }
-// });
+export const getProfileRemittee = createSelector([getAllUsers, getRemitteeUserID], (users, remitteeID) => {
+    console.log('users', users)
+    console.log(remitteeID)
+    if (remitteeID !== null) {
+        var remittee = [remitteeID.profileTchatID]
+        console.log(remittee[0])
+        var profileUserTchat = findUserByID(users, remitteeID.profileTchatID)
+    }
+    return profileUserTchat;
+})

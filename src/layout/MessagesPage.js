@@ -19,7 +19,7 @@ class MessagesPage extends Component {
 							<Conversation />
 						</div>
 				</aside>
-				<div className="column is-9 messages hero is-fullheight">
+				<div className="column is-8 messages hero is-fullheight">
 					<Tchat />
 				</div>
 			</div>

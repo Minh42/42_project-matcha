@@ -141,6 +141,8 @@
     "sharp": "^0.20.5",
     "shortid": "^2.2.12",
     "shuffle-array": "^1.0.1",
+    "socket.io": "^2.1.1",
+    "socket.io-client": "^2.1.1",
     "stemmer": "^1.0.2",
     "transform-runtime": "0.0.0",
     "universal-cookie": "^2.2.0",

@@ -25,7 +25,9 @@ class UserProfile extends Component {
 	}
 
 	async componentDidMount() {
+		console.log('here')
 		const res = await axios.get('/api/profile');
+		console.log(res)
 		this.props.selectUser(res);
 	}
 
@@ -119,6 +121,7 @@ class UserProfile extends Component {
 	}
 
 	render () {
+		console.log(this.props.selectedUser)
 		return (
 		<div className="columns" id="mail-app">
 			<aside className="column is-2 aside backgroundInfoUser">

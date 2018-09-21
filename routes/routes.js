@@ -474,11 +474,13 @@ router.get('/api/profile', authenticate, async (req, res) => {
   let user = require('../models/user.class');
   async function getData() {
     const id = req.currentUser[0].user_id;
+    console.log('id', req.currentUser[0].user_id)
     const infos = JSON.parse(JSON.stringify(await user.selectAllUserInfos(id)));
     const photos = await user.selectAllUserPhotos(id);
     const tags = await user.selectAllUserTags(id);
     const interest = await user.selectNameGenders(id);
     const relationship = await user.selectNameRelationship(id)
+    console.log(interest)
   
     const customData = {
       infos: infos[0],
@@ -837,6 +839,36 @@ router.post('/api/findAllConversation', authenticate, (req, res) => {
       console.log(allUserID)
       res.json(allUserID) // tous les user avec qui le current user a une conversation en cours
     }
+  })
+})
+
+router.post('/api/addMessageBDD', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  var current_user = req.currentUser[0].user_id;
+  var message = req.body.message
+  console.log(message)
+  user.addMessageBDD(current_user, message).then((ret) => {
+    res.send('success')
+  })
+})
+
+router.post('/api/findConversationID', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  var current_user = req.currentUser[0].user_id;
+  var convers = [];
+  id_other = req.body.user_id
+  user.findAllConversationtionID(current_user).then((convers1) => {
+    user.findAllConversationtionID(id_other).then((convers2) => {
+      for (var i = 0; i < convers1.length; i++) {
+        for (var y = 0; y < convers2.length; y++) {
+          if (convers1[i].conversation_id === convers2[y].conversation_id) {
+            convers.push(convers1[i].conversation_id)
+            console.log(convers)
+            res.send(convers)
+          }
+        }
+      }
+    })
   })
 })
 
