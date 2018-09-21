@@ -7,14 +7,15 @@ const session = require('express-session')
 const mustacheExpress = require('mustache-express')
 const helmet = require('helmet')
 // const csrf = require('csurf')
+const pool = require('./server/db')
 
 const passport = require('passport')
 const cookieSession = require('cookie-session')
 const keys = require('./server/config/keys')
 
 const app = require('express')();
-const http = require('http').Server(app);
-const io = require('socket.io')(http);
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
 const PORT = process.env.PORT || 8080;
 
 app.set('views', path.join(__dirname, 'views'))
@@ -55,15 +56,39 @@ app.use((err, req, res, next) => {
   res.status(500).send('Something broke!')
 })
 
-io.on('connection', function(socket){
-  console.log('a user connected');
-  socket.on('disconnect', function(){
-    console.log('user disconnected');
-  });
+server.listen(PORT, () => {
+  console.log('App running at http://localhost:8080')
+})
+
+var users = [];
+io.sockets.on('connection', function (socket) {
+  socket.on('new_user', function(user_id) {
+    users.push({
+      userID: user_id,
+      socketID: socket.id
+    });
+  })
+
+  socket.on('new_notification', function(data) {
+    console.log(data)
+    // generate notification message
+    // io.to(sessionID).emit('show_notification', {
+    //   type: '',
+    //   text: 'hello world' {actor_username} {action_type}
+    // });
+    // io.sockets.emit('message', data);
+  })
+
+  socket.on('disconnect', function() {
+    for(let i = 0; i < users.length; i++) {
+      if(users[i].socketID === socket.id) {
+        users.splice(i,1); 
+      }
+    }
+  })
 });
 
-http.listen(PORT, () => {
-    console.log('App running at http://localhost:8080')
-})
+
+
 
 

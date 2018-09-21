@@ -1,15 +1,21 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
+import { bindActionCreators } from 'redux';
+import { addFlashMessage } from '../actions/actionMessages';
 import axios from 'axios';
+import io from 'socket.io-client';
+import PropTypes from 'prop-types';
 
 class UserProfile extends Component {
     constructor(props) {
-        super(props)
+        super(props);
 
         this.state = {
             isMounted: false,
             like : false
         }
+        this.socket = io('ws://localhost:8080', {transports: ['websocket']});
         this.showProfile = this.showProfile.bind(this)
         this.handleLike = this.handleLike.bind(this)
     }
@@ -44,11 +50,26 @@ class UserProfile extends Component {
         var data = { user_id : this.props.id}
         const res = await axios.post('/api/addLike', data);
         if (res.data) {
-            if (res.data === "add") {
+            if (res.data.action_type === "add like") {
                 document.getElementById(this.props.id).style.color = "red";
             }
-            else if (res.data === "delete") {
+            else if (res.data.action_type === "delete like") {
                 document.getElementById(this.props.id).style.color = "grey";
+            }
+            var notificationData = res.data;
+            console.log(notificationData)
+            const ret = await axios.post('/api/notifications', notificationData);
+            console.log(ret.data)
+            if (ret.data) {
+                console.log('ready to emit')
+                this.socket.emit('new_notification', {notification : ret.data});
+                // this.socket.on('show_notification', function(data) {
+                //     console.log(data);
+                //     this.props.addFlashMessage({
+                //         type: data.type,
+                //         text: data.message
+                //     });
+                // })
             }
         }
     }
@@ -128,4 +149,18 @@ class UserProfile extends Component {
     }
 }
 
-export default withRouter(UserProfile);
+UserProfile.propTypes = {
+    addFlashMessage: PropTypes.func.isRequired
+}
+
+function mapStateToProps(state) {
+    return {
+      currentUser: state.auth.currentUser
+    };
+}
+
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators({ addFlashMessage: addFlashMessage}, dispatch);
+}
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(UserProfile));

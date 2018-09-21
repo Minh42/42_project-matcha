@@ -6,6 +6,8 @@ import flashMessagesReducer from './reducer_flashMessages';
 import usersReducer from './reducer_users';
 import selectedUserReducer from './reducer_selectedUser';
 import filterUsersReducer from './reducer_filter';
+import profileLikesReducer from './reducer_match';
+import profileConversationReducer from './reducer_conversation';
 import { UNAUTHENTICATED } from '../actions/actionUsers';
 
 // mapping of our state
@@ -16,7 +18,9 @@ const appReducer = combineReducers({
     flashMessages: flashMessagesReducer,
     users: usersReducer,
     selectedUser: selectedUserReducer,
-    filterUsers: filterUsersReducer
+    filterUsers: filterUsersReducer,
+    profileConversation : profileConversationReducer,
+    profileLikes : profileLikesReducer,
 });
 
 const rootReducer = (state, action) => {

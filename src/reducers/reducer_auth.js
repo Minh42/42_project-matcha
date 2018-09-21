@@ -1,7 +1,15 @@
 import { FETCH_CURRENT_USER, AUTHENTICATED, UNAUTHENTICATED, AUTHENTICATION_ERROR, ONBOARDING, UNONBOARDING } from '../actions/actionUsers';
 
-export default function(state = null, action) {
+const INITIAL_STATE = {
+  currentUser: null,
+  authenticated: false
+};
+
+export default function(state = INITIAL_STATE, action) {
   switch(action.type) {
+    case 'REHYDRATE':
+      return {...state, currentUser: action.payload.currentUser
+    };
     case AUTHENTICATED:
       return { ...state, authenticated: true, currentUser: action.payload };
     case UNAUTHENTICATED:

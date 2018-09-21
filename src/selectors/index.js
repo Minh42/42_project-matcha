@@ -1,62 +1,32 @@
 import { createSelector } from 'reselect';
-import { removeUserFromArray, filterByProperty, filterByLikesProfile, filterByAge, filterByPopularity, filterByDistance, findAge, sortByAge, findPop, sortByPop, findDistance, sortByDistance, searchTag, deleteTag, filterByViewsProfile, sortByScore, match } from '../../library/searchFunctions';
+import { filterByProperty, filterByLikesProfile, filterByAge, filterByPopularity, filterByDistance, findAge, sortByAge, findPop, sortByPop, findDistance, sortByDistance, searchTag, filterByViewsProfile, profileWhoMatch, findUserByID, sortByScore, match } from '../../library/searchFunctions';
 
 const getUsers = (state) => state.users.items
 const getCurrentUser = (state) => state.auth.currentUser
 const getFilter = (state) => state.filterUsers
+const getLikes = (state) => state.profileLikes // personnes que le current user a like
+const getConversationProfileID = (state) => state.profileConversation // tous les user avec qui le current user a une conversation en cours
 
-export const getAllUsers = createSelector([getUsers], users => {
-    return users;
-});
-
-// export const getAllUsersExceptCurrentUser = createSelector([getAllUsers, getCurrentUser], async (users, currentUser) => {
-//     const usersList = await users;
-//     const actualUser = await currentUser;
-//     const result = await removeUserFromArray(usersList, actualUser.user_id);
-//     return result;
-// });
-
-export const getAllUsersExceptCurrentUser = createSelector([getAllUsers, getCurrentUser], (users, currentUser) => {
-    const result = removeUserFromArray(users, currentUser.user_id);
+export const getLikesUsers = createSelector([getUsers, getCurrentUser], (users, currentUser) => {
+    const result = filterByLikesProfile(currentUser, users)
     return result;
 })
 
-export const getActualUser = createSelector([getAllUsers, getCurrentUser], (users, currentUser) => {
-    const result = filterByProperty(users, "user_id", currentUser.user_id)
+export const getViewsUsers = createSelector([getUsers, getCurrentUser], (users, currentUser) => {
+    const result = filterByViewsProfile(currentUser, users)
     return result;
 });
-
-export const getLikesUsers = createSelector([getAllUsersExceptCurrentUser, getCurrentUser], (users, currentUser) => {
-    const user = filterByProperty(users, "user_id", currentUser.user_id)
-    const result = filterByLikesProfile(user, users)
-    return result;
-})
-
-export const getViewsUsers = createSelector([getAllUsersExceptCurrentUser, getCurrentUser], (users, currentUser) => {
-    const user = filterByProperty(users, "user_id", currentUser.user_id)
-    const result = filterByViewsProfile(user, users)
-    return result;
+    
+export const getMatchedUsers = createSelector([getUsers, getCurrentUser], (users, currentUser) => {
+    if (users != undefined && currentUser != undefined) {
+        var result = match(currentUser, users);
+        var sorted_result = sortByScore(result);
+        return sorted_result;
+    }
 });
-
-export const getMatchedUsers = createSelector([getAllUsersExceptCurrentUser, getActualUser], (users, currentUser) => {
-    console.log(users)
-    console.log(currentUser)
-    // var result = match(actual_user, users);
-    // console.log('RESULT:', result)
-});
-
-// export const getMatchedUsers = createSelector([getAllUsers, getCurrentUser], async (users, currentUser) => {
-//     var actualUser = await filterByProperty(users, "user_id", currentUser.user_id);
-//     var usersList = await removeUserFromArray(users, currentUser.user_id);
-//     console.log(actualUser);
-
-//     var result = await match(actualUser, usersList);
-//     var sortedResult = await sortByScore(result);
-//     return sortedResult;
-// });
 
 export const getFilterUsers = createSelector([getMatchedUsers, getCurrentUser, getFilter], (users, currentUser, filter) => {
-
+    if (users != undefined && currentUser != undefined) {
     if (filter.ageChange === true) {
         var users = filterByAge(users, "birth_date", filter.ageFilter.min, filter.ageFilter.max)
     }
@@ -93,4 +63,21 @@ export const getFilterUsers = createSelector([getMatchedUsers, getCurrentUser, g
         return users;
     }
     return users;
+    }   
 });
+
+// TCHAT/MESSAGES/CONVERSATION
+
+// export const getConversationProfileUser = createSelector([getAllUsers, getConversationProfileID], (users, id_users) => {
+//     if (id_users !== null) {
+//         var profileUserConvers = findUserByID(users, id_users.profileConversation)
+//     }
+//     return profileUserConvers;
+// })
+
+// export const getMatchProfile = createSelector([getLikes, getLikesUsers, getConversationProfileID], (likesByCurrentUser, userWhoLikedMe, id_users) => {
+//     if (likesByCurrentUser !== null && id_users !== null) {
+//         var WhoMatch1 = profileWhoMatch(likesByCurrentUser.profileLikes, userWhoLikedMe)
+//     }
+//     return WhoMatch1
+// })

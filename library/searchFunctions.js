@@ -7,21 +7,11 @@ var getAge = require('get-age');
 var turf = require('@turf/turf');
 var stemmer = require('stemmer');
 
-// function removeUserFromArray(users, user_id) {
-//     for(var i = users.length; i--;) {
-//         if (users[i]["user_id"] === user_id) users.splice(i, 1);
-//     }
-//     return users;
-// }
-
-function removeUserFromArray(users, currentUserID) {
-    var usersExceptCurrent = new Array();
-    for (var i = 0; i < users.length; i++) {
-        if (users[i].user_id !== currentUserID) {
-            usersExceptCurrent.push(users[i])
-        }
+function removeUserFromArray(users, user_id) {
+    for(var i = users.length; i--;) {
+        if (users[i]["user_id"] === user_id) users.splice(i, 1);
     }
-    return usersExceptCurrent
+    return users;
 }
 
 function filterByProperty(array, prop, value) {
@@ -81,8 +71,8 @@ function filterByPopularity(array, prop, min, max) {
 
 function filterByDistance(array, currentUser, min, max) {
     var filtered = new Array();
-    var latitudeCurrent = currentUser.latitude;
-    var longitudeCurrent = currentUser.longitude;
+    var latitudeCurrent = currentUser[0].latitude;
+    var longitudeCurrent = currentUser[0].longitude;
     for (var i = 0; i < array.length; i++) {
         var obj = array[i];
         for (var key in obj) {
@@ -177,8 +167,8 @@ function sortByPop(array, newArray, prop) {
 
 function findDistance(array, currentUser) {
     var arrayDistance = new Array();
-    var latitudeCurrent = currentUser.latitude;
-    var longitudeCurrent = currentUser.longitude;
+    var latitudeCurrent = currentUser[0].latitude;
+    var longitudeCurrent = currentUser[0].longitude;
     for (var i = 0; i < array.length; i++) {
         var latitudeUser = array[i].latitude
         var longitudeUser = array[i].longitude
@@ -193,8 +183,8 @@ function findDistance(array, currentUser) {
 
 function sortByDistance(array, newArray, currentUser) {
     var filtered = new Array();
-    var latitudeCurrent = currentUser.latitude;
-    var longitudeCurrent = currentUser.longitude;
+    var latitudeCurrent = currentUser[0].latitude;
+    var longitudeCurrent = currentUser[0].longitude;
     var i = 0;
     while (i < newArray.length) 
     {
@@ -220,9 +210,8 @@ function sortByDistance(array, newArray, currentUser) {
 
 // SORT BY SCORE
 
-async function sortByScore(users) {
-    var usersList = await users;
-    var sortedUsers = await usersList.sort(mySorting);
+function sortByScore(users) {
+    var sortedUsers = users.sort(mySorting);
     return sortedUsers;
 }
 
@@ -255,18 +244,33 @@ function searchTag(users, tag) {
     return filtered
 }
 
+// trouver Users by ID
+
+function findUserByID(users, id_users) {
+    var userConversation = new Array();
+    for (var y = 0; y < id_users.length; y++) {
+        for (var i = 0; i < users.length; i++) {
+            if (id_users[y] === users[i].user_id) {
+                userConversation.push(users[i])
+            }
+        }
+    }
+    return userConversation
+}
+
+
 // ALGO MATCHING
 
-async function match(user, users) {
+function match(user, users) {
     var scoring_list = new Array();
-    const res = await validateInput(users, function(err, data) {
+    const res = validateInput(users, function(err, data) {
         if (err) {
             console.log(err);
         } 
     });
 
     // split by groups
-    const groups = await groupByGender(users);
+    const groups = groupByGender(users);
     var men = groups["men"];
     var women = groups["women"];
     var both = groups["both"];
@@ -420,7 +424,7 @@ async function validateInput(users, callback) {
     assert.strictEqual(typeof (users), 'object', "argument 'users' must be a string");
     assert.strictEqual(typeof (callback), 'function');
 
-    const groups = await groupByGender(users);
+    const groups = groupByGender(users);
     var men = groups["men"];
     var women = groups["women"];
     var both = groups["both"];
@@ -523,9 +527,9 @@ async function validateInput(users, callback) {
     return true;
 }
 
-async function groupByGender(users) {
-    var men = await filterByProperty(users, "gender", "man");
-    var women = await filterByProperty(users, "gender", "woman");
+function groupByGender(users) {
+    var men = filterByProperty(users, "gender", "man");
+    var women = filterByProperty(users, "gender", "woman");
     var both = users;
 
     const groups = {
@@ -538,6 +542,47 @@ async function groupByGender(users) {
         return groups;
     }
 }
+
+// PROFILE WHO MATCH
+
+function profileWhoMatch(likesByCurrentUser, WhoLikedMe) {
+    console.log("likesByCurrentUser:", likesByCurrentUser)
+    console.log("id_user", WhoLikedMe)
+    var match = new Array();
+
+    for (var i = 0; i < likesByCurrentUser.length; i++) {
+        for (var y = 0; y < WhoLikedMe.length; y++) {
+            if (likesByCurrentUser[i].to_user_id === WhoLikedMe[y].user_id)
+            {
+                match.push(WhoLikedMe[y])
+            }
+        }
+    }
+    return match
+}
+
+function checkUserConversation(conversationUserID, id_user) {
+    for (var i = 0; i < conversationUserID.profileConversation.length; i++) {
+        if (conversationUserID.profileConversation[i] === id_user.id_user_match) {
+            return true;
+        }
+    }
+    return false
+}
+
+
+
+function AllUsersExceptCurrentUser(users, currentUserID) {
+    var usersExceptCurrent = new Array();
+    for (var i = 0; i < users.length; i++) {
+        if (users[i].user_id !== currentUserID) {
+            usersExceptCurrent.push(users[i])
+        }
+    }
+    return usersExceptCurrent
+}
+
+
 
 module.exports = {
     filterByProperty : filterByProperty,
@@ -553,10 +598,14 @@ module.exports = {
     sortByDistance: sortByDistance,
     searchTag: searchTag,
     filterByViewsProfile: filterByViewsProfile,
+    checkUserConversation : checkUserConversation,
     groupByGender: groupByGender,
+    findUserByID: findUserByID,
     validateInput: validateInput,
     getScore : getScore,
     match: match,
     removeUserFromArray: removeUserFromArray,
-    sortByScore: sortByScore
+    sortByScore: sortByScore,
+    profileWhoMatch: profileWhoMatch,
+    AllUsersExceptCurrentUser : AllUsersExceptCurrentUser 
 }
