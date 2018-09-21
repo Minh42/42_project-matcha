@@ -16,7 +16,7 @@ class Filters extends Component {
 		  },
 		  valueDistance: {
 			min: 0,
-			max: 60,
+			max: 30,
 		  },
 		  valuePopularity: {
 			min: 0,
@@ -29,7 +29,6 @@ class Filters extends Component {
 		}
 		
 		componentDidMount() {
-			console.log(this.props.ageRange)
 			this.setState ({
 				valueAge: {
 				min: (this.props.ageRange === undefined) ? 0 : this.props.ageRange.min,
@@ -37,7 +36,7 @@ class Filters extends Component {
 				},
 				valueDistance: {
 				min: (this.props.distanceRange === undefined) ? 0 : this.props.distanceRange.min,
-				max: (this.props.distanceRange === undefined) ? 60 : this.props.distanceRange.max,
+				max: (this.props.distanceRange === undefined) ? 30 : this.props.distanceRange.max,
 				},
 				valuePopularity: {
 				min: (this.props.popularityRange === undefined) ? 0 : this.props.popularityRange.min,
@@ -66,7 +65,7 @@ class Filters extends Component {
 		<div >
 			<InputRange
 			  maxValue={100}
-			  minValue={18}
+			  minValue={0}
 			  value={this.state.valueAge}
 			  onChange={value => this.setState({ valueAge: value })}
 			  onChangeComplete={value => this.handleAge(value)} />
@@ -74,7 +73,7 @@ class Filters extends Component {
 		<label>Distance</label>
 		<div >
 			<InputRange
-			  maxValue={60}
+			  maxValue={30}
 			  minValue={0}
 			  formatLabel={value => `${value} km`}
 			  value={this.state.valueDistance}

@@ -43,26 +43,42 @@ class LikesViewsContainer extends Component {
 					<div>No likes</div>
 				)
 			} else {
-				return (
-					<LikesComponent 
-						users={users}
-					/>
-				)
+				return users.map((user) => {
+					return (
+					<div key={user.user_id}>
+						<LikesComponent
+							id={user.user_id}
+							firstname={user.firstname}
+							lastname={user.lastname}
+							age={user.birth_date}
+							occupation={user.occupation}
+							src={user.imageProfile_path}
+						/>
+					</div>
+					);
+				});
 			}
 		} else if (this.state.isViews) {
-			console.log('im in views')
 			var users = this.props.usersViews;
-			console.log(users)
 			if (users === 'undefined' || users === null || users === '' || users.length <= 0) {
 				return (
 					<div>No views</div>
 				)
 			} else {
-				return (
-					<ViewsComponent 
-						users={users}
-					/>
-				)
+				return users.map((user) => {
+					return (
+					<div key={user.user_id}>
+						<ViewsComponent
+							id={user.user_id}
+							firstname={user.firstname}
+							lastname={user.lastname}
+							age={user.birth_date}
+							occupation={user.occupation}
+							src={user.imageProfile_path}
+						/>
+					</div>
+					);
+				});
 			}
 		}
 	}

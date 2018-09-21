@@ -5,8 +5,10 @@ import WizardFormThirdPage from './WizardFormThirdPage'
 import WizardFormFourPage from './WizardFormFourPage'
 import WizardFormFivePage from './WizardFormFivePage'
 import axios from 'axios';
+import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { setOnboarding } from '../../actions/actionUsers';
+import { setOnboarding, fetchCurrentUser } from '../../actions/actionUsers';
 import { bindActionCreators } from 'redux';
 
 class WizardForm extends Component {
@@ -22,8 +24,12 @@ class WizardForm extends Component {
   async componentDidMount() {
     this.props.setOnboarding();
     const res = await axios.get('/api/onboarding');
-    if (res.data === false) {
-      this.props.history.push('/homepage');
+    if (!res.data) {
+      this.props.fetchCurrentUser().then(() => {
+        if (this.props.isAuthenticated && this.props.currentUser != undefined) {
+          this.props.history.push('/homepage');
+        }
+      })
     }
   }
 
@@ -85,10 +91,22 @@ class WizardForm extends Component {
   }
 }
 
+WizardForm.propTypes = {
+  isAuthenticated: PropTypes.bool
+}
+
+function mapStateToProps(state) {
+  return {
+    isAuthenticated: state.auth.authenticated,
+    currentUser: state.auth.currentUser
+  };
+}
+
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ 
-    setOnboarding: setOnboarding
+    setOnboarding: setOnboarding,
+    fetchCurrentUser: fetchCurrentUser
   }, dispatch);
 }
 
-export default connect(null, mapDispatchToProps)(WizardForm);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(WizardForm));

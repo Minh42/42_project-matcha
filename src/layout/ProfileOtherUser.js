@@ -11,15 +11,15 @@ class ProfileOtherUser extends Component {
 	async componentDidMount() {
 		var user_id = this.props.match.params.id;
 		const res = await axios.get('/api/otherProfile/?user_id=' + user_id);
-		console.log(res.data)
-        this.props.selectUser({data: res.data});
+		this.props.selectUser({data: res.data});
 	}
 
 	renderProfile() {
-		console.log(this.props.selectedUser)
+		var user_id = this.props.match.params.id;
 		if (this.props.selectedUser) {
 			return (
 				<UserProfileContainer 
+					id={user_id}
 					user={this.props.selectedUser.data.infos}	
 					photos={this.props.selectedUser.data.photos}
 					tags={this.props.selectedUser.data.tags}

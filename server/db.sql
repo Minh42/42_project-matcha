@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS `user_photos` (
 );
 
 CREATE TABLE IF NOT EXISTS `likes` (
+    `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     `from_user_id` BIGINT UNSIGNED,
     `to_user_id` BIGINT UNSIGNED,
     `date_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -48,6 +49,7 @@ CREATE TABLE IF NOT EXISTS `likes` (
 );
 
 CREATE TABLE IF NOT EXISTS `views` (
+    `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     `from_user_id` BIGINT UNSIGNED,
     `to_user_id` BIGINT UNSIGNED,
     `date_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -133,19 +135,27 @@ CREATE TABLE IF NOT EXISTS `block_user` (
     FOREIGN KEY (user_id_blocked) REFERENCES users(user_id)
 );
 
+CREATE TABLE IF NOT EXISTS `report_user` (
+    `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `user_id` BIGINT UNSIGNED,
+    `user_id_reported` BIGINT UNSIGNED,
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (user_id_reported) REFERENCES users(user_id)
+);
+
 CREATE TABLE IF NOT EXISTS `notification_object` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `entity_type` INT UNSIGNED NOT NULL,
+    `entity_type_id` INT UNSIGNED NOT NULL,
     `entity_id` INT UNSIGNED NOT NULL,
-    `created_on` DATETIME NOT NULL,
-    `status` TINYINT NOT NULL
+    `created_on` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `status` TINYINT DEFAULT 1 NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS `notification` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `notification_object_id` BIGINT UNSIGNED NOT NULL,
     `notifier_id` BIGINT UNSIGNED NOT NULL,
-    `status` TINYINT NOT NULL,
+    `status` TINYINT DEFAULT 1 NOT NULL,
     FOREIGN KEY (notification_object_id) REFERENCES notification_object(id),
     FOREIGN KEY (notifier_id) REFERENCES users(user_id)
 );

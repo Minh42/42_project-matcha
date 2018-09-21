@@ -1,3 +1,5 @@
+import { USER_SELECTED } from '../src/actions/actionUsers';
+
 const assert = require('assert');
 const empty = require('is-empty');
 const isFloat = require('is-float-nodejs');
@@ -5,29 +7,44 @@ var getAge = require('get-age');
 var turf = require('@turf/turf');
 var stemmer = require('stemmer');
 
+function removeUserFromArray(users, user_id) {
+    for(var i = users.length; i--;) {
+        if (users[i]["user_id"] === user_id) users.splice(i, 1);
+    }
+    return users;
+}
+
 function filterByProperty(array, prop, value) {
     var filtered = new Array();
-    for (var i = 0; i < array.length; i++) {
-        var obj = array[i];
-        for (var key in obj) {
-            var item = obj[prop];
-            if (item === value) {
-                filtered.push(obj);
-                break;
-            }
+    array.filter(function (el, index, arr) {
+        if (el[prop] === value) {
+            filtered.push(el);
         }
-    } 
+    });
     return filtered;
 }
 
+// function filterByProperty(array, prop, value) {
+//     var filtered = new Array();
+//     for (var i = 0; i < array.length; i++) {
+//         var obj = array[i];
+//         for (var key in obj) {
+//             var item = obj[prop];
+//             if (item === value) {
+//                 filtered.push(obj);
+//                 break;
+//             }
+//         }
+//     } 
+//     return filtered;
+// }
+
 function filterByAge(array, prop, min, max) {
-    console.log(array)
     var filtered = new Array();
     for (var i = 0; i < array.length; i++) {
         var obj = array[i];
         for (var key in obj) {
             var item = getAge(obj[prop]);
-            console.log(item)
             if (item <= max && item >= min) {
                 filtered.push(obj);
                 break
@@ -38,13 +55,11 @@ function filterByAge(array, prop, min, max) {
 }
 
 function filterByPopularity(array, prop, min, max) {
-    console.log(array)
     var filtered = new Array();
     for (var i = 0; i < array.length; i++) {
         var obj = array[i];
         for (var key in obj) {
             var item = obj[prop];
-            console.log(item)
             if (item <= max && item >= min) {
                 filtered.push(obj);
                 break
@@ -55,10 +70,9 @@ function filterByPopularity(array, prop, min, max) {
 }
 
 function filterByDistance(array, currentUser, min, max) {
-    console.log(array)
     var filtered = new Array();
-    var latitudeCurrent = currentUser.latitude;
-    var longitudeCurrent = currentUser.longitude;
+    var latitudeCurrent = currentUser[0].latitude;
+    var longitudeCurrent = currentUser[0].longitude;
     for (var i = 0; i < array.length; i++) {
         var obj = array[i];
         for (var key in obj) {
@@ -68,7 +82,6 @@ function filterByDistance(array, currentUser, min, max) {
             var to = turf.point([latitudeUser, longitudeUser]);
             var options = {units: 'kilometers'};
             var distance = turf.distance(from, to, options);
-            console.log(distance)
             if (distance <= max && distance >= min) {
                 filtered.push(obj);
                 break
@@ -154,8 +167,8 @@ function sortByPop(array, newArray, prop) {
 
 function findDistance(array, currentUser) {
     var arrayDistance = new Array();
-    var latitudeCurrent = currentUser.latitude;
-    var longitudeCurrent = currentUser.longitude;
+    var latitudeCurrent = currentUser[0].latitude;
+    var longitudeCurrent = currentUser[0].longitude;
     for (var i = 0; i < array.length; i++) {
         var latitudeUser = array[i].latitude
         var longitudeUser = array[i].longitude
@@ -170,8 +183,8 @@ function findDistance(array, currentUser) {
 
 function sortByDistance(array, newArray, currentUser) {
     var filtered = new Array();
-    var latitudeCurrent = currentUser.latitude;
-    var longitudeCurrent = currentUser.longitude;
+    var latitudeCurrent = currentUser[0].latitude;
+    var longitudeCurrent = currentUser[0].longitude;
     var i = 0;
     while (i < newArray.length) 
     {
@@ -193,6 +206,19 @@ function sortByDistance(array, newArray, currentUser) {
         i++;
     }
     return filtered
+}
+
+// SORT BY SCORE
+
+function sortByScore(users) {
+    var sortedUsers = users.sort(mySorting);
+    return sortedUsers;
+}
+
+function mySorting(a,b) {
+    a = a.score;
+    b = b.score;
+    return a == b ? 0 : (a < b ? 1 : -1)
 }
 
 // SEARCH TAGS
@@ -246,7 +272,6 @@ function findUserByID(users, id_users) {
 // ALGO MATCHING
 
 function match(user, users) {
-    console.log('USERS', users)
     var scoring_list = new Array();
     const res = validateInput(users, function(err, data) {
         if (err) {
@@ -256,12 +281,9 @@ function match(user, users) {
 
     // split by groups
     const groups = groupByGender(users);
-    console.log('GROUPS', groups)
     var men = groups["men"];
     var women = groups["women"];
     var both = groups["both"];
-    console.log(user[0].genders)
-    console.log('length :', men)
 
     if (user[0].genders === "man") {
         for (var i = 0; i < men.length; i++) {
@@ -516,11 +538,9 @@ async function validateInput(users, callback) {
 }
 
 function groupByGender(users) {
-    console.log('users', users)
     var men = filterByProperty(users, "gender", "man");
     var women = filterByProperty(users, "gender", "woman");
     var both = users;
-    console.log('MEN', men.length)
 
     const groups = {
         men: men,
@@ -598,6 +618,8 @@ module.exports = {
     validateInput: validateInput,
     getScore : getScore,
     match: match,
+    removeUserFromArray: removeUserFromArray,
+    sortByScore: sortByScore,
     profileWhoMatch: profileWhoMatch,
     AllUsersExceptCurrentUser : AllUsersExceptCurrentUser 
 }

@@ -7,6 +7,7 @@ const session = require('express-session')
 const mustacheExpress = require('mustache-express')
 const helmet = require('helmet')
 // const csrf = require('csurf')
+const pool = require('./server/db')
 
 const passport = require('passport')
 const cookieSession = require('cookie-session')
@@ -14,10 +15,7 @@ const keys = require('./server/config/keys')
 
 const app = require('express')();
 const server = require('http').Server(app);
-const io = require('socket.io')(server, {
-  pingInterval: 1000,
-  pingTimeout: 5000,
-  });
+const io = require('socket.io')(server);
 const PORT = process.env.PORT || 8080;
 
 app.set('views', path.join(__dirname, 'views'))
@@ -62,10 +60,26 @@ server.listen(PORT, () => {
   console.log('App running at http://localhost:8080')
 })
 
-var messages = []
-
+var users = [];
+var messages = [];
 io.sockets.on('connection', function (socket) {
-  console.log('Un client est connecté !');
+  socket.on('new_user', function(user_id) {
+    users.push({
+      userID: user_id,
+      socketID: socket.id
+    });
+  })
+
+  socket.on('new_notification', function(data) {
+    console.log(data)
+    // generate notification message
+    // io.to(sessionID).emit('show_notification', {
+    //   type: '',
+    //   text: 'hello world' {actor_username} {action_type}
+    // });
+    // io.sockets.emit('message', data);
+  })
+
   socket.on('message', function (data) {
     // messages.push(message)
     console.log('message:', data.message);
@@ -74,4 +88,17 @@ io.sockets.on('connection', function (socket) {
                 id : data.user_id}
     io.sockets.emit('message', info)
   });
+
+  socket.on('disconnect', function() {
+    for(let i = 0; i < users.length; i++) {
+      if(users[i].socketID === socket.id) {
+        users.splice(i,1); 
+      }
+    }
+  })
 });
+
+
+
+
+

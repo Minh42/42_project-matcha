@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { signOutAction } from '../actions/actionUsers';
 import { bindActionCreators } from 'redux';
+import io from 'socket.io-client';
 
 class Header extends Component {
 	constructor(props) {
@@ -17,8 +18,9 @@ class Header extends Component {
 
         this.state = {
             firstname : "",
-            lastname : ""
+            lastname : "",
         }
+        this.socket = io('ws://localhost:8080', {transports: ['websocket']});
 	  }
 
 	showModal() {
@@ -30,6 +32,7 @@ class Header extends Component {
     }
 
     handleLogout() {
+        this.socket.emit('disconnect_user', this.props.currentUser[0].user_id);
         this.props.signOutAction(this.props.history);
     }
 
@@ -120,7 +123,8 @@ class Header extends Component {
 
 function mapStateToProps(state) {
     return { 
-        auth: state.auth
+        auth: state.auth,
+        currentUser: state.auth.currentUser
     };
 }
 

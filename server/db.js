@@ -5,7 +5,7 @@ const util = require('util')
 const importer = require('node-mysql-importer')
 
 const pool = mysql.createPool({
-    connectionLimit: 10,
+    connectionLimit: 1000,
     host     : '192.168.99.100',
     port     : '3306',
     user     : 'root',

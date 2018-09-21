@@ -4,14 +4,8 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import FormContainer from './FormContainer';
 import Button from '../components/Button';
-import { Link } from 'react-router-dom';
-
-// import { signInGoogleAction } from '../actions/actionUsers';
-// import { signInFacebookAction } from '../actions/actionUsers';
 import { fetchCurrentUser } from '../actions/actionUsers';
-
 import { bindActionCreators } from 'redux';
-
 import GoogleLoginButton from "react-social-login-buttons/lib/buttons/GoogleLoginButton";
 import FacebookLoginButton from "react-social-login-buttons/lib/buttons/FacebookLoginButton";
 
@@ -106,15 +100,8 @@ class SignupContainer extends Component{
 	)}
 }
 
-// SignupContainer.propTypes = {
-// 	signInGoogleAction: PropTypes.func.isRequired,
-// 	signInFacebookAction: PropTypes.func.isRequired
-// };
-
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({ 
-		// signInGoogleAction: signInGoogleAction,
-		// signInFacebookAction: signInFacebookAction
 		fetchCurrentUser: fetchCurrentUser
 	}, dispatch);
 }

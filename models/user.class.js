@@ -30,10 +30,20 @@ class User {
         } 
     }
 
-    static async selectAllUsers() {
+    static async selectAllUsers(userId) {
         try {
-            let requete = "SELECT users.user_id, users.firstname, users.lastname, users.username, users.imageProfile_path, GROUP_CONCAT(DISTINCT tags.name) AS tags, users.birth_date, users.gender, users.latitude, users.longitude, users.occupation, users.popularity, GROUP_CONCAT(DISTINCT likes.from_user_id) AS likes, GROUP_CONCAT(DISTINCT views.from_user_id) AS views, GROUP_CONCAT(DISTINCT genders.name) AS genders, GROUP_CONCAT(DISTINCT relationships_type.name) AS relationships_type FROM `users` INNER JOIN `user_tags` ON user_tags.user_id = users.user_id LEFT JOIN `tags` ON tags.tag_id = user_tags.tag_id LEFT JOIN `likes` ON likes.to_user_id = users.user_id LEFT JOIN `views` ON views.to_user_id = users.user_id INNER JOIN `interested_in_gender` ON interested_in_gender.user_id = users.user_id LEFT JOIN `genders` ON genders.gender_id = interested_in_gender.gender_id INNER JOIN `interested_in_relation` ON interested_in_relation.user_id = users.user_id LEFT JOIN `relationships_type` ON relationships_type.relationship_type_id = interested_in_relation.relationship_type_id GROUP BY users.user_id";
-            let ret = await pool.query(requete);
+            let requete = "SELECT users.user_id, users.firstname, users.lastname, users.username, users.imageProfile_path, GROUP_CONCAT(DISTINCT tags.name) AS tags, users.birth_date, users.gender, users.latitude, users.longitude, users.occupation, users.popularity, GROUP_CONCAT(DISTINCT likes.from_user_id) AS likes, GROUP_CONCAT(DISTINCT views.from_user_id) AS views, GROUP_CONCAT(DISTINCT genders.name) AS genders, GROUP_CONCAT(DISTINCT relationships_type.name) AS relationships_type FROM `users` INNER JOIN `user_tags` ON user_tags.user_id = users.user_id LEFT JOIN `tags` ON tags.tag_id = user_tags.tag_id LEFT JOIN `likes` ON likes.to_user_id = users.user_id LEFT JOIN `views` ON views.to_user_id = users.user_id INNER JOIN `interested_in_gender` ON interested_in_gender.user_id = users.user_id LEFT JOIN `genders` ON genders.gender_id = interested_in_gender.gender_id INNER JOIN `interested_in_relation` ON interested_in_relation.user_id = users.user_id LEFT JOIN `relationships_type` ON relationships_type.relationship_type_id = interested_in_relation.relationship_type_id WHERE users.user_id != ? GROUP BY users.user_id";
+            let ret = await pool.query(requete, [userId]);
+            return ret;
+        } catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async selectAllUsersInformations(userId) {
+        try {
+            let requete = "SELECT users.user_id, users.firstname, users.lastname, users.username, users.imageProfile_path, GROUP_CONCAT(DISTINCT tags.name) AS tags, users.birth_date, users.gender, users.latitude, users.longitude, users.occupation, users.popularity, GROUP_CONCAT(DISTINCT likes.from_user_id) AS likes, GROUP_CONCAT(DISTINCT views.from_user_id) AS views, GROUP_CONCAT(DISTINCT genders.name) AS genders, GROUP_CONCAT(DISTINCT relationships_type.name) AS relationships_type FROM `users` INNER JOIN `user_tags` ON user_tags.user_id = users.user_id LEFT JOIN `tags` ON tags.tag_id = user_tags.tag_id LEFT JOIN `likes` ON likes.to_user_id = users.user_id LEFT JOIN `views` ON views.to_user_id = users.user_id INNER JOIN `interested_in_gender` ON interested_in_gender.user_id = users.user_id LEFT JOIN `genders` ON genders.gender_id = interested_in_gender.gender_id INNER JOIN `interested_in_relation` ON interested_in_relation.user_id = users.user_id LEFT JOIN `relationships_type` ON relationships_type.relationship_type_id = interested_in_relation.relationship_type_id WHERE users.user_id = ? GROUP BY users.user_id";
+            let ret = await pool.query(requete, [userId]);
             return ret;
         } catch(err) {
             throw new Error(err)
@@ -74,7 +84,7 @@ class User {
 
     static async addUser(firstname, lastname, login, email, password,  activation_code) {
         try {
-            const values = {username: login, firstname: firstname, lastname: lastname, password: password, email: email,  activation_code:  activation_code};
+            const values = {username: login, firstname: firstname, lastname: lastname, password: password, email: email, activation_code: activation_code, popularity: Math.random() * (100 - 1) + 1};
             const requete = 'INSERT INTO `users` SET ?'
        
             let ret = await pool.query(requete, values)
@@ -92,7 +102,7 @@ class User {
 
     static async addUserFacebook(firstname, lastname, email, facebookID) {
     try {
-        const values = {firstname: firstname, lastname: lastname, email : email, fb_id : facebookID};
+        const values = {firstname: firstname, lastname: lastname, email : email, fb_id : facebookID, popularity: Math.floor(Math.random() * 100)};
         const requete = 'INSERT INTO `users` SET ?'
        
         let ret = await pool.query(requete, values)
@@ -110,7 +120,7 @@ class User {
     
     static async addUserGoogle(username, firstname, lastname, email, googleID) {
         try {
-            const values = {username: username, firstname: firstname, lastname: lastname, email : email, google_id : googleID};
+            const values = {username: username, firstname: firstname, lastname: lastname, email : email, google_id : googleID, popularity: Math.floor(Math.random() * 100)};
             const requete = 'INSERT INTO `users` SET ?'
        
             let ret = await pool.query(requete, values)
@@ -124,6 +134,21 @@ class User {
         catch(err) {
             throw new Error(err)
         } 
+    } 
+
+    static async updateLastLogin(user_id) {
+        try {
+            let ret = await pool.query("UPDATE `users` SET `last_login` = ? WHERE `user_id` = ?", [new Date(), user_id]);
+                if (ret) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+        }
+        catch(err) {
+            throw new Error(err)
+        }         
     }
 
     static async compareToken(login,  activation_code) {
@@ -244,8 +269,6 @@ class User {
     static async onboardingState(user_id) {
         try {
             let ret = await pool.query("SELECT `onboardingDone` FROM `users` WHERE `user_id` = ?", [user_id]);
-            console.log('onboardingState')
-            console.log(ret[0].onboardingDone)
             return ret[0].onboardingDone
         }
         catch(err) {
@@ -377,7 +400,6 @@ class User {
     //------------------------------LOCALISATION---------------------------------
     static async addLatLng(lat, lng, user_id) {
         try {
-            console.log(lat)
             let ret = await pool.query("UPDATE `users` SET `latitude` = ?, `longitude` = ? WHERE `user_id` = ?", [lat, lng, user_id]);
             if (ret) {
                 return true;
@@ -394,7 +416,6 @@ class User {
     static async findLatLngBDD(user_id) {
         try {
             let ret = await pool.query("SELECT `latitude`, `longitude`, `geolocalisationAllowed` FROM `users` WHERE `user_id` = ?", [user_id]);
-            console.log("inside fonction ret:", ret)
             return ret;
         }
         catch(err) {
@@ -457,9 +478,7 @@ class User {
 
     static async searchIdGenders(interest) {
         try {
-            console.log(interest)
             let ret = await pool.query("SELECT `gender_id` FROM `genders` WHERE `name` = ?", [interest]);
-            console.log(ret)
             return ret;
         }
         catch(err) {
@@ -598,10 +617,14 @@ class User {
         try {
             let ret = await pool.query("INSERT INTO `likes` SET `from_user_id` = ?, `to_user_id` = ? ", [id_actual_user, user_like]);
                 if (ret) {
-                    return true;
-                }
-                else {
-                    return false;
+                    var notificationData = {
+                    action_type: "add like",
+                    entity_type_id: 1,
+                    entity_id: ret.insertId,
+                    actor_id: id_actual_user,
+                    notifier_id: user_like
+                    }
+                    return notificationData;
                 }
         }
         catch(err) {
@@ -613,10 +636,14 @@ class User {
         try {
             let ret = await pool.query("DELETE FROM `likes` WHERE `from_user_id` = ? AND `to_user_id` = ? ", [id_actual_user, user_like]);
                 if (ret) {
-                    return true;
-                }
-                else {
-                    return false;
+                    var notificationData = {
+                        action_type: "delete like",
+                        entity_type_id: 2,
+                        entity_id: ret.insertId,
+                        actor_id: id_actual_user,
+                        notifier_id: user_like
+                    }
+                    return notificationData;
                 }
         }
         catch(err) {
@@ -654,12 +681,35 @@ class User {
         } 
     }
 
+    static async searchBlockedUser(current_user) {
+        try {
+            let ret = await pool.query("SELECT user_id_blocked FROM `block_user` WHERE `user_id` = ?", [current_user]);
+            return ret;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
    // ----------------------------CONVERSATION-----------------------------------
 
    static async addNewConversation(user_id) {
         try {
             let ret = await pool.query("INSERT INTO `conversation` SET `user_id` = ?", [user_id]);
             return ret;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async searchReportedUser(user_id) {
+        try {
+            let ret = await pool.query("SELECT count(*) as value_exists FROM `report_user` WHERE `user_id_reported` = ?", [user_id]);
+            if (ret[0].value_exists > '0')
+                return true;
+            else
+                return false;
         }
         catch(err) {
             throw new Error(err)
@@ -674,6 +724,34 @@ class User {
         catch(err) {
             throw new Error(err)
         } 
+    }
+
+    static async reportUser(current_user, user_id) {
+        try {
+            let ret = await pool.query("INSERT INTO `report_user` SET `user_id` = ?, `user_id_reported` = ? ", [current_user, user_id]);
+            return true;
+        }
+        catch(err) {
+            console.log(err);
+            return false;
+        } 
+    }
+
+    static async blockUser(current_user, user_id) {
+        try {
+            let ret = await pool.query("SELECT count(*) as value_exists FROM `block_user` WHERE `user_id` = ? AND `user_id_blocked` = ?", [current_user, user_id]);
+            if (ret[0].value_exists > '0') {
+                let ret = await pool.query("DELETE FROM `block_user` WHERE `user_id` = ? AND `user_id_blocked` = ?", [current_user, user_id]);
+                return "unblocked";
+            } else {
+                let ret = await pool.query("INSERT INTO `block_user` SET `user_id` = ?, `user_id_blocked` = ? ", [current_user, user_id]);
+                return "blocked";
+            }
+        }
+        catch(err) {
+            console.log(err);
+            return false;
+        }
     }
 
     static async findAllConversation(current_user) {
@@ -714,6 +792,22 @@ class User {
             return true;
         }
         catch(err) {
+            throw new Error(err)
+        } 
+    }
+    
+    // Notifications
+
+    static async insertNotification(entity_type_id, entity_id, actor_id, notifier_id) {
+        try {
+            let ret = await pool.query("INSERT INTO `notification_object` SET `entity_type_id` = ?, `entity_id` = ? ", [entity_type_id, entity_id]);
+            let notification_object_id = ret.insertId;
+            await pool.query("INSERT INTO `notification_change` SET `notification_object_id` = ?, `actor_id` = ? ", [notification_object_id, actor_id]);
+            await pool.query("INSERT INTO `notification` SET `notification_object_id` = ?, `notifier_id` = ? ", [notification_object_id, notifier_id]);
+            if (ret) {
+                return notification_object_id;
+            }
+        } catch(err) {
             throw new Error(err)
         } 
     }

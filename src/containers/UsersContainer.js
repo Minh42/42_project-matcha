@@ -3,31 +3,34 @@ import UserProfile from '../components/UserProfile';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { fetchUsers } from '../actions/actionFetch';
-import { getFilterUsers, getMatchedProfiles, getActualUser } from '../selectors/index';
+import { getFilterUsers } from '../selectors/index';
 import { fetchCurrentUser } from '../actions/actionUsers';
 import PropTypes from 'prop-types';
 
 class UsersContainer extends Component {
     componentDidMount() {
-        this.props.fetchUsers();
         this.props.fetchCurrentUser();
+        this.props.fetchUsers();
     }
 
     renderList() {
-        console.log(this.props.users)
-        return this.props.users.map((user) => {
-            return (
-            <div key={user.user_id} className="column is-half">
-                <UserProfile
-                    id={user.user_id}
-                    firstname={user.firstname}
-                    lastname={user.lastname}
-                    age={user.birth_date}
-                    src={user.imageProfile_path}
-                />
-            </div>
-            );
-        });
+        if(this.props.users) {
+            return this.props.users.map((user) => {
+                return (
+                <div key={user.user_id} className="column is-half">
+                    <UserProfile
+                        id={user.user_id}
+                        firstname={user.firstname}
+                        lastname={user.lastname}
+                        age={user.birth_date}
+                        src={user.imageProfile_path}
+                    />
+                </div>
+                );
+            });
+        } else {
+            return;
+        }
     }
 
     render() {

@@ -67,7 +67,6 @@ router.post('/api/signup', checkSignupValidation, function(req, res) {
         messages.error = null;
         messages.success = "success";
     
-        console.log(messages);
         res.send(messages);
       }
       else {
@@ -88,7 +87,6 @@ router.get('/api/activationMail', function(req, res) {
   try {
     user.compareToken(login, token).then(function(ret) {
       if (ret) {
-        console.log('token in database')
         user.changeStatus(login).then(function(ret){
           res.redirect('/');
         })
@@ -175,7 +173,6 @@ router.get('/api/resetPassword', function(req, res) {
 
   user.compareTokenReset(user_id, token_reset).then(function(ret) {
     if (ret) {
-      console.log('token_reset in database')
       res.redirect('/resetPassword/' + user_id);
     }
     else {
@@ -234,23 +231,39 @@ router.get('/api/signout', (req, res) => {
   res.redirect('/');
 });
 
-router.get('/api/current_user', authenticate, (req, res) => {
-  if (req.currentUser === null) 
+// router.get('/api/current_user', authenticate, (req, res) => {
+//   if (req.currentUser === null) 
+//     res.send(req.currentUser);
+//   else 
+//     res.send(req.currentUser[0]);
+// });
+
+router.get('/api/current_user', authenticate, async (req, res) => {
+  let user = require('../models/user.class');
+  if (req.currentUser === null) {
     res.send(req.currentUser);
-  else 
-    res.send(req.currentUser[0]);
+  }
+  else {
+    let user_id = req.currentUser[0].user_id;
+    // user.updateLastLogin(user_id);
+    const ret = await user.selectAllUsersInformations(user_id);
+    if (ret) {
+      res.send(ret);
+    } else {
+      res.sendStatus(404);
+    }  
+  }
 });
 
-router.get('/api/homepage', authenticate, (req, res) => {
+router.get('/api/homepage', authenticate, async (req, res) => {
   let user = require('../models/user.class');
   let id = req.currentUser[0].user_id;
-  user.selectAllUsers().then(function(ret) {
+  const ret = await user.selectAllUsers(id);
     if (ret) {
       res.json(ret);
     } else {
-    res.sendStatus(404);
+      res.sendStatus(404);
     }
-  })
 });
 
 //ONBOARDING
@@ -274,7 +287,6 @@ router.post('/api/addTags', authenticate, (req, res) => {
   {
       user.findOneTag("name", tag)
         .then((ret) => {
-          console.log("tag exist")
           if (ret) { // TAG EXIST
             user.searchByColNameTag("name", tag)
               .then((ret) => {
@@ -293,7 +305,6 @@ router.post('/api/addTags', authenticate, (req, res) => {
               })
           }
           else { // TAG NOT EXIST
-            console.log("tag not exist")
             user.addTagBDD(tag) //add new tag BDD
               .then((ret) => {
                 if (ret) {
@@ -363,8 +374,6 @@ router.post('/api/deleteTags', authenticate, (req, res) => {
 router.post('/api/searchTags', authenticate, (req, res) => {
   let user = require('../models/user.class');
   const user_id = req.currentUser[0].user_id
-  console.log("inside search tags")
-
   user.findUserId("user_tags", user_id)
     .then((ret) => {
       res.json(ret)
@@ -759,21 +768,18 @@ router.get('/api/otherProfile', async (req, res) => {
 // LIKES
 router.post('/api/addLike', authenticate, (req, res) => {
   let user = require('../models/user.class');
-  const id_actual_user = req.currentUser[0].user_id
-  const user_like = req.body.user_id
-  user.findLikeUser(id_actual_user, user_like)
-    .then((ret) => {
-      if (ret === false) {
-        user.addLikeBDD(id_actual_user, user_like)
-          .then((ret1) => {
-            res.send("add")
-          })
+  const id_actual_user = req.currentUser[0].user_id;
+  const user_like = req.body.user_id;
+  user.findLikeUser(id_actual_user, user_like).then((ret) => {
+    if (ret === false) {
+      user.addLikeBDD(id_actual_user, user_like).then((ret) => {
+        res.send(ret);
+      })
     }
     else {
-        user.deleteLikeBDD(id_actual_user, user_like)
-          .then((ret) => {
-            res.send("delete")
-          })
+      user.deleteLikeBDD(id_actual_user, user_like).then((ret) => {
+        res.send(ret);
+      })
     }
   })
 })
@@ -808,6 +814,61 @@ router.post('/api/addUserViews', authenticate, (req, res) => {
   })
 })
 
+router.get('/api/showBlockProfile', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  var current_user = req.currentUser[0].user_id;
+  var id = req.param('user_id');
+  user.searchBlockedUser(current_user).then((ret) => {
+    var result = JSON.parse(JSON.stringify(ret));
+    var count = 0; 
+    for (var i = 0; i < result.length; i++) {
+      if (result[i]['user_id_blocked'] == id) {
+        count += 1;
+      } 
+    }
+    if (count > 1) {
+      res.send('blocked');
+    } else {
+      res.send('unblocked');
+    }
+  });
+});
+
+router.get('/api/showReportProfile', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  var user_id = req.param('user_id');
+  user.searchReportedUser(user_id).then((ret) => {
+    if (ret) {
+      res.send('reported');
+    } else {
+      res.send('unreported');
+    }
+  });
+});
+
+router.post('/api/blockProfile', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  var current_user = req.currentUser[0].user_id;
+  var user_id = req.param('user_id');
+  user.blockUser(current_user, user_id).then((ret) => {
+    if (ret === "blocked") {
+      res.send('blocked');
+    } else if (ret === "unblocked") {
+      res.send('unblocked')
+    }
+  })
+});
+
+router.post('/api/reportProfile', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  var current_user = req.currentUser[0].user_id;
+  var user_id = req.param('user_id');
+  user.reportUser(current_user, user_id).then((ret) => {
+    if (ret) {
+      res.send('reported')
+    }
+  })
+});
 // TCHAT/CONVERSATION
 
 router.post('/api/createConversationParticipant', authenticate, (req, res) => {
@@ -836,7 +897,6 @@ router.post('/api/findAllConversation', authenticate, (req, res) => {
         var ret1 = await user.findIdParticipantConversation(ret[i].conversation_id, current_user)
         allUserID.push(ret1[0].participant_id)
       }
-      console.log(allUserID)
       res.json(allUserID) // tous les user avec qui le current user a une conversation en cours
     }
   })
@@ -871,5 +931,17 @@ router.post('/api/findConversationID', authenticate, (req, res) => {
     })
   })
 })
+// NOTIFICATIONS
+
+router.post('/api/notifications', authenticate, async (req, res) => {
+  let { entity_type_id, entity_id, actor_id, notifier_id } = req.body;
+  let user = require('../models/user.class');
+  const ret = await user.insertNotification(entity_type_id, entity_id, actor_id, notifier_id);
+  if (ret) {
+    res.json(ret)
+  }
+});
+
+
 
 module.exports = router 
