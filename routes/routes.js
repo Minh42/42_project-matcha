@@ -942,6 +942,15 @@ router.post('/api/notifications', authenticate, async (req, res) => {
   }
 });
 
+router.post('/api/lastNotification', authenticate, async (req, res) => {
+  let notification_object_id = req.body.notification_object_id;
+  let user = require('../models/user.class');
+  const ret = await user.getNotification(notification_object_id);
+  if (ret) {
+    res.json(ret)
+  }
+});
+
 
 
 module.exports = router 

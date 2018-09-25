@@ -4,19 +4,21 @@ import Filters from '../containers/Filters';
 import SortBy from '../containers/SortBy';
 import SearchTags from '../containers/SearchTags';
 import { connect } from 'react-redux';
-import { setUnOnboarding } from '../actions/actionUsers';
+import { setUnOnboarding, addFlashMessage } from '../actions/actionUsers';
 import { bindActionCreators } from 'redux';
 import { withRouter } from 'react-router-dom';
 import FlashMessagesList from '../components/FlashMessagesList';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import io from 'socket.io-client';
+import izitoast from 'izitoast';
+import 'izitoast/dist/css/iziToast.min.css'
+
+const socket = io('http://localhost:8080', { transports: ['websocket'] });
 
 class HomePage extends Component {
     constructor(props) {
 		super(props);
-		// this.socket = io('http://localhost:8080', {transports: ['websocket']});
-		this.socket = io('http://localhost:8080');
 	}
 
 	async componentDidMount() {
@@ -25,14 +27,31 @@ class HomePage extends Component {
 			this.props.history.push('/onboarding');
 		} else {
 			this.props.setUnOnboarding();
-			this.socket.emit('join', this.props.currentUser[0].user_id);
+			socket.emit('new_user', this.props.currentUser[0].user_id);
+			socket.on('userlist', (userList, socketID) => {
+				window.socketID = null;
+				window.selectedUser = null;
+				if (window.socketID === null) {
+					window.socketID = socketID;
+				}
+				window.userList = userList;
+			})
+			socket.on('exit', (userList) => {
+				window.userList = userList;
+			})
+			socket.on('show_notification', (data) => {
+				izitoast.show({
+					image: '',
+					message: data.text,
+					position: 'topRight'
+				});
+			})
 		}
 	}
 	
 	render () {
 		return (
 		<div className="columns">
-			<FlashMessagesList />
 			<aside className="column is-4 aside">
 				<div className="columns">
 					<SortBy />
@@ -45,14 +64,18 @@ class HomePage extends Component {
 				</div>
 			</aside>
 			<div className="column is-8 messages hero is-fullheight" id="message-feed">
-					<UsersContainer />
+					<FlashMessagesList />
+					<UsersContainer 
+						socket = {socket}
+					/>
 			</div>
 		</div>
 	)};
 }
 
 HomePage.propTypes = {
-	setUnOnboarding: PropTypes.func.isRequired
+	setUnOnboarding: PropTypes.func.isRequired,
+	addFlashMessage: PropTypes.func.isRequired
 };
 
 function mapStateToProps(state) {
@@ -63,7 +86,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
 	return bindActionCreators({
-	  	setUnOnboarding: setUnOnboarding
+		  setUnOnboarding: setUnOnboarding,
+		  addFlashMessage: addFlashMessage
 	}, dispatch);
   }
 
