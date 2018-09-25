@@ -47,6 +47,7 @@ class UserProfile extends Component {
     }
 
     async handleLike() {
+        this.socket.emit('new_user', this.props.currentUser[0].user_id);
         var data = { user_id : this.props.id}
         const res = await axios.post('/api/addLike', data);
         if (res.data) {
@@ -63,13 +64,13 @@ class UserProfile extends Component {
             if (ret.data) {
                 console.log('ready to emit')
                 this.socket.emit('new_notification', {notification : ret.data});
-                // this.socket.on('show_notification', function(data) {
-                //     console.log(data);
-                //     this.props.addFlashMessage({
-                //         type: data.type,
-                //         text: data.message
-                //     });
-                // })
+                this.socket.on('show_notification', function(data) {
+                    console.log(data);
+                    this.props.addFlashMessage({
+                        type: data.type,
+                        text: data.message
+                    });
+                })
             }
         }
     }

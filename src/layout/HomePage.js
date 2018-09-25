@@ -15,7 +15,6 @@ import io from 'socket.io-client';
 class HomePage extends Component {
     constructor(props) {
 		super(props);
-		this.socket = io('ws://localhost:8080', {transports: ['websocket']});
 	}
 
 	async componentDidMount() {
@@ -24,7 +23,6 @@ class HomePage extends Component {
 			this.props.history.push('/onboarding');
 		} else {
 			this.props.setUnOnboarding();
-			this.socket.emit('new_user', this.props.currentUser[0].user_id);
 		}
 	}
 	
