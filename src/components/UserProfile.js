@@ -15,12 +15,21 @@ class UserProfile extends Component {
             isMounted: false,
             like : false
         }
-        this.socket = io('ws://localhost:8080', {transports: ['websocket']});
+        // this.socket = io('http://localhost:8080', {transports: ['websocket']});
+        this.socket = io('http://localhost:8080');
         this.showProfile = this.showProfile.bind(this)
         this.handleLike = this.handleLike.bind(this)
     }
 
     componentDidMount() {
+        this.socket.on('show_notification', function(data) {
+            console.log(data);
+            // console.log(this.props)
+            // this.props.addFlashMessage({
+            //     type: "",
+            //     text: data.text
+            // });
+        })
         this.setState({ isMounted: true }, () => {
             axios.get('/api/searchLikeProfileUser').then(res => {
                 for (var i = 0; i < res.data.length; i++) {
@@ -63,13 +72,6 @@ class UserProfile extends Component {
             if (ret.data) {
                 console.log('ready to emit')
                 this.socket.emit('new_notification', {notification : ret.data});
-                // this.socket.on('show_notification', function(data) {
-                //     console.log(data);
-                //     this.props.addFlashMessage({
-                //         type: data.type,
-                //         text: data.message
-                //     });
-                // })
             }
         }
     }

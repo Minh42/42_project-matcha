@@ -2,9 +2,11 @@ import React, { Component } from 'react';
 import { Field, reduxForm, formValueSelector } from 'redux-form';
 import validate from './validate';
 import axios from 'axios';
-import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
+import { fetchCurrentUser } from '../../actions/actionUsers';
 import LocationComponent from '../LocationComponent';
+import { bindActionCreators } from 'redux';
 
 class WizardFormFivePage extends Component{
 
@@ -16,8 +18,11 @@ class WizardFormFivePage extends Component{
 
 	async handleOnboardingSubmit() {
 		const res = await axios.post('/api/changeOnboardingStatus')
-		if (res.data === "success")
-			this.props.history.push('/homepage');
+		if (res.data === "success") {
+			this.props.fetchCurrentUser().then(() => {
+				this.props.history.push('/homepage');
+			})
+		}
 	}
 
 	render () {
@@ -61,7 +66,13 @@ WizardFormFivePage = connect(
   }
 )(WizardFormFivePage)
 
-WizardFormFivePage = withRouter(WizardFormFivePage);
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({ 
+    fetchCurrentUser: fetchCurrentUser
+  }, dispatch);
+}
+
+WizardFormFivePage = withRouter(connect(null, mapDispatchToProps)(WizardFormFivePage));
 export default reduxForm({
   form: 'wizard', //Form name is same
   destroyOnUnmount: false,

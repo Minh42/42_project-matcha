@@ -63,31 +63,75 @@ server.listen(PORT, () => {
 var users = [];
 var messages = [];
 io.sockets.on('connection', function (socket) {
-  socket.on('new_user', function(user_id) {
+  
+  socket.on('join', function(user_id) {
+    console.log(user_id)
     users.push({
       userID: user_id,
       socketID: socket.id
     });
   })
 
-  socket.on('new_notification', function(data) {
-    console.log(data)
-    // generate notification message
-    // io.to(sessionID).emit('show_notification', {
-    //   type: '',
-    //   text: 'hello world' {actor_username} {action_type}
-    // });
-    // io.sockets.emit('message', data);
-  })
+  // socket.on('new_user', function(user_id) {
+  //   console.log(user_id)
+  //   socket.join(user_id)
+  // })
 
-  socket.on('message', function (data) {
-    // messages.push(message)
-    console.log('message:', data.message);
-    console.log('id:', data.user_id);
-    var info = { message : data.message,
-                id : data.user_id}
-    io.sockets.emit('message', info)
-  });
+
+  // socket.on('new_notification', async function(data) {
+  //   var notification_object_id = data.notification;
+  //   console.log(notification_object_id);
+
+  //   let requete = "SELECT `notifier_id` FROM `notification` WHERE notification_object_id = ?";
+  //   let ret = await pool.query(requete, [notification_object_id]);
+  //   var user_id = ret[0].notifier_id;
+  //   console.log(ret[0].notifier_id);
+
+  //   io.to(user_id).emit('show_notification', {
+  //     type: '',
+  //     text: 'hello world' 
+  //   })
+  // })
+
+
+  socket.on('new_notification', async function(data) {
+    var notification_object_id = data.notification;
+    console.log(notification_object_id);
+
+    let requete = "SELECT `notifier_id` FROM `notification` WHERE notification_object_id = ?";
+    const ret = await pool.query(requete, [notification_object_id]);
+    var user_id = ret[0].notifier_id;
+
+    console.log(ret[0].notifier_id);
+    console.log(users);
+
+    var socketID;
+    for(var i = 0; i < users.length; i++) {
+      if(users[i].userID === ret[0].notifier_id) {
+        socketID = users[i].socketID;
+      }
+    }
+    console.log(socketID);
+
+    // generate notification message
+    // {actor_username} {action_type}
+
+    // io.sockets.connected[socketID].emit('show_notification', {
+    //   type: '',
+    //   text: 'hello world' 
+    // });
+
+    // socket.broadcast.to(socketID).emit('show_notification', {
+    //   type: '',
+    //   text: 'hello world' 
+    // });
+
+
+    io.to(socketID).emit('show_notification', {
+      type: '',
+      text: 'hello world' 
+    });
+  })
 
   socket.on('disconnect', function() {
     for(let i = 0; i < users.length; i++) {
