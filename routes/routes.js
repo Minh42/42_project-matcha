@@ -784,16 +784,6 @@ router.post('/api/addLike', authenticate, (req, res) => {
   })
 })
 
-router.get('/api/searchLikeProfileUser', authenticate, (req, res) => {
-  let user = require('../models/user.class');
-  var user_id = req.currentUser[0].user_id
-  user.searchUserWhoLike(user_id)
-    .then((ret) => {
-      res.json(ret)
-    })
-
-})
-
 router.post('/api/savePicture', authenticate, (req, res) => {
   let user = require('../models/user.class');
   var user_id = req.currentUser[0].user_id;
@@ -869,23 +859,44 @@ router.post('/api/reportProfile', authenticate, (req, res) => {
     }
   })
 });
+
 // TCHAT/CONVERSATION
 
-router.post('/api/createConversationParticipant', authenticate, (req, res) => {
+router.post('/api/createConversationParticipant', authenticate, async (req, res) => {
   let user = require('../models/user.class');
-  var current_user = req.currentUser[0].user_id;
-  var user_match = req.body.id_user_match;
-  user.addNewConversation(current_user).then((ret) => {
-    var id_conversation = ret.insertId
-    user.addParticipant(current_user, id_conversation).then((ret1) => {
-      user.addParticipant(user_match, id_conversation).then((ret2) => {
-        if(ret2) {
-          res.send("success");
-        }
-      })
-    })
-  })
+  var participant1 = req.currentUser[0].user_id;
+  var participant2 = req.body.user_match;
+  const ret = await user.addNewConversation(participant1, participant2);
+  if (ret) {
+    console.log(ret)
+
+    // var conversation_id = ret;
+    // const ret1 = await user.addParticipant(participant1, conversation_id);
+    // const ret2 = await user.addParticipant(participant2, conversation_id);
+    // if (ret1 && ret2) {
+    //   res.send('success');
+    // } else {
+    //   const ret3 = await user.deleteNewConversation(conversation_id);
+    //   res.send('failure');
+    // }
+  }
 })
+
+// router.post('/api/createConversationParticipant', authenticate, (req, res) => {
+//   let user = require('../models/user.class');
+//   var current_user = req.currentUser[0].user_id;
+//   var user_match = req.body.id_user_match;
+//   user.addNewConversation(current_user).then((ret) => {
+//     var id_conversation = ret.insertId
+//     user.addParticipant(current_user, id_conversation).then((ret1) => {
+//       user.addParticipant(user_match, id_conversation).then((ret2) => {
+//         if(ret2) {
+//           res.send("success");
+//         }
+//       })
+//     })
+//   })
+// })
 
 router.post('/api/findAllConversation', authenticate, (req, res) => {
   let user = require('../models/user.class');
@@ -906,7 +917,6 @@ router.post('/api/addMessageBDD', authenticate, (req, res) => {
   let user = require('../models/user.class');
   var current_user = req.currentUser[0].user_id;
   var message = req.body.message
-  console.log(message)
   user.addMessageBDD(current_user, message).then((ret) => {
     res.send('success')
   })
@@ -923,6 +933,7 @@ router.post('/api/findConversationID', authenticate, (req, res) => {
         for (var y = 0; y < convers2.length; y++) {
           if (convers1[i].conversation_id === convers2[y].conversation_id) {
             convers.push(convers1[i].conversation_id)
+            convers.push(current_user)
             console.log(convers)
             res.send(convers)
           }
@@ -942,6 +953,13 @@ router.post('/api/notifications', authenticate, async (req, res) => {
   }
 });
 
-
+router.get('/api/searchLikeProfileUser', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  var user_id = req.currentUser[0].user_id
+  user.searchUserWhoLike(user_id)
+    .then((ret) => {
+      res.json(ret)
+    })
+})
 
 module.exports = router 

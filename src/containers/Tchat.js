@@ -26,21 +26,23 @@ class Tchat extends Component {
 	  }
 
 	async handleSubmit(e) {
+		var socket = io.connect('http://localhost:8080');
 		e.preventDefault();
-		var data = { message : this.state.messageSend,
-					user_id : this.state.id}
+		var user_id = { user_id : this.state.id }
+		var messageSend = { message : this.state.messageSend}
 
-		const id_conversation = await axios.post('/api/findConversationID', data)
-		console.log('id convers', id_conversation.data[0])
-		
-		const res = await axios.post('/api/addMessageBDD', data)
+		const id_conversation = await axios.post('/api/findConversationID', user_id)
+		console.log('id convers', id_conversation.data[1])
+
+		socket.emit('subscribe', id_conversation.data[0])
+
+		const res = await axios.post('/api/addMessageBDD', messageSend)
 		if (res.data === 'success') {
-			var socket = io.connect('http://localhost:8080');
-			socket.emit('message', data);
+			socket.emit('send', {room : id_conversation.data[0], message : this.state.messageSend, id : id_conversation});
 			socket.on('message', function (message) {
-				console.log(message.id)
-				console.log(data.user_id)
-				if (message.id != data.user_id) {
+				console.log(user_id.user_id)
+				console.log(message.id.data[1])
+				if (user_id.user_id === message.id.data[1]) {
 					alert('Le serveur a un message pour vous : ' + message.message);
 					const newDiv = document.createElement('div')
 					newDiv.setAttribute("id", message.message + '1')
@@ -71,12 +73,12 @@ class Tchat extends Component {
 						<p className="has-text-centered labelNameTchat">Conversation with {user[0].username}</p>
 					</div>
 					<div className="columns BodyTchat">
-						<div className="column is-5 is-offset-1">
+						<div className="column is-5 is-offset-1 yourMessage">
 							{/* <p>hello</p> */}
 							<div id="parentMessageContainer"> 
 							</div>
 						</div>
-						<div className="column is-5 is-offset-1">
+						<div className="column is-5 is-offset-1 myMessage">
 							{/* <p>hello</p> */}
 							<div id="parentMyMessContainer"> 
 							</div>

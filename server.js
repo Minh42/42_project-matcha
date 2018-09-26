@@ -68,25 +68,24 @@ io.sockets.on('connection', function (socket) {
       userID: user_id,
       socketID: socket.id
     });
+    console.log(users)
   })
 
-  socket.on('new_notification', function(data) {
-    console.log(data)
-    // generate notification message
-    // io.to(sessionID).emit('show_notification', {
-    //   type: '',
-    //   text: 'hello world' {actor_username} {action_type}
-    // });
-    // io.sockets.emit('message', data);
+  socket.on('subscribe', function(room) {
+    console.log('joining room', room)
+    socket.join(room)
   })
 
-  socket.on('message', function (data) {
-    // messages.push(message)
-    console.log('message:', data.message);
-    console.log('id:', data.user_id);
-    var info = { message : data.message,
-                id : data.user_id}
-    io.sockets.emit('message', info)
+  // socket.on('unsubscribe', function(room) {
+  //   console.log('leaving room', room)
+  //   socket.join(room)
+  // })
+
+  socket.on('send', function (data) {
+    console.log('info', data.id)
+    console.log('room', data.room)
+    console.log('message', data.message)
+    io.sockets.in(data.room).emit('message', data)
   });
 
   socket.on('disconnect', function() {

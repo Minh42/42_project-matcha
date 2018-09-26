@@ -11,7 +11,6 @@ class Conversation extends Component {
 
 	constructor(props) {
 		super(props)
-
 		this.openTchat = this.openTchat.bind(this);
 	}
 
@@ -20,8 +19,13 @@ class Conversation extends Component {
 		this.props.profileConversationAction(res.data)
 	}
 
-	openTchat(user_id) {
+	async openTchat(user_id) {
+
 		console.log(user_id)
+		// var id = { user_id : user_id }
+		// const id_conversation = await axios.post('/api/findConversationID', id)
+		// console.log(id_conversation)
+		// socket.emit('subscribe', id_conversation.data[0])
 		this.props.profileTchatAction(user_id)
 	}
 

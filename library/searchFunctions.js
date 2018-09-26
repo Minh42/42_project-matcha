@@ -391,8 +391,8 @@ function multiFilter(users, filters){
   };
 
 function filterByLikesProfile(user, users) {
-    if (user[0].likes !=  null) {
-        var likedByUsers = user[0].likes.split(',');
+    if (user[0].usersWholikedMe !=  null) {
+        var likedByUsers = user[0].usersWholikedMe.split(',');
         var likes = []
         likedByUsers.forEach(function(elt) {
             var item = parseInt(elt)
@@ -555,24 +555,22 @@ function groupByGender(users) {
 
 // PROFILE WHO MATCH
 
-function profileWhoMatch(likesByCurrentUser, WhoLikedMe) {
-    console.log("likesByCurrentUser:", likesByCurrentUser)
-    console.log("id_user", WhoLikedMe)
-    var match = new Array();
-    if (likesByCurrentUser && WhoLikedMe) {
-        for (var i = 0; i < likesByCurrentUser.length; i++) {
-            for (var y = 0; y < WhoLikedMe.length; y++) {
-                if (likesByCurrentUser[i].to_user_id === WhoLikedMe[y].user_id)
+function profileWhoMatch(currentUser, users) {
+    if (currentUser[0].usersLikedByMe != null) {
+        var usersLikedByMe = currentUser[0].usersLikedByMe.split(',');
+        var match = new Array();
+        for (var i = 0; i < usersLikedByMe.length; i++) {
+            for (var y = 0; y < users.length; y++) {
+                if (parseInt(usersLikedByMe[i]) === users[y].user_id)
                 {
-                    match.push(WhoLikedMe[y])
+                    match.push(users[y]);
                 }
             }
         }
-    } else {
-        match.push('false')
+        return match;
     }
-    console.log(match)
-    return match
+    else 
+        return;
 }
 
 function checkUserConversation(conversationUserID, id_user) {

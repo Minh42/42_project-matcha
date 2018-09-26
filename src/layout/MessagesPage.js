@@ -16,11 +16,11 @@ class MessagesPage extends Component {
 						</div>
 					<p className="labelTchat">Chat room</p>
 						<div className="has-text-centered columnTchat">
-							<Conversation />
+							{/* <Conversation /> */}
 						</div>
 				</aside>
 				<div className="column is-8 messages hero is-fullheight">
-					<Tchat />
+					{/* <Tchat /> */}
 				</div>
 			</div>
 			</section>
