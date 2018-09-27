@@ -9,6 +9,7 @@ import filterUsersReducer from './reducer_filter';
 import profileLikesReducer from './reducer_match';
 import profileConversationReducer from './reducer_conversation';
 import profileTchatIDReducer from './reducer_tchatProfile';
+import socketOnReducer from './reducer_socket';
 import { UNAUTHENTICATED } from '../actions/actionUsers';
 
 // mapping of our state
@@ -22,7 +23,8 @@ const appReducer = combineReducers({
     filterUsers: filterUsersReducer,
     profileConversation : profileConversationReducer,
     profileLikes : profileLikesReducer,
-    profileTchatID : profileTchatIDReducer
+    profileTchatID : profileTchatIDReducer,
+    socketON : socketOnReducer
 });
 
 const rootReducer = (state, action) => {

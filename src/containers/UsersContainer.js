@@ -14,7 +14,8 @@ class UsersContainer extends Component {
     }
 
     renderList() {
-        const { socket } = this.props;
+        const {socket} = this.props;
+        console.log(socket);
         if(this.props.users) {
             return this.props.users.map((user) => {
                 return (

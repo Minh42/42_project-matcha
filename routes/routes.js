@@ -809,7 +809,8 @@ router.post('/api/addUserViews', authenticate, (req, res) => {
   var user_id = req.body.user_id;
   user.addUserViews(current_user, user_id).then((ret) => {
     if(ret) {
-      res.send("success");
+      console.log(ret);
+      res.send(ret);
     }
   })
 })
