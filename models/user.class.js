@@ -774,6 +774,28 @@ class User {
         } 
     }
 
+    static async findAllConversationtionID(id) {
+        try {
+            let ret = await pool.query("SELECT `conversation_id` FROM `participant` WHERE `participant_id` = ?",[id]);
+            return ret;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+   // ---------------------------------ADD MESSAGES BDD--------------------------------
+
+   static async addMessageBDD(current_user, message) {
+        try {
+            let ret = await pool.query("INSERT INTO `message` SET `participant_id` = ?, `message` = ?", [current_user, message]);
+            return true;
+        }
+        catch(err) {
+            throw new Error(err)
+        } 
+    }
+    
     // Notifications
 
     static async insertNotification(entity_type_id, entity_id, actor_id, notifier_id) {
@@ -785,6 +807,20 @@ class User {
             if (ret) {
                 return notification_object_id;
             }
+        } catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async getNotification(notification_object_id) {
+        try {
+            let requete = "SELECT `notifier_id` FROM `notification` WHERE notification_object_id = ?";
+            let ret = await pool.query(requete, [notification_object_id]);
+            var notifier_id = ret[0].notifier_id;
+
+            let requete = "SELECT `firstname`, `lastname` FROM users "
+
+            return notifier_id;
         } catch(err) {
             throw new Error(err)
         } 

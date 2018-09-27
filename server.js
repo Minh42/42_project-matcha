@@ -61,40 +61,32 @@ server.listen(PORT, () => {
 })
 
 var users = [];
+var messages = [];
 io.sockets.on('connection', function (socket) {
+  
   socket.on('new_user', function(user_id) {
-    socket.join(user_id);
+    users.push({
+      userID: user_id,
+      socketID: socket.id
+    });
+
+    let len = users.length;
+    len--;
+    io.emit('userlist', users, users[len].socketID);
   })
 
   socket.on('new_notification', async function(data) {
-    console.log(data);
-    var notification_object_id = data.notification;
-    let requete = "SELECT `notifier_id` FROM `notification` WHERE notification_object_id = ?";
-    let ret = await pool.query(requete, [notification_object_id]);
-    console.log(ret)
-    var user_id = ret[0].notifier_id;
-    console.log(user_id);
-
-    // generate notification message
-    // {actor_username} {action_type}
-    io.sockets.in(user_id).emit('show_notification', {
-      type: '',
-      text: 'hello world' 
-    });
+    socket.broadcast.to(data.notifier_id).emit('show_notification', {
+      text: data.message
+    })
   })
-
-
 
   socket.on('disconnect', function() {
-    // for(let i = 0; i < users.length; i++) {
-    //   if(users[i].socketID === socket.id) {
-    //     users.splice(i,1); 
-    //   }
-    // }
+    for(let i = 0; i < users.length; i++) {
+      if(users[i].socketID === socket.id) {
+        users.splice(i,1);
+      }
+    }
+    io.emit('exit', users);
   })
 });
-
-
-
-
-

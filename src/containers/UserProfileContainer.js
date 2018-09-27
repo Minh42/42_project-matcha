@@ -163,6 +163,7 @@ class UserProfileContainer extends Component {
     }
 
     render () {
+        console.log(this.props)
         return (
         <div className="container is-fluid">
                 <div className="header">

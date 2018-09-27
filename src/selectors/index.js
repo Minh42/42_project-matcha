@@ -1,11 +1,12 @@
 import { createSelector } from 'reselect';
-import { filterByProperty, filterByLikesProfile, filterByAge, filterByPopularity, filterByDistance, findAge, sortByAge, findPop, sortByPop, findDistance, sortByDistance, searchTag, filterByViewsProfile, profileWhoMatch, findUserByID, sortByScore, match } from '../../library/searchFunctions';
+import { filterByLikesProfile, filterByAge, filterByPopularity, filterByDistance, findAge, sortByAge, findPop, sortByPop, findDistance, sortByDistance, searchTag, filterByViewsProfile, profileWhoMatch, findUserByID, sortByScore, match } from '../../library/searchFunctions';
 
 const getUsers = (state) => state.users.items
 const getCurrentUser = (state) => state.auth.currentUser
 const getFilter = (state) => state.filterUsers
 const getLikes = (state) => state.profileLikes // personnes que le current user a like
 const getConversationProfileID = (state) => state.profileConversation // tous les user avec qui le current user a une conversation en cours
+const getRemitteeUserID = (state) => state.profileTchatID
 
 export const getLikesUsers = createSelector([getUsers, getCurrentUser], (users, currentUser) => {
     const result = filterByLikesProfile(currentUser, users)
@@ -68,16 +69,27 @@ export const getFilterUsers = createSelector([getMatchedUsers, getCurrentUser, g
 
 // TCHAT/MESSAGES/CONVERSATION
 
-// export const getConversationProfileUser = createSelector([getAllUsers, getConversationProfileID], (users, id_users) => {
-//     if (id_users !== null) {
-//         var profileUserConvers = findUserByID(users, id_users.profileConversation)
-//     }
-//     return profileUserConvers;
-// })
+export const getConversationProfileUser = createSelector([getUsers, getConversationProfileID], (users, id_users) => {
+    if (id_users !== null) {
+        var profileUserConvers = findUserByID(users, id_users.profileConversation)
+    }
+    return profileUserConvers;
+})
 
-// export const getMatchProfile = createSelector([getLikes, getLikesUsers, getConversationProfileID], (likesByCurrentUser, userWhoLikedMe, id_users) => {
-//     if (likesByCurrentUser !== null && id_users !== null) {
-//         var WhoMatch1 = profileWhoMatch(likesByCurrentUser.profileLikes, userWhoLikedMe)
-//     }
-//     return WhoMatch1
-// })
+export const getProfileRemittee = createSelector([getUsers, getRemitteeUserID], (users, remitteeID) => {
+    console.log('users', users)
+    console.log(remitteeID)
+    if (remitteeID !== null) {
+        var remittee = [remitteeID.profileTchatID]
+        console.log(remittee[0])
+        var profileUserTchat = findUserByID(users, remitteeID.profileTchatID)
+    }
+    return profileUserTchat;
+})
+
+export const getMatchProfiles = createSelector([getLikesUsers, getCurrentUser], (users, currentUser) => {
+    // if (likesByCurrentUser !== null && id_users !== null) {
+    //     var WhoMatch1 = profileWhoMatch(likesByCurrentUser.profileLikes, userWhoLikedMe)
+    // }
+    // return WhoMatch1
+})
