@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import axios from 'axios';
 
 class UserProfile extends Component {
     constructor(props) {
@@ -36,7 +37,8 @@ class UserProfile extends Component {
     }
 
     async showProfile() {
-        const { socket } = this.props;   
+        // const { socket } = this.props; 
+        const socket = this.props.socket.socket;
         const res = await axios.post('/api/addUserViews', {user_id : this.props.id});
         var notificationData = res.data;
         const ret = await axios.post('/api/notifications', notificationData);
@@ -66,7 +68,8 @@ class UserProfile extends Component {
     }
 
     async handleLike() {
-        const { socket } = this.props;
+        // const { socket } = this.props;
+        const socket = this.props.socket.socket;
         var data = { user_id : this.props.id}
         const res = await axios.post('/api/addLike', data);
         if (res.data) {
@@ -189,4 +192,10 @@ class UserProfile extends Component {
     }
 }
 
-export default withRouter(UserProfile);
+function mapStateToProps(state) {
+    return {
+	  socket: state.socket
+    };
+}
+
+export default withRouter(connect(mapStateToProps, null)(UserProfile));

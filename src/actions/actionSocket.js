@@ -1,16 +1,14 @@
-export function setSocket() {
-	return async (dispatch) => {
-		const res = await axios.get('/api/current_user');
-		if (res.data === 'undefined' || res.data === null || res.data === '' || res.data.length <= 0) {
-			dispatch({ 
-				type: UNAUTHENTICATED
-			});
-		}
-		else {
-			dispatch({ 
-				type: AUTHENTICATED,
-				payload: res.data
-			});
-		}
-	}
+import io from 'socket.io-client';
+export const SOCKET_ON = 'SOCKET_ON';
+
+export function setSocket(dispatch) {
+	const socket = io('http://localhost:8080', { transports: ['websocket'] });
+	// const JSON = require('circular-json');
+	// console.log(socket)
+	// const test = JSON.stringify(socket);
+	// console.log(test);
+	dispatch({ 
+		type: SOCKET_ON,
+		payload: socket
+	});
 }

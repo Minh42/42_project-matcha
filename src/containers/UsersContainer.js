@@ -14,8 +14,7 @@ class UsersContainer extends Component {
     }
 
     renderList() {
-        const {socket} = this.props;
-        console.log(socket);
+        // const {socket} = this.props;
         if(this.props.users) {
             return this.props.users.map((user) => {
                 return (
@@ -26,7 +25,7 @@ class UsersContainer extends Component {
                         lastname={user.lastname}
                         age={user.birth_date}
                         src={user.imageProfile_path}
-                        socket={socket}
+                        // socket={socket}
                     />
                 </div>
                 );

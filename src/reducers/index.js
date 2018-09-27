@@ -24,7 +24,7 @@ const appReducer = combineReducers({
     profileConversation : profileConversationReducer,
     profileLikes : profileLikesReducer,
     profileTchatID : profileTchatIDReducer,
-    socketON : socketOnReducer
+    socket : socketOnReducer
 });
 
 const rootReducer = (state, action) => {
