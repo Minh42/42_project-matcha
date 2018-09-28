@@ -961,5 +961,15 @@ router.get('/api/searchLikeProfileUser', authenticate, (req, res) => {
       res.json(ret)
     })
 })
+router.post('/api/lastNotification', authenticate, async (req, res) => {
+  let notification_object_id = req.body.notification_object_id;
+  let user = require('../models/user.class');
+  const ret = await user.getNotification(notification_object_id);
+  if (ret) {
+    res.json(ret)
+  }
+});
+
+
 
 module.exports = router 

@@ -835,6 +835,17 @@ class User {
         } 
     }
 
+    static async getNotification(notification_object_id) {
+        try {
+            let requete = "SELECT `notifier_id` FROM `notification` WHERE notification_object_id = ?";
+            let ret = await pool.query(requete, [notification_object_id]);
+            var notifier_id = ret[0].notifier_id;
+            return notifier_id;
+        } catch(err) {
+            throw new Error(err)
+        } 
+    }
+
 }
 
 module.exports = User

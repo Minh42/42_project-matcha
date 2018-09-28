@@ -1,11 +1,5 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router';
-import { bindActionCreators } from 'redux';
-import { addFlashMessage } from '../actions/actionMessages';
 import axios from 'axios';
-import io from 'socket.io-client';
-import PropTypes from 'prop-types';
 
 class UserProfile extends Component {
     constructor(props) {
@@ -15,7 +9,6 @@ class UserProfile extends Component {
             isMounted: false,
             like : false
         }
-        this.socket = io('ws://localhost:8080', {transports: ['websocket']});
         this.showProfile = this.showProfile.bind(this)
         this.handleLike = this.handleLike.bind(this)
     }
@@ -47,6 +40,7 @@ class UserProfile extends Component {
     }
 
     async handleLike() {
+        const { socket } = this.props;
         var data = { user_id : this.props.id}
         const res = await axios.post('/api/addLike', data);
         if (res.data) {
@@ -57,19 +51,23 @@ class UserProfile extends Component {
                 document.getElementById(this.props.id).style.color = "grey";
             }
             var notificationData = res.data;
-            console.log(notificationData)
             const ret = await axios.post('/api/notifications', notificationData);
-            console.log(ret.data)
+            var notification_object_id = ret.data;
             if (ret.data) {
-                console.log('ready to emit')
-                this.socket.emit('new_notification', {notification : ret.data});
-                // this.socket.on('show_notification', function(data) {
-                //     console.log(data);
-                //     this.props.addFlashMessage({
-                //         type: data.type,
-                //         text: data.message
-                //     });
-                // })
+                const ret = await axios.post('/api/lastNotification', { "notification_object_id" : notification_object_id })
+                var notifier_id = ret.data;
+                
+                for(var i = 0; i < userList.length; i++) {
+                    if(userList[i].userID === notifier_id) {
+                      window.selectedUser = userList[i].socketID;
+                    }
+                }
+
+                if (window.selectedUser != null) {
+                socket.emit('new_notification', {
+                    notifier_id : window.selectedUser
+                });
+                }
             }
         }
     }
@@ -149,18 +147,4 @@ class UserProfile extends Component {
     }
 }
 
-UserProfile.propTypes = {
-    addFlashMessage: PropTypes.func.isRequired
-}
-
-function mapStateToProps(state) {
-    return {
-      currentUser: state.auth.currentUser
-    };
-}
-
-function mapDispatchToProps(dispatch) {
-    return bindActionCreators({ addFlashMessage: addFlashMessage}, dispatch);
-}
-
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(UserProfile));
+export default UserProfile;

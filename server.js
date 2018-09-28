@@ -63,12 +63,17 @@ server.listen(PORT, () => {
 var users = [];
 var messages = [];
 io.sockets.on('connection', function (socket) {
+  
   socket.on('new_user', function(user_id) {
     users.push({
       userID: user_id,
       socketID: socket.id
     });
     console.log(users)
+
+    let len = users.length;
+    len--;
+    io.emit('userlist', users, users[len].socketID);
   })
 
   socket.on('subscribe', function(room) {
@@ -88,16 +93,18 @@ io.sockets.on('connection', function (socket) {
     io.sockets.in(data.room).emit('message', data)
   });
 
+  socket.on('new_notification', async function(data) {
+    socket.broadcast.to(data.notifier_id).emit('show_notification', {
+      text: 'hello world'
+    })
+  })
+
   socket.on('disconnect', function() {
     for(let i = 0; i < users.length; i++) {
       if(users[i].socketID === socket.id) {
-        users.splice(i,1); 
+        users.splice(i,1);
       }
     }
+    io.emit('exit', users);
   })
 });
-
-
-
-
-
