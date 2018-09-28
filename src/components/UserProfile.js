@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import axios from 'axios';
 
 class UserProfile extends Component {
@@ -35,16 +37,43 @@ class UserProfile extends Component {
     }
 
     async showProfile() {
+        // const { socket } = this.props; 
+        const socket = this.props.socket.socket;
         const res = await axios.post('/api/addUserViews', {user_id : this.props.id});
+        var notificationData = res.data;
+        const ret = await axios.post('/api/notifications', notificationData);
+        var notification_object_id = ret.data;
+        if (ret.data) {
+            const ret = await axios.post('/api/lastNotification', { "notification_object_id" : notification_object_id })
+            var firstname = ret.data.firstname;
+            var lastname = ret.data.lastname;
+            var entity_type_id = ret.data.entity_type_id;
+            var notifier_id = ret.data.notifier_id;
+            
+            for(var i = 0; i < userList.length; i++) {
+                if(userList[i].userID === notifier_id) {
+                  window.selectedUser = userList[i].socketID;
+                }
+            }
+            if (window.selectedUser != null) {
+                if (entity_type_id === 4) {
+                    socket.emit('new_notification', {
+                        notifier_id : window.selectedUser,
+                        message: firstname + " " + lastname + " viewed your profile."
+                    });
+                }
+            }
+        }
         this.props.history.push('/otherProfile/' + this.props.id);
     }
 
     async handleLike() {
-        const { socket } = this.props;
+        // const { socket } = this.props;
+        const socket = this.props.socket.socket;
         var data = { user_id : this.props.id}
         const res = await axios.post('/api/addLike', data);
         if (res.data) {
-            if (res.data.action_type === "add like") {
+            if (res.data.action_type === "add like" || res.data.action_type === "match") {
                 document.getElementById(this.props.id).style.color = "red";
             }
             else if (res.data.action_type === "delete like") {
@@ -55,7 +84,10 @@ class UserProfile extends Component {
             var notification_object_id = ret.data;
             if (ret.data) {
                 const ret = await axios.post('/api/lastNotification', { "notification_object_id" : notification_object_id })
-                var notifier_id = ret.data;
+                var firstname = ret.data.firstname;
+                var lastname = ret.data.lastname;
+                var entity_type_id = ret.data.entity_type_id;
+                var notifier_id = ret.data.notifier_id;
                 
                 for(var i = 0; i < userList.length; i++) {
                     if(userList[i].userID === notifier_id) {
@@ -64,9 +96,22 @@ class UserProfile extends Component {
                 }
 
                 if (window.selectedUser != null) {
-                socket.emit('new_notification', {
-                    notifier_id : window.selectedUser
-                });
+                    if (entity_type_id === 1) {
+                        socket.emit('new_notification', {
+                            notifier_id : window.selectedUser,
+                            message: firstname + " " + lastname + " liked your profile."
+                        });
+                    } else if (entity_type_id === 2) {
+                        socket.emit('new_notification', {
+                            notifier_id : window.selectedUser,
+                            message: firstname + " " + lastname + " unliked your profile."
+                        });
+                    } else if (entity_type_id === 3) {
+                        socket.emit('new_notification', {
+                            notifier_id : window.selectedUser,
+                            message: firstname + " " + lastname + " matches with you."
+                        });
+                    }
                 }
             }
         }
@@ -147,4 +192,10 @@ class UserProfile extends Component {
     }
 }
 
-export default UserProfile;
+function mapStateToProps(state) {
+    return {
+	  socket: state.socket
+    };
+}
+
+export default withRouter(connect(mapStateToProps, null)(UserProfile));

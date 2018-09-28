@@ -15,7 +15,11 @@ const keys = require('./server/config/keys')
 
 const app = require('express')();
 const server = require('http').Server(app);
-const io = require('socket.io')(server);
+const io = require('socket.io')(server, {
+  pingInterval: 1000,
+  pingTimeout: 5000,
+}) 
+
 const PORT = process.env.PORT || 8080;
 
 app.set('views', path.join(__dirname, 'views'))
@@ -95,7 +99,7 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('new_notification', async function(data) {
     socket.broadcast.to(data.notifier_id).emit('show_notification', {
-      text: 'hello world'
+      text: data.message
     })
   })
 
