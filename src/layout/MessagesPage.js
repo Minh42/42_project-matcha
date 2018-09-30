@@ -8,7 +8,6 @@ import Tchat from '../containers/Tchat'
 class MessagesPage extends Component {
 
 	componentDidUpdate() {
-		console.log(this.props.socket.message)
 		if (this.props.socket.message != null) {
 			izitoast.show({
 				message: this.props.socket.message,
@@ -19,23 +18,19 @@ class MessagesPage extends Component {
 
 	render() {
 		return (
-			<section className="hero is-small">
-			<div className="columns">
-				<aside className="column is-4 aside">
+			<div className="columns" id="mail-app">
+				<aside className="column is-3 aside backgroundInfoUser">
+					<div className="column">
 					<p className="labelTchat">Match</p>
-						<div className="has-text-centered columnTchat">
+						<div className="has-text-centered columnTchat ">
 							<Match />
 						</div>
-					<p className="labelTchat">Chat room</p>
-						<div className="has-text-centered columnTchat">
-							<Conversation />
-						</div>
+					</div>
 				</aside>
-				<div className="column is-8 messages hero is-fullheight">
-					<Tchat />
+				<div className="column is-9 messages hero is-fullheight" id="message-feed">
+					<Conversation />
 				</div>
 			</div>
-			</section>
 		);
 	}
 }

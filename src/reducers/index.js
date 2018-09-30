@@ -6,7 +6,6 @@ import flashMessagesReducer from './reducer_flashMessages';
 import usersReducer from './reducer_users';
 import selectedUserReducer from './reducer_selectedUser';
 import filterUsersReducer from './reducer_filter';
-import profileLikesReducer from './reducer_match';
 import profileConversationReducer from './reducer_conversation';
 import profileTchatIDReducer from './reducer_tchatProfile';
 import socketReducer from './reducer_socket';
@@ -22,7 +21,6 @@ const appReducer = combineReducers({
     selectedUser: selectedUserReducer,
     filterUsers: filterUsersReducer,
     profileConversation : profileConversationReducer,
-    profileLikes : profileLikesReducer,
     profileTchatID : profileTchatIDReducer,
     socket : socketReducer
 });

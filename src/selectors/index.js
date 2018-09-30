@@ -4,7 +4,6 @@ import { filterByLikesProfile, filterByAge, filterByPopularity, filterByDistance
 const getUsers = (state) => state.users.items
 const getCurrentUser = (state) => state.auth.currentUser
 const getFilter = (state) => state.filterUsers
-const getLikes = (state) => state.profileLikes // personnes que le current user a like
 const getConversationProfileID = (state) => state.profileConversation // tous les user avec qui le current user a une conversation en cours
 const getRemitteeUserID = (state) => state.profileTchatID
 
@@ -69,6 +68,13 @@ export const getFilterUsers = createSelector([getMatchedUsers, getCurrentUser, g
 
 // TCHAT/MESSAGES/CONVERSATION
 
+export const getMatchProfiles = createSelector([getLikesUsers, getCurrentUser], (users, currentUser) => {
+    if (users != null && currentUser !== undefined) {
+        var result = profileWhoMatch(currentUser, users);
+    }
+    return result;
+})
+
 export const getConversationProfileUser = createSelector([getUsers, getConversationProfileID], (users, id_users) => {
     if (id_users !== null) {
         var profileUserConvers = findUserByID(users, id_users.profileConversation)
@@ -76,20 +82,13 @@ export const getConversationProfileUser = createSelector([getUsers, getConversat
     return profileUserConvers;
 })
 
-export const getProfileRemittee = createSelector([getUsers, getRemitteeUserID], (users, remitteeID) => {
-    console.log('users', users)
-    console.log(remitteeID)
-    if (remitteeID !== null) {
-        var remittee = [remitteeID.profileTchatID]
-        console.log(remittee[0])
-        var profileUserTchat = findUserByID(users, remitteeID.profileTchatID)
-    }
-    return profileUserTchat;
-})
-
-export const getMatchProfiles = createSelector([getLikesUsers, getCurrentUser], (users, currentUser) => {
-    // if (likesByCurrentUser !== null && id_users !== null) {
-    //     var WhoMatch1 = profileWhoMatch(likesByCurrentUser.profileLikes, userWhoLikedMe)
-    // }
-    // return WhoMatch1
-})
+// export const getProfileRemittee = createSelector([getUsers, getRemitteeUserID], (users, remitteeID) => {
+//     console.log('users', users)
+//     console.log(remitteeID)
+//     if (remitteeID !== null) {
+//         var remittee = [remitteeID.profileTchatID]
+//         console.log(remittee[0])
+//         var profileUserTchat = findUserByID(users, remitteeID.profileTchatID)
+//     }
+//     return profileUserTchat;
+// })

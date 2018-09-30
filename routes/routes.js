@@ -869,22 +869,26 @@ router.post('/api/reportProfile', authenticate, (req, res) => {
     }
   })
 });
+
 // TCHAT/CONVERSATION
 
-router.post('/api/createConversationParticipant', authenticate, (req, res) => {
+router.post('/api/createConversationParticipant', authenticate, async (req, res) => {
+  let user = require('../models/user.class');
+  var participant1 = req.currentUser[0].user_id;
+  var participant2 = req.body.user_match;
+  const ret = await user.addNewConversation(participant1, participant2);
+  if (ret) {
+    res.send('success');
+  } else {
+    res.send('failure')
+  }
+})
+
+router.post('/api/findAllConversations', authenticate, async (req, res) => {
   let user = require('../models/user.class');
   var current_user = req.currentUser[0].user_id;
-  var user_match = req.body.id_user_match;
-  user.addNewConversation(current_user).then((ret) => {
-    var id_conversation = ret.insertId
-    user.addParticipant(current_user, id_conversation).then((ret1) => {
-      user.addParticipant(user_match, id_conversation).then((ret2) => {
-        if(ret2) {
-          res.send("success");
-        }
-      })
-    })
-  })
+  const ret = await user.findAllConversationtionID(current_user);
+  res.send(ret);
 })
 
 router.post('/api/findAllConversation', authenticate, (req, res) => {
@@ -906,7 +910,6 @@ router.post('/api/addMessageBDD', authenticate, (req, res) => {
   let user = require('../models/user.class');
   var current_user = req.currentUser[0].user_id;
   var message = req.body.message
-  console.log(message)
   user.addMessageBDD(current_user, message).then((ret) => {
     res.send('success')
   })
@@ -923,6 +926,7 @@ router.post('/api/findConversationID', authenticate, (req, res) => {
         for (var y = 0; y < convers2.length; y++) {
           if (convers1[i].conversation_id === convers2[y].conversation_id) {
             convers.push(convers1[i].conversation_id)
+            convers.push(current_user)
             console.log(convers)
             res.send(convers)
           }
@@ -942,6 +946,15 @@ router.post('/api/notifications', authenticate, async (req, res) => {
   }
 });
 
+router.get('/api/searchLikeProfileUser', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  var user_id = req.currentUser[0].user_id
+  user.searchUserWhoLike(user_id)
+    .then((ret) => {
+      res.json(ret)
+    })
+})
+
 router.post('/api/lastNotification', authenticate, async (req, res) => {
   let notification_object_id = req.body.notification_object_id;
   let user = require('../models/user.class');
@@ -951,4 +964,13 @@ router.post('/api/lastNotification', authenticate, async (req, res) => {
   }
 });
 
-module.exports = router
+router.post('/api/findUserByID', async (req, res) => {
+  let user = require('../models/user.class');
+  const user_id = req.body.user_id
+  const ret = await user.findUserByID(user_id)
+  if (ret) {
+    res.json(ret)
+  }
+});
+
+module.exports = router 

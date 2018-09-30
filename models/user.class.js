@@ -6,6 +6,15 @@ class User {
     constructor(conn) {
         this.conn = conn;
     }
+    static async findUserByID(user_id) {
+        try {
+                let ret = await pool.query("SELECT * FROM `users` WHERE `user_id` = ?", [user_id]);
+                return ret;
+            }
+            catch(err) {
+                throw new Error(err)
+            } 
+    }
 
     static async findOne(colName, value) {
         try {
@@ -42,7 +51,7 @@ class User {
 
     static async selectAllUsersInformations(userId) {
         try {
-            let requete = "SELECT users.user_id, users.firstname, users.lastname, users.username, users.imageProfile_path, GROUP_CONCAT(DISTINCT tags.name) AS tags, users.birth_date, users.gender, users.latitude, users.longitude, users.occupation, users.popularity, GROUP_CONCAT(DISTINCT likes.from_user_id) AS likes, GROUP_CONCAT(DISTINCT views.from_user_id) AS views, GROUP_CONCAT(DISTINCT genders.name) AS genders, GROUP_CONCAT(DISTINCT relationships_type.name) AS relationships_type FROM `users` INNER JOIN `user_tags` ON user_tags.user_id = users.user_id LEFT JOIN `tags` ON tags.tag_id = user_tags.tag_id LEFT JOIN `likes` ON likes.to_user_id = users.user_id LEFT JOIN `views` ON views.to_user_id = users.user_id INNER JOIN `interested_in_gender` ON interested_in_gender.user_id = users.user_id LEFT JOIN `genders` ON genders.gender_id = interested_in_gender.gender_id INNER JOIN `interested_in_relation` ON interested_in_relation.user_id = users.user_id LEFT JOIN `relationships_type` ON relationships_type.relationship_type_id = interested_in_relation.relationship_type_id WHERE users.user_id = ? GROUP BY users.user_id";
+            let requete = "SELECT users.user_id, users.firstname, users.lastname, users.username, users.imageProfile_path, GROUP_CONCAT(DISTINCT tags.name) AS tags, users.birth_date, users.gender, users.latitude, users.longitude, users.occupation, users.popularity, GROUP_CONCAT(DISTINCT usersWholikedMe.from_user_id) AS usersWholikedMe, GROUP_CONCAT(DISTINCT usersLikedByMe.to_user_id) AS usersLikedByMe, GROUP_CONCAT(DISTINCT views.from_user_id) AS views, GROUP_CONCAT(DISTINCT genders.name) AS genders, GROUP_CONCAT(DISTINCT relationships_type.name) AS relationships_type FROM `users` INNER JOIN `user_tags` ON user_tags.user_id = users.user_id LEFT JOIN `tags` ON tags.tag_id = user_tags.tag_id LEFT JOIN `likes` AS `usersWholikedMe` ON usersWholikedMe.to_user_id = users.user_id LEFT JOIN `likes` AS `usersLikedByMe` ON usersLikedByMe.from_user_id = users.user_id LEFT JOIN `views` ON views.to_user_id = users.user_id INNER JOIN `interested_in_gender` ON interested_in_gender.user_id = users.user_id LEFT JOIN `genders` ON genders.gender_id = interested_in_gender.gender_id INNER JOIN `interested_in_relation` ON interested_in_relation.user_id = users.user_id LEFT JOIN `relationships_type` ON relationships_type.relationship_type_id = interested_in_relation.relationship_type_id WHERE users.user_id = ? GROUP BY users.user_id";
             let ret = await pool.query(requete, [userId]);
             return ret;
         } catch(err) {
@@ -721,15 +730,33 @@ class User {
 
    // ----------------------------CONVERSATION-----------------------------------
 
-   static async addNewConversation(user_id) {
+   static async addNewConversation(participant1, participant2) {
         try {
-            let ret = await pool.query("INSERT INTO `conversation` SET `user_id` = ?", [user_id]);
-            return ret;
+            let count = await pool.query("SELECT count(conversation.conversation_id) AS `value_exists` FROM `conversation` INNER JOIN `participant` AS p1 ON p1.conversation_id = conversation.conversation_id INNER JOIN `participant` as p2 ON p2.conversation_id = conversation.conversation_id WHERE p1.participant_id = ? AND p2.participant_id = ?", [participant1, participant2]);
+            if (count[0].value_exists > '0') {
+                return false;
+            } else {
+                let ret = await pool.query("INSERT INTO `conversation` SET `user_id` = ?", [participant1]);
+                var conversation_id = ret.insertId;
+                await pool.query("INSERT INTO `participant` SET `conversation_id` = ?, `participant_id` = ?", [conversation_id, participant1]);
+                await pool.query("INSERT INTO `participant` SET `conversation_id` = ?, `participant_id` = ?", [conversation_id, participant2]);
+                return true;
+            }
         }
         catch(err) {
             throw new Error(err)
         } 
     }
+
+   static async deleteNewConversation(conversation_id) {
+    try {
+        let ret = await pool.query("DELETE FROM `conversation` WHERE `conversation_id` = ?", [conversation_id]);
+        return ret;
+    }
+    catch(err) {
+        throw new Error(err)
+    } 
+}
 
     static async searchReportedUser(user_id) {
         try {
@@ -744,7 +771,8 @@ class User {
         } 
     }
 
-    static async addParticipant(user_id, id_conversation) {
+    static async addParticipant(participant_id, conversation_id) {
+        console.log(conversation_id)
         try {
             let ret = await pool.query("INSERT INTO `participant` SET `conversation_id` = ?, `participant_id` = ?", [id_conversation, user_id]);
             return true;
@@ -784,7 +812,7 @@ class User {
 
     static async findAllConversation(current_user) {
         try {
-            let ret = await pool.query("SELECT `conversation_id` FROM `participant` WHERE `participant_id` = ? ",[current_user]);
+            let ret = await pool.query("SELECT `conversation_id` FROM `participant` WHERE `participant_id` = ? ", [current_user]);
             return ret;
         }
         catch(err) {
@@ -823,7 +851,7 @@ class User {
             throw new Error(err)
         } 
     }
-    
+
     // Notifications
 
     static async insertNotification(entity_type_id, entity_id, actor_id, notifier_id) {

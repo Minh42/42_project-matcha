@@ -80,12 +80,43 @@ io.sockets.on('connection', function (socket) {
   })
 
   socket.on('sendNotification', function(data) {
-    console.log(data.notifier_id);
-    console.log(data.message);
-    socket.broadcast.to(data.notifier_id).emit('showNotification', {
+    io.sockets.in(data.notifier_id).emit('showNotification', {
       message: data.message
     })
   })
+
+  socket.on('requestMessages', function(data) {
+    data.forEach(async element => {
+      console.log(element.conversation_id)
+      var res = await pool.query('SELECT firstname, lastname, imageProfile_path, participant_id, message FROM `message` INNER JOIN `users` ON users.user_id = message.participant_id WHERE message.conversation_id = ?', [element.conversation_id]);
+      console.log('im here MOTHERFUCKER');
+      console.log(res);
+      console.log('im here motherfucker');
+      // messages.push({
+      //   conversation_id: element.conversation_id,
+      //   messages: res
+      // })
+    });
+    // console.log(messages);
+    // io.emit('sendMessages', {messages: messages})
+  })
+    
+  // socket.on('subscribe', function(room) {
+  //   console.log('joining room', room)
+  //   socket.join(room)
+  // })
+
+  // socket.on('unsubscribe', function(room) {
+  //   console.log('leaving room', room)
+  //   socket.join(room)
+  // })
+
+  // socket.on('send', function (data) {
+  //   console.log('info', data.id)
+  //   console.log('room', data.room)
+  //   console.log('message', data.message)
+  //   io.sockets.in(data.room).emit('message', data)
+  // });
 
   socket.on('disconnect', function() {
     for(let i = 0; i < users.length; i++) {
