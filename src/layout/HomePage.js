@@ -11,9 +11,9 @@ import FlashMessagesList from '../components/FlashMessagesList';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import izitoast from 'izitoast';
-// import io from 'socket.io-client';
+import io from 'socket.io-client';
 
-// const socket = io('http://localhost:8080', { transports: ['websocket'] });
+const socket = io('http://localhost:8080', { transports: ['websocket'] });
 
 class HomePage extends Component {
     constructor(props) {
@@ -21,8 +21,8 @@ class HomePage extends Component {
 	}
 
 	async componentDidMount() {
-		console.log(this.props.socket.socket)
-		const socket = this.props.socket.socket;
+		// console.log(this.props.socket)
+		// const socket = this.props.socket;
 		const res = await axios.get('/api/onboarding');
 		if(res.data) {
 			this.props.history.push('/onboarding');
@@ -67,7 +67,7 @@ class HomePage extends Component {
 			<div className="column is-8 messages hero is-fullheight" id="message-feed">
 					<FlashMessagesList />
 					<UsersContainer 
-						// socket={socket}
+						socket={socket}
 					/>
 			</div>
 		</div>
@@ -82,7 +82,7 @@ HomePage.propTypes = {
 function mapStateToProps(state) {
     return {
 	  currentUser: state.auth.currentUser,
-	  socket: state.socket
+	//   socket: state.socket
     };
 }
 

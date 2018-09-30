@@ -6,6 +6,15 @@ class User {
     constructor(conn) {
         this.conn = conn;
     }
+    static async findUserByID(user_id) {
+        try {
+                let ret = await pool.query("SELECT * FROM `users` WHERE `user_id` = ?", [user_id]);
+                return ret;
+            }
+            catch(err) {
+                throw new Error(err)
+            } 
+    }
 
     static async findOne(colName, value) {
         try {
@@ -724,11 +733,15 @@ class User {
    static async addNewConversation(participant1, participant2) {
         try {
             let count = await pool.query("SELECT count(conversation.conversation_id) AS `value_exists` FROM `conversation` INNER JOIN `participant` AS p1 ON p1.conversation_id = conversation.conversation_id INNER JOIN `participant` as p2 ON p2.conversation_id = conversation.conversation_id WHERE p1.participant_id = ? AND p2.participant_id = ?", [participant1, participant2]);
-            if (count[0].value_exists > '0')
+            if (count[0].value_exists > '0') {
+            console.log(false)
                 return false;
-            else {
+            } else {
                 let ret = await pool.query("INSERT INTO `conversation` SET `user_id` = ?", [participant1]);
-                return ret.insertId;
+                var conversation_id = ret.insertId;
+                await pool.query("INSERT INTO `participant` SET `conversation_id` = ?, `participant_id` = ?", [conversation_id, participant1]);
+                await pool.query("INSERT INTO `participant` SET `conversation_id` = ?, `participant_id` = ?", [conversation_id, participant2]);
+                return true;
             }
         }
         catch(err) {
@@ -764,13 +777,6 @@ class User {
         try {
             let ret = await pool.query("INSERT INTO `participant` SET `conversation_id` = ?, `participant_id` = ?", [id_conversation, user_id]);
             return true;
-            // let ret = await pool.query("SELECT count(*) as value_exists FROM `participant` WHERE `conversation_id` = ? AND `participant_id` = ?", [conversation_id, participant_id]);
-            // if (ret[0].value_exists <= '0') {
-            //     let ret = await pool.query("INSERT INTO `participant` SET `conversation_id` = ?, `participant_id` = ?", [conversation_id, participant_id]);
-            //     return true;
-            // } else {
-            //     return false;
-            // }
         }
         catch(err) {
             throw new Error(err)

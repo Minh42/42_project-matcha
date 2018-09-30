@@ -75,12 +75,12 @@ export const getMatchProfiles = createSelector([getLikesUsers, getCurrentUser], 
     return result;
 })
 
-// export const getConversationProfileUser = createSelector([getUsers, getConversationProfileID], (users, id_users) => {
-//     if (id_users !== null) {
-//         var profileUserConvers = findUserByID(users, id_users.profileConversation)
-//     }
-//     return profileUserConvers;
-// })
+export const getConversationProfileUser = createSelector([getUsers, getConversationProfileID], (users, id_users) => {
+    if (id_users !== null) {
+        var profileUserConvers = findUserByID(users, id_users.profileConversation)
+    }
+    return profileUserConvers;
+})
 
 // export const getProfileRemittee = createSelector([getUsers, getRemitteeUserID], (users, remitteeID) => {
 //     console.log('users', users)

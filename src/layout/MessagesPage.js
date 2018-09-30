@@ -7,23 +7,42 @@ class MessagesPage extends Component {
 
 	render() {
 		return (
-			<section className="hero is-small">
-			<div className="columns">
-				<aside className="column is-4 aside">
+			<div className="columns" id="mail-app">
+				<aside className="column is-3 aside backgroundInfoUser">
+					<div className="column">
 					<p className="labelTchat">Match</p>
-						<div className="has-text-centered columnTchat">
+						<div className="has-text-centered columnTchat ">
 							<Match />
 						</div>
-					<p className="labelTchat">Chat room</p>
-						<div className="has-text-centered columnTchat">
-							{/* <Conversation /> */}
-						</div>
+					</div>
 				</aside>
-				<div className="column is-8 messages hero is-fullheight">
-					{/* <Tchat /> */}
+				<div className="column is-9 messages hero is-fullheight" id="message-feed">
+					<Conversation />
 				</div>
+				{/* <div className="column is-7 message hero is-fullheight" id="message-pane"> */}
+					{/* {this.showEditFeature()} */}
+				{/* </div> */}
 			</div>
-			</section>
+			// <section className="hero is-fullheigth">
+			// <div className="columns">
+			// 	<aside className="column is-3 aside">
+			// 		<p className="labelTchat">Match</p>
+			// 			<div className="has-text-centered">
+			// 				<Match />
+			// 			</div>
+			// 	</aside>
+			// 	<aside className="column is-3 aside">
+			// 		<p className="labelTchat">Chat room</p>
+			// 			<div className="has-text-centered">
+			// 				{/* <Conversation /> */}
+			// 				hello
+			// 			</div>
+			// 		{/* <div className="column is-8 messages hero is-fullheight"> */}
+			// 			{/* <Tchat /> */}
+			// 		{/* </div> */}
+			// 	</aside>
+			// </div>
+			// </section>
 		);
 	}
 }

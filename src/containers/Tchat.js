@@ -16,7 +16,7 @@ class Tchat extends Component {
 			id: ''
 		}
 		this.onChange = this.onChange.bind(this)
-		this.handleSubmit = this.handleSubmit.bind(this)
+		// this.handleSubmit = this.handleSubmit.bind(this)
 	}
 
 	onChange (event) {
@@ -25,61 +25,60 @@ class Tchat extends Component {
 		})
 	  }
 
-	async handleSubmit(e) {
-		var socket = io.connect('http://localhost:8080');
-		e.preventDefault();
-		var user_id = { user_id : this.state.id }
-		var messageSend = { message : this.state.messageSend}
+	// async handleSubmit(e) {
+	// 	var socket = io.connect('http://localhost:8080');
+	// 	e.preventDefault();
+	// 	var user_id = { user_id : this.state.id }
+	// 	var messageSend = { message : this.state.messageSend}
 
-		const id_conversation = await axios.post('/api/findConversationID', user_id)
-		console.log('id convers', id_conversation.data[1])
+	// 	const id_conversation = await axios.post('/api/findConversationID', user_id)
+	// 	console.log('id convers', id_conversation.data[1])
 
-		socket.emit('subscribe', id_conversation.data[0])
+	// 	socket.emit('subscribe', id_conversation.data[0])
 
-		const res = await axios.post('/api/addMessageBDD', messageSend)
-		if (res.data === 'success') {
-			socket.emit('send', {room : id_conversation.data[0], message : this.state.messageSend, id : id_conversation});
-			socket.on('message', function (message) {
-				console.log(user_id.user_id)
-				console.log(message.id.data[1])
-				if (user_id.user_id === message.id.data[1]) {
-					alert('Le serveur a un message pour vous : ' + message.message);
-					const newDiv = document.createElement('div')
-					newDiv.setAttribute("id", message.message + '1')
-					const currentDiv = document.getElementById("parentMessageContainer"); 
-					currentDiv.parentNode.insertBefore(newDiv, currentDiv);
-					document.getElementById(message.message + '1').innerHTML = message.message;
-				}
-			})
-			const newDiv = document.createElement('div')
-			newDiv.setAttribute("id", this.state.messageSend + '1')
-			const currentDiv = document.getElementById("parentMyMessContainer"); 
-			currentDiv.parentNode.insertBefore(newDiv, currentDiv);
-			document.getElementById(this.state.messageSend + '1').innerHTML = this.state.messageSend;
-			this.setState({
-				messageSend: ''
-			})
+	// 	const res = await axios.post('/api/addMessageBDD', messageSend)
+	// 	if (res.data === 'success') {
+	// 		socket.emit('send', {room : id_conversation.data[0], message : this.state.messageSend, id : id_conversation});
+	// 		socket.on('message', function (message) {
+	// 			console.log(user_id.user_id)
+	// 			console.log(message.id.data[1])
+	// 			if (user_id.user_id === message.id.data[1]) {
+	// 				alert('Le serveur a un message pour vous : ' + message.message);
+	// 				const newDiv = document.createElement('div')
+	// 				newDiv.setAttribute("id", message.message + '1')
+	// 				const currentDiv = document.getElementById("parentMessageContainer"); 
+	// 				currentDiv.parentNode.insertBefore(newDiv, currentDiv);
+	// 				document.getElementById(message.message + '1').innerHTML = message.message;
+	// 			}
+	// 		})
+	// 		const newDiv = document.createElement('div')
+	// 		newDiv.setAttribute("id", this.state.messageSend + '1')
+	// 		const currentDiv = document.getElementById("parentMyMessContainer"); 
+	// 		currentDiv.parentNode.insertBefore(newDiv, currentDiv);
+	// 		document.getElementById(this.state.messageSend + '1').innerHTML = this.state.messageSend;
+	// 		this.setState({
+	// 			messageSend: ''
+	// 		})
 			
-		}
-	}
+	// 	}
+	// }
 
 	render () {
-		var user = this.props.profileTchatID
-		console.log(user)
-		if (user) {
+		const { username } = this.props
+		console.log('hello')
 			return (
 				<div className="TchatSection">
 					<div className="HeadTchat">
-						<p className="has-text-centered labelNameTchat">Conversation with {user[0].username}</p>
+						<p className="has-text-centered labelNameTchat">Conversation with {username}</p>
 					</div>
-					<div className="columns BodyTchat">
+					{/* <div className="columns BodyTchat">
 						<div className="column is-5 is-offset-1 yourMessage">
-							{/* <p>hello</p> */}
+							<p>hello</p>
 							<div id="parentMessageContainer"> 
 							</div>
 						</div>
 						<div className="column is-5 is-offset-1 myMessage">
-							{/* <p>hello</p> */}
+							<p>hello</p>
 							<div id="parentMyMessContainer"> 
 							</div>
 						</div>
@@ -94,15 +93,10 @@ class Tchat extends Component {
 								<button className="button msg_send_btn" type="submit" value="submit">Send</button>
 							</p>
 						</form>
-					</div>
+					</div> */}
 				</div>
 			)
-		} else {
-			return (
-				<p>hello</p>
-			)
 		}
-	}
 }
 
 function mapStateToProps(state) {

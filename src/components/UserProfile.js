@@ -37,8 +37,8 @@ class UserProfile extends Component {
     }
 
     async showProfile() {
-        // const { socket } = this.props; 
-        const socket = this.props.socket.socket;
+        const { socket } = this.props; 
+        // const socket = this.props.socket.socket;
         const res = await axios.post('/api/addUserViews', {user_id : this.props.id});
         var notificationData = res.data;
         const ret = await axios.post('/api/notifications', notificationData);
@@ -68,8 +68,8 @@ class UserProfile extends Component {
     }
 
     async handleLike() {
-        // const { socket } = this.props;
-        const socket = this.props.socket.socket;
+        const { socket } = this.props;
+        // const socket = this.props.socket.socket;
         var data = { user_id : this.props.id}
         const res = await axios.post('/api/addLike', data);
         if (res.data) {
