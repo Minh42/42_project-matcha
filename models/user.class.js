@@ -615,17 +615,35 @@ class User {
 
     static async addLikeBDD(id_actual_user, user_like) {
         try {
-            let ret = await pool.query("INSERT INTO `likes` SET `from_user_id` = ?, `to_user_id` = ? ", [id_actual_user, user_like]);
-                if (ret) {
+            let ret = await pool.query('SELECT COUNT(*) as value_exists FROM `likes` WHERE `from_user_id` = ? AND `to_user_id` = ?', [user_like, id_actual_user]);
+            console.log(ret)
+            if (ret[0].value_exists > '0') {
+                let ret1 = await pool.query("INSERT INTO `likes` SET `from_user_id` = ?, `to_user_id` = ? ", [id_actual_user, user_like]);
+                if (ret1) {
                     var notificationData = {
-                    action_type: "add like",
-                    entity_type_id: 1,
-                    entity_id: ret.insertId,
+                    action_type: "match",
+                    entity_type_id: 3,
+                    entity_id: ret1.insertId,
                     actor_id: id_actual_user,
                     notifier_id: user_like
                     }
                     return notificationData;
                 }
+            } else {
+                let ret2 = await pool.query("INSERT INTO `likes` SET `from_user_id` = ?, `to_user_id` = ? ", [id_actual_user, user_like]);
+                if (ret2) {
+                    var notificationData = {
+                    action_type: "add like",
+                    entity_type_id: 1,
+                    entity_id: ret2.insertId,
+                    actor_id: id_actual_user,
+                    notifier_id: user_like
+                    }
+                    return notificationData;
+                }
+            }
+
+    
         }
         catch(err) {
             throw new Error(err)
@@ -674,7 +692,17 @@ class User {
     static async addUserViews(current_user, user_id) {
         try {
             let ret = await pool.query("INSERT INTO `views` SET `from_user_id` = ?, `to_user_id` = ? ", [current_user, user_id]);
-            return true;
+            if (ret) {
+                var notificationData = {
+                action_type: "add view",
+                entity_type_id: 4,
+                entity_id: ret.insertId,
+                actor_id: current_user,
+                notifier_id: user_id
+                }
+                console.log(notificationData)
+                return notificationData;
+            }
         }
         catch(err) {
             throw new Error(err)
@@ -814,13 +842,26 @@ class User {
 
     static async getNotification(notification_object_id) {
         try {
-            let requete = "SELECT `notifier_id` FROM `notification` WHERE notification_object_id = ?";
-            let ret = await pool.query(requete, [notification_object_id]);
-            var notifier_id = ret[0].notifier_id;
+            let requete1 = "SELECT `notifier_id` FROM `notification` WHERE notification_object_id = ?";
+            let ret1 = await pool.query(requete1, [notification_object_id]);
+            var notifier_id = ret1[0].notifier_id;
 
-            let requete = "SELECT `firstname`, `lastname` FROM users "
+            var requete2 = "SELECT `firstname`, `lastname` FROM `users` INNER JOIN `notification_change` ON notification_change.actor_id = users.user_id INNER JOIN `notification_object` ON notification_object.id = notification_change.notification_object_id WHERE notification_object.id = ?";
+            let ret2 = await pool.query(requete2, [notification_object_id]);
+            var firstname = ret2[0].firstname;
+            var lastname = ret2[0].lastname;
 
-            return notifier_id;
+            var requete3 = "SELECT `entity_type_id` FROM `notification_object` WHERE notification_object.id = ?";
+            let ret3 = await pool.query(requete3, [notification_object_id]);
+            var entity_type_id = ret3[0].entity_type_id;
+
+            const customData = {
+                notifier_id: notifier_id,
+                firstname: firstname,
+                lastname: lastname,
+                entity_type_id: entity_type_id
+            };
+            return customData;
         } catch(err) {
             throw new Error(err)
         } 

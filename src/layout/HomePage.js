@@ -5,15 +5,13 @@ import SortBy from '../containers/SortBy';
 import SearchTags from '../containers/SearchTags';
 import { connect } from 'react-redux';
 import { setUnOnboarding, addFlashMessage } from '../actions/actionUsers';
+import { joinSocket } from '../actions/actionNotifications';
 import { bindActionCreators } from 'redux';
 import { withRouter } from 'react-router-dom';
 import FlashMessagesList from '../components/FlashMessagesList';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-import io from 'socket.io-client';
 import izitoast from 'izitoast';
-
-const socket = io('http://localhost:8080', { transports: ['websocket'] });
 
 class HomePage extends Component {
     constructor(props) {
@@ -26,25 +24,25 @@ class HomePage extends Component {
 			this.props.history.push('/onboarding');
 		} else {
 			this.props.setUnOnboarding();
-			socket.emit('new_user', this.props.currentUser[0].user_id);
-			socket.on('userlist', (userList, socketID) => {
-				window.socketID = null;
-				window.selectedUser = null;
-				if (window.socketID === null) {
-					window.socketID = socketID;
-				}
-				window.userList = userList;
-			})
-			socket.on('exit', (userList) => {
-				window.userList = userList;
-			})
-			socket.on('show_notification', (data) => {
+			this.props.joinSocket(this.props.currentUser[0].user_id);
+		}
+	}
+
+	componentDidUpdate() {
+		if (this.props.socket != null) {
+			window.socketID = null;
+			window.selectedUser = null;
+			window.userList = null;
+			if (window.socketID === null) {
+				window.socketID = this.props.socket.socketID;
+			}
+			window.userList = this.props.socket.connectedUsers;
+			if (this.props.socket.message != null) {
 				izitoast.show({
-					image: '',
-					message: data.text,
+					message: this.props.socket.message,
 					position: 'topRight'
 				});
-			})
+			}
 		}
 	}
 	
@@ -64,30 +62,33 @@ class HomePage extends Component {
 			</aside>
 			<div className="column is-8 messages hero is-fullheight" id="message-feed">
 					<FlashMessagesList />
-					<UsersContainer 
-						socket = {socket}
-					/>
+					<UsersContainer />
 			</div>
 		</div>
 	)};
 }
 
 HomePage.propTypes = {
+	// currentUser: PropTypes.array.isRequired,
+	// socket: PropTypes.node.isRequired,
 	setUnOnboarding: PropTypes.func.isRequired,
-	addFlashMessage: PropTypes.func.isRequired
+	addFlashMessage: PropTypes.func.isRequired,
+	joinSocket: PropTypes.func.isRequired,
 };
 
 function mapStateToProps(state) {
     return {
-      currentUser: state.auth.currentUser
+	  currentUser: state.auth.currentUser,
+	  socket: state.socket
     };
 }
 
 function mapDispatchToProps(dispatch) {
 	return bindActionCreators({
 		  setUnOnboarding: setUnOnboarding,
-		  addFlashMessage: addFlashMessage
+		  addFlashMessage: addFlashMessage,
+		  joinSocket: joinSocket
 	}, dispatch);
-  }
+}
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(HomePage));

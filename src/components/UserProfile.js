@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import { sendNotification } from '../actions/actionNotifications';
+import { bindActionCreators } from 'redux';
+import axios from 'axios';
 
 class UserProfile extends Component {
     constructor(props) {
@@ -37,15 +40,37 @@ class UserProfile extends Component {
 
     async showProfile() {
         const res = await axios.post('/api/addUserViews', {user_id : this.props.id});
+        var notificationData = res.data;
+        const ret = await axios.post('/api/notifications', notificationData);
+        var notification_object_id = ret.data;
+        if (ret.data) {
+            const ret = await axios.post('/api/lastNotification', { "notification_object_id" : notification_object_id })
+            var firstname = ret.data.firstname;
+            var lastname = ret.data.lastname;
+            var entity_type_id = ret.data.entity_type_id;
+            var notifier_id = ret.data.notifier_id;
+            
+            for(var i = 0; i < userList.length; i++) {
+                if(userList[i].userID === notifier_id) {
+                  window.selectedUser = userList[i].socketID;
+                }
+            }
+            if (window.selectedUser != null) {
+                if (entity_type_id === 4) {
+                    var notifier_id = window.selectedUser;
+                    var message = firstname + " " + lastname + " viewed your profile.";
+                    this.props.sendNotification(notifier_id, message);
+                }
+            }
+        }
         this.props.history.push('/otherProfile/' + this.props.id);
     }
 
     async handleLike() {
-        const { socket } = this.props;
         var data = { user_id : this.props.id}
         const res = await axios.post('/api/addLike', data);
         if (res.data) {
-            if (res.data.action_type === "add like") {
+            if (res.data.action_type === "add like" || res.data.action_type === "match") {
                 document.getElementById(this.props.id).style.color = "red";
             }
             else if (res.data.action_type === "delete like") {
@@ -56,7 +81,10 @@ class UserProfile extends Component {
             var notification_object_id = ret.data;
             if (ret.data) {
                 const ret = await axios.post('/api/lastNotification', { "notification_object_id" : notification_object_id })
-                var notifier_id = ret.data;
+                var firstname = ret.data.firstname;
+                var lastname = ret.data.lastname;
+                var entity_type_id = ret.data.entity_type_id;
+                var notifier_id = ret.data.notifier_id;
                 
                 for(var i = 0; i < userList.length; i++) {
                     if(userList[i].userID === notifier_id) {
@@ -65,10 +93,19 @@ class UserProfile extends Component {
                 }
 
                 if (window.selectedUser != null) {
-                socket.emit('new_notification', {
-                    notifier_id : window.selectedUser,
-                    message: '{actor_username} {action_type} your profile'
-                });
+                    if (entity_type_id === 1) {
+                        var notifier_id = window.selectedUser;
+                        var message = firstname + " " + lastname + " liked your profile."
+                        this.props.sendNotification(notifier_id, message);
+                    } else if (entity_type_id === 2) {
+                        var notifier_id = window.selectedUser;
+                        var message = firstname + " " + lastname + " unliked your profile."
+                        this.props.sendNotification(notifier_id, message);
+                    } else if (entity_type_id === 3) {
+                        var notifier_id = window.selectedUser;
+                        var message = firstname + " " + lastname + " matches with you."
+                        this.props.sendNotification(notifier_id, message);
+                    }
                 }
             }
         }
@@ -149,4 +186,16 @@ class UserProfile extends Component {
     }
 }
 
-export default withRouter(UserProfile);
+function mapStateToProps(state) {
+    return {
+	  socket: state.socket
+    };
+}
+
+function mapDispatchToProps(dispatch) {
+	return bindActionCreators({
+		  sendNotification: sendNotification
+	}, dispatch);
+}
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(UserProfile));

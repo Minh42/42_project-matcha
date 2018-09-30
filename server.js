@@ -15,7 +15,11 @@ const keys = require('./server/config/keys')
 
 const app = require('express')();
 const server = require('http').Server(app);
-const io = require('socket.io')(server);
+const io = require('socket.io')(server, {
+  pingInterval: 1000,
+  pingTimeout: 5000,
+}) 
+
 const PORT = process.env.PORT || 8080;
 
 app.set('views', path.join(__dirname, 'views'))
@@ -63,8 +67,8 @@ server.listen(PORT, () => {
 var users = [];
 var messages = [];
 io.sockets.on('connection', function (socket) {
-  
-  socket.on('new_user', function(user_id) {
+
+  socket.on('joinRequested', function(user_id) {
     users.push({
       userID: user_id,
       socketID: socket.id
@@ -72,12 +76,14 @@ io.sockets.on('connection', function (socket) {
 
     let len = users.length;
     len--;
-    io.emit('userlist', users, users[len].socketID);
+    io.emit('userJoined', {users: users, socketID: users[len].socketID})
   })
 
-  socket.on('new_notification', async function(data) {
-    socket.broadcast.to(data.notifier_id).emit('show_notification', {
-      text: data.message
+  socket.on('sendNotification', function(data) {
+    console.log(data.notifier_id);
+    console.log(data.message);
+    socket.broadcast.to(data.notifier_id).emit('showNotification', {
+      message: data.message
     })
   })
 
@@ -87,6 +93,6 @@ io.sockets.on('connection', function (socket) {
         users.splice(i,1);
       }
     }
-    io.emit('exit', users);
+    io.emit('userLeft', {users: users});
   })
 });

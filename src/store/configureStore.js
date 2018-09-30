@@ -1,7 +1,8 @@
 import reduxThunk from 'redux-thunk';
 import rootReducer from '../reducers/index';
 import { createStore, applyMiddleware, compose } from 'redux';
-import { persistStore, persistReducer } from 'redux-persist';
+import { persistStore, persistReducer, createTransform } from 'redux-persist';
+import { init as socketInit, emit } from '../actions/actionSocket';
 import storage from 'redux-persist/lib/storage';
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
 
@@ -17,19 +18,21 @@ export default function configureStore() {
     const store = createStore(
         reducers,
         compose(
-            applyMiddleware(reduxThunk),
+            applyMiddleware(reduxThunk.withExtraArgument({ emit })),
             window.devToolsExtension ? window.devToolsExtension() : f => f // initialize devToolsExtension
         )
     ) 
     
     const persistor = persistStore(store);
-  
+
     if (process.env.NODE_ENV !== 'production' && module.hot) {
       // Enable Webpack hot module replacement for reducers
       module.hot.accept('../reducers', () => {
         store.replaceReducer(rootReducer)
       });
     }
+
+    socketInit(store);
   
     return { persistor, store };
 }

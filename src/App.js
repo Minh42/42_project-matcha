@@ -51,7 +51,9 @@ class App extends Component {
 }
 
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({ fetchCurrentUser: fetchCurrentUser}, dispatch);
+    return bindActionCreators({ 
+        fetchCurrentUser: fetchCurrentUser
+    }, dispatch);
 }
 
 export default connect(null, mapDispatchToProps)(App);

@@ -6,7 +6,7 @@ const importer = require('node-mysql-importer')
 
 const pool = mysql.createPool({
     connectionLimit: 1000,
-    host     : '192.168.99.100',
+    host     : '192.168.99.101',
     port     : '3306',
     user     : 'root',
     password : 'root',
@@ -14,7 +14,7 @@ const pool = mysql.createPool({
 })
 
 importer.config({
-    'host': '192.168.99.100',
+    'host': '192.168.99.101',
     'user': 'root',
     'password': 'root',
     'database': 'matcha'

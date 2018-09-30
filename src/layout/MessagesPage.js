@@ -1,9 +1,21 @@
 import React, { Component }  from 'react';
+import { connect } from 'react-redux';
+import izitoast from 'izitoast';
 import Match from '../containers/Match'
 import Conversation from '../containers/Conversation'
 import Tchat from '../containers/Tchat'
 
 class MessagesPage extends Component {
+
+	componentDidUpdate() {
+		console.log(this.props.socket.message)
+		if (this.props.socket.message != null) {
+			izitoast.show({
+				message: this.props.socket.message,
+				position: 'topRight'
+			});
+		}
+	}
 
 	render() {
 		return (
@@ -28,4 +40,10 @@ class MessagesPage extends Component {
 	}
 }
 
-export default MessagesPage;
+function mapStateToProps(state) {
+    return { 
+		socket: state.socket
+    };
+}
+
+export default connect(mapStateToProps, null)(MessagesPage);
