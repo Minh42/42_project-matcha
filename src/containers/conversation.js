@@ -3,39 +3,32 @@ import axios from 'axios';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { requestMessages } from '../actions/actionConversations';
-import { profileConversationAction } from '../actions/actionConversation';
-import { profileTchatAction } from '../actions/actionOpenTchat';
-import { getConversationProfileUser} from '../selectors/index';
-import ConversationComponent from '../components/ConversationComponent'
-import Tchat from '../components/ConversationComponent'
+import ConversationComponent from '../components/ConversationComponent';
+import Tchat from '../components/ConversationComponent';
+import { filterByProperty } from '../../library/searchFunctions';
 
 class Conversation extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {
 			open: false,
-			username: ''
+			messagesSent: '',
+			messagesReceived: ''
 		};
 		this.openTchat = this.openTchat.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this)
 	}
 
 	async componentDidMount() {
+		var currentUser = this.props.currentUser;
 		var res = await axios.post('/api/findAllConversations');
-		console.log(res.data);
-		this.props.requestMessages(res.data);
-		this.props.profileConversationAction(res.data)
+		this.props.requestMessages(res.data, currentUser);
 	}
 
 	async handleSubmit() {
-		var socket = io.connect('http://localhost:8080');
-
 		var user_id = { user_id : this.state.id }
 		var messageSend = { message : this.state.messageSend}
-
 		const id_conversation = await axios.post('/api/findConversationID', user_id)
-		console.log('id convers', id_conversation.data[1])
-
 		socket.emit('subscribe', id_conversation.data[0])
 
 		const res = await axios.post('/api/addMessageBDD', messageSend)
@@ -63,51 +56,112 @@ class Conversation extends Component {
 		}
 	}
 
-	async openTchat(user_id) {
-		const id = {user_id : user_id}
-		const res = await axios.post('/api/findUserByID', id)
-		//trouver l'username de l'utilisateur clique via son id(ci-dessus)
+	async openTchat(conversation) {
+		var currentUser = this.props.currentUser[0].user_id;
+		var messagesSent = filterByProperty(conversation.messages, "participant_id", currentUser);
+		var messagesReceived = filterByProperty(conversation.messages, "participant_id", conversation.user_id);
 		this.setState ({
 			open: true,
-			username: res.data[0].username
-		})
+			messagesSent: messagesSent,
+			messagesReceived: messagesReceived
+		});
+		
+	}
+
+	renderMessagesSent() {
+		if (this.state.messagesSent != '') {
+			return this.state.messagesSent.map((message, i) => {
+				return (
+					<p key={i}>
+							{message.message}
+					</p>
+				)
+			});
+		}
+	}
+
+	renderMessagesReceived() {
+		if (this.state.messagesReceived != '') {
+			return this.state.messagesReceived.map((message, i) => {
+				return (
+					<p key={i}>
+							{message.message}
+					</p>
+				)
+			});
+		}
 	}
 
 	renderConversation() {
-		if (this.props.matchConversation != undefined) {
-			return this.props.matchConversation.map((user) => {
-				return (
-				<div key={user.user_id}>
-					<ConversationComponent
-						firstname={user.firstname}
-						lastname={user.lastname}
-						age={user.birth_date}
-						src={user.imageProfile_path}
-						onclick={() => this.openTchat(user.user_id)}
-					/>
-				</div>
-				);
+		if (this.props.chat != null) {
+			return this.props.chat.conversations.map((conversation) => {
+				if (conversation.messages.length > 0) {
+					var len = conversation.messages.length;
+					var message;
+					conversation.messages[len - 1].participant_id === this.props.currentUser[0].user_id ? 
+					message = 'Vous: ' + conversation.messages[len - 1].message : message = conversation.messages[len - 1].message;
+					return (
+						<ConversationComponent
+							key={conversation.conversation_id}
+							firstname={conversation.firstname}
+							lastname={conversation.lastname}
+							src={conversation.profilePicture}
+							message={message}
+							onClick={() => this.openTchat(conversation)}
+						/>
+					);
+				} else {
+					return (
+						<ConversationComponent
+							key={conversation.conversation_id}
+							firstname={conversation.firstname}
+							lastname={conversation.lastname}
+							src={conversation.profilePicture}
+							message="Write a new message"
+							onClick={() => this.openTchat(conversation)}
+						/>
+					);
+				}
 			});
-		} else if (this.props.matchConversation === undefined)  {
+		} else {
 			return (
-				<p>no conversation</p>
+				<p>No conversation</p>
 			)
 		}
 	}
 
 	renderTchat() {
-		if (this.state.open === true) {
+		if (this.state.open) {
 			return (
 					<div className="TchatSection">
 						<div className="HeadTchat">
-							<p className="has-text-centered labelNameTchat">Conversation with {this.state.username}</p>
+							<p className="has-text-centered labelNameTchat">Conversation</p>
+						</div>
+						<div className="columns BodyTchat">
+							<div className="column is-5 is-offset-1 yourMessage">
+								{this.renderMessagesSent()}
+							</div>
+							<div className="column is-5 is-offset-1 myMessage">
+								{this.renderMessagesReceived()}
+							</div>
+						</div>
+						<div className="InputTchat">
+							<form className="columns" onSubmit={this.handleSubmit}>
+								<div className="input_msg_write column is-10">
+								<input className="write_msg" type="text"  placeholder="type a message" value={this.state.messageSend} onChange={this.onChange}/>
+								{/* <input type="hidden" value={this.state.id = user[0].user_id}/> */}
+								</div>
+								<p className="column is-1">
+									<button className="button msg_send_btn" type="submit" value="submit">Send</button>
+								</p>
+							</form>
 						</div>
 					</div>
 				)
 		} else {
 			return (
 				<div>
-					no tchat open
+					No tchat open
 				</div>
 			)
 		}
@@ -129,15 +183,14 @@ class Conversation extends Component {
 
 function mapStateToProps(state) {
     return {
-		matchConversation : getConversationProfileUser(state)
+		currentUser: state.auth.currentUser,
+		chat: state.conversations
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({ 
-		requestMessages: requestMessages,
-		profileConversationAction : profileConversationAction,
-		profileTchatAction : profileTchatAction
+		requestMessages: requestMessages
     }, dispatch);
 }
 

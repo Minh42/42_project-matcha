@@ -27,7 +27,7 @@ class MessagesPage extends Component {
 						</div>
 					</div>
 				</aside>
-				<div className="column is-9 messages hero is-fullheight" id="message-feed">
+				<div className="column is-9">
 					<Conversation />
 				</div>
 			</div>

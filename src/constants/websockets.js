@@ -5,7 +5,7 @@ export const messageTypes = [
     'sendNotification',
     'showNotification',
     'requestMessages',
-    'showMessages'
+    'sendMessages'
   ].reduce((accum, msg) => {
     accum[msg] = msg;
     return accum;

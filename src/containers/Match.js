@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getMatchProfiles } from '../selectors/index';
 import { fetchCurrentUser } from '../actions/actionUsers';
-import { profileConversationAction } from '../actions/actionConversation';
+import { requestMessages } from '../actions/actionConversations';
 
 class Match extends Component {
 	constructor(props) {
@@ -18,9 +18,10 @@ class Match extends Component {
 	}
 
 	async openConversation(user_id) {
-		await axios.post('/api/createConversationParticipant', {user_match : user_id})
-		var allConversation = await axios.post('/api/findAllConversation')
-		this.props.profileConversationAction(allConversation.data)
+		await axios.post('/api/createConversationParticipant', {user_match : user_id});
+		var currentUser = this.props.currentUser;
+		var res = await axios.post('/api/findAllConversations');
+		this.props.requestMessages(res.data, currentUser);
 	}
 
 	render() {
@@ -58,15 +59,15 @@ class Match extends Component {
 
 function mapStateToProps(state) {
     return {
+		currentUser: state.auth.currentUser,
 		users : getMatchProfiles(state)
     }
 }
 
-
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({ 
 		fetchCurrentUser: fetchCurrentUser,
-		profileConversationAction : profileConversationAction
+		requestMessages: requestMessages
     }, dispatch);
 }
 

@@ -65,7 +65,6 @@ server.listen(PORT, () => {
 })
 
 var users = [];
-var messages = [];
 io.sockets.on('connection', function (socket) {
 
   socket.on('joinRequested', function(user_id) {
@@ -85,20 +84,26 @@ io.sockets.on('connection', function (socket) {
     })
   })
 
-  socket.on('requestMessages', function(data) {
-    data.forEach(async element => {
-      console.log(element.conversation_id)
-      var res = await pool.query('SELECT firstname, lastname, imageProfile_path, participant_id, message FROM `message` INNER JOIN `users` ON users.user_id = message.participant_id WHERE message.conversation_id = ?', [element.conversation_id]);
-      console.log('im here MOTHERFUCKER');
-      console.log(res);
-      console.log('im here motherfucker');
-      // messages.push({
-      //   conversation_id: element.conversation_id,
-      //   messages: res
-      // })
-    });
-    // console.log(messages);
-    // io.emit('sendMessages', {messages: messages})
+  socket.on('requestMessages', async function(data) {
+    var conversations = [];
+    for (var i = 0; i < data.conversationIDs.length; i++) {
+      var res1 = await pool.query('SELECT firstname, lastname, imageProfile_path, participant_id, message FROM `message` INNER JOIN `users` ON users.user_id = message.participant_id WHERE message.conversation_id = ?', [data.conversationIDs[i].conversation_id]);
+      var message = JSON.parse(JSON.stringify(res1));
+      var res2 = await pool.query('SELECT user_id, firstname, lastname, imageProfile_path FROM `participant` INNER JOIN `users` ON users.user_id = participant.participant_id WHERE participant.conversation_id = ?', [data.conversationIDs[i].conversation_id]);
+      var user_id = res2[1].user_id;
+      var firstname = res2[1].firstname;
+      var lastname = res2[1].lastname;
+      var profilePicture = res2[1].imageProfile_path;
+      conversations.push({
+        conversation_id: data.conversationIDs[i].conversation_id,
+        user_id: user_id,
+        firstname: firstname,
+        lastname: lastname,
+        profilePicture: profilePicture,
+        messages: message
+      })
+    }
+    io.emit('sendMessages', conversations);
   })
     
   // socket.on('subscribe', function(room) {
