@@ -80,7 +80,7 @@ io.sockets.on('connection', function (socket) {
   })
 
   socket.on('sendNotification', function(data) {
-    io.sockets.in(data.notifier_id).emit('showNotification', {
+    socket.broadcast.to(data.notifier_id).emit('showNotification', {
       message: data.message
     })
   })
