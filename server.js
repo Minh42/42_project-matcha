@@ -115,7 +115,9 @@ io.sockets.on('connection', function (socket) {
   })
 
   socket.on('sendDirectMessage', async function(data) {
-    console.log(data);
+    console.log(data.conversationID)
+    console.log(data.participantID)
+    console.log(data.directMessage)
     await pool.query("INSERT INTO `message` SET `conversation_id` = ?, `participant_id` = ?, `message` = ?", [data.conversationID, data.participantID, data.directMessage]);
     io.sockets.in(data.conversationID).emit('showDirectMessage', data.directMessage);
   })
