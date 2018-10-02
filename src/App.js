@@ -26,7 +26,7 @@ class App extends Component {
     componentDidMount() {
         this.props.fetchCurrentUser();
     }
-
+ 
     render() {
         return (
             <Router>
@@ -56,6 +56,6 @@ function mapDispatchToProps(dispatch) {
     }, dispatch);
 }
 
-export default connect(null, mapDispatchToProps)(App);
+export default connect (null, mapDispatchToProps)(App);
 
 

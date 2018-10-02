@@ -5,7 +5,10 @@ export const messageTypes = [
     'sendNotification',
     'showNotification',
     'requestMessages',
-    'sendMessages'
+    'sendMessages',
+    'joinRoom',
+    'sendDirectMessage',
+    'showDirectMessage'
   ].reduce((accum, msg) => {
     accum[msg] = msg;
     return accum;

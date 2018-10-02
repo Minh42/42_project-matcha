@@ -18,16 +18,16 @@ class MessagesPage extends Component {
 
 	render() {
 		return (
-			<div className="columns" id="mail-app">
+			<div className="columns">
 				<aside className="column is-3 aside backgroundInfoUser">
-					<div className="column">
+					{/* <div className="column"> */}
 					<p className="labelTchat">Match</p>
 						<div className="has-text-centered columnTchat ">
 							<Match />
 						</div>
-					</div>
+					{/* </div> */}
 				</aside>
-				<div className="column is-9">
+				<div className="column is-9 hero is-medium">
 					<Conversation />
 				</div>
 			</div>

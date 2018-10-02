@@ -79,7 +79,7 @@ io.sockets.on('connection', function (socket) {
   })
 
   socket.on('sendNotification', function(data) {
-    socket.broadcast.to(data.notifier_id).emit('showNotification', {
+    io.to(data.notifier_socketID).emit('showNotification', {
       message: data.message
     })
   })
@@ -90,10 +90,14 @@ io.sockets.on('connection', function (socket) {
       var res1 = await pool.query('SELECT firstname, lastname, imageProfile_path, participant_id, message FROM `message` INNER JOIN `users` ON users.user_id = message.participant_id WHERE message.conversation_id = ?', [data.conversationIDs[i].conversation_id]);
       var message = JSON.parse(JSON.stringify(res1));
       var res2 = await pool.query('SELECT user_id, firstname, lastname, imageProfile_path FROM `participant` INNER JOIN `users` ON users.user_id = participant.participant_id WHERE participant.conversation_id = ?', [data.conversationIDs[i].conversation_id]);
-      var user_id = res2[1].user_id;
-      var firstname = res2[1].firstname;
-      var lastname = res2[1].lastname;
-      var profilePicture = res2[1].imageProfile_path;
+      var user_id;
+      var firstname;
+      var lastname;
+      var profilePicture;
+      data.currentUser === res2[0].user_id ? user_id = res2[1].user_id : user_id = res2[0].user_id;
+      data.currentUser === res2[0].user_id ? firstname = res2[1].firstname : firstname = res2[0].firstname;
+      data.currentUser === res2[0].user_id ? lastname = res2[1].lastname : lastname = res2[0].lastname;
+      data.currentUser === res2[0].user_id ? profilePicture = res2[1].imageProfile_path : profilePicture = res2[0].imageProfile_path;
       conversations.push({
         conversation_id: data.conversationIDs[i].conversation_id,
         user_id: user_id,
@@ -103,25 +107,18 @@ io.sockets.on('connection', function (socket) {
         messages: message
       })
     }
-    io.emit('sendMessages', conversations);
+    io.to(data.notifier_socketID).emit('sendMessages', conversations);
   })
     
-  // socket.on('subscribe', function(room) {
-  //   console.log('joining room', room)
-  //   socket.join(room)
-  // })
+  socket.on('joinRoom', function(conversation_id) {
+    socket.join(conversation_id)
+  })
 
-  // socket.on('unsubscribe', function(room) {
-  //   console.log('leaving room', room)
-  //   socket.join(room)
-  // })
-
-  // socket.on('send', function (data) {
-  //   console.log('info', data.id)
-  //   console.log('room', data.room)
-  //   console.log('message', data.message)
-  //   io.sockets.in(data.room).emit('message', data)
-  // });
+  socket.on('sendDirectMessage', async function(data) {
+    console.log(data);
+    await pool.query("INSERT INTO `message` SET `conversation_id` = ?, `participant_id` = ?, `message` = ?", [data.conversationID, data.participantID, data.directMessage]);
+    io.sockets.in(data.conversationID).emit('showDirectMessage', data.directMessage);
+  })
 
   socket.on('disconnect', function() {
     for(let i = 0; i < users.length; i++) {

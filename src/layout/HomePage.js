@@ -30,13 +30,6 @@ class HomePage extends Component {
 
 	componentDidUpdate() {
 		if (this.props.socket != null) {
-			window.socketID = null;
-			window.selectedUser = null;
-			window.userList = null;
-			if (window.socketID === null) {
-				window.socketID = this.props.socket.socketID;
-			}
-			window.userList = this.props.socket.connectedUsers;
 			if (this.props.socket.message != null) {
 				izitoast.show({
 					message: this.props.socket.message,
@@ -85,9 +78,9 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
 	return bindActionCreators({
-		  setUnOnboarding: setUnOnboarding,
-		  addFlashMessage: addFlashMessage,
-		  joinSocket: joinSocket
+		setUnOnboarding: setUnOnboarding,
+		addFlashMessage: addFlashMessage,
+		joinSocket: joinSocket
 	}, dispatch);
 }
 

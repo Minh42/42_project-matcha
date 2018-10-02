@@ -8,6 +8,11 @@ export default function (state = null, action) {
 				...state,
 				conversations: action.payload
 			};
+		case messageTypes.showDirectMessage:
+			return {
+				...state,
+				directMessage: action.payload
+			};
 		default:
 		  return state;
 	}

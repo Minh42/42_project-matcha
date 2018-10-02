@@ -7,8 +7,8 @@ export function joinSocket(user_id) {
     };
 }
 
-export function sendNotification(notifier_id, message) {
+export function sendNotification(notifier_socketID, message) {
     return (dispatch, getState, {emit}) => {
-        emit(messageTypes.sendNotification, {notifier_id: notifier_id, message: message});
+        emit(messageTypes.sendNotification, {notifier_socketID: notifier_socketID, message: message});
     };
 }

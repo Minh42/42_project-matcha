@@ -2,9 +2,8 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { requestMessages } from '../actions/actionConversations';
+import { requestMessages, joinRoom, sendDirectMessage } from '../actions/actionConversations';
 import ConversationComponent from '../components/ConversationComponent';
-import Tchat from '../components/ConversationComponent';
 import { filterByProperty } from '../../library/searchFunctions';
 
 class Conversation extends Component {
@@ -13,59 +12,60 @@ class Conversation extends Component {
 		this.state = {
 			open: false,
 			messagesSent: '',
-			messagesReceived: ''
+			messagesReceived: '',
+			conversation_id: '',
+			firstname: '',
+			lastname: '',
+			directMessage: ''
 		};
 		this.openTchat = this.openTchat.bind(this);
-		this.handleSubmit = this.handleSubmit.bind(this)
+		this.handleSubmit = this.handleSubmit.bind(this);
+		this.handleChange = this.handleChange.bind(this)
 	}
 
 	async componentDidMount() {
-		var currentUser = this.props.currentUser;
-		var res = await axios.post('/api/findAllConversations');
-		this.props.requestMessages(res.data, currentUser);
-	}
+		var currentUser = this.props.currentUser[0].user_id;
+		var userList = this.props.socket.connectedUsers;
+		var socketID = this.props.socket.socketID;
+		var notifier_socketID;
 
-	async handleSubmit() {
-		var user_id = { user_id : this.state.id }
-		var messageSend = { message : this.state.messageSend}
-		const id_conversation = await axios.post('/api/findConversationID', user_id)
-		socket.emit('subscribe', id_conversation.data[0])
-
-		const res = await axios.post('/api/addMessageBDD', messageSend)
-		if (res.data === 'success') {
-			socket.emit('send', {room : id_conversation.data[0], message : this.state.messageSend, id : id_conversation});
-			socket.on('message', function (message) {
-				if (user_id.user_id === message.id.data[1]) {
-					alert('Le serveur a un message pour vous : ' + message.message);
-					const newDiv = document.createElement('div')
-					newDiv.setAttribute("id", message.message + '1')
-					const currentDiv = document.getElementById("parentMessageContainer"); 
-					currentDiv.parentNode.insertBefore(newDiv, currentDiv);
-					document.getElementById(message.message + '1').innerHTML = message.message;
-				}
-			})
-			const newDiv = document.createElement('div')
-			newDiv.setAttribute("id", this.state.messageSend + '1')
-			const currentDiv = document.getElementById("parentMyMessContainer"); 
-			currentDiv.parentNode.insertBefore(newDiv, currentDiv);
-			document.getElementById(this.state.messageSend + '1').innerHTML = this.state.messageSend;
-			this.setState({
-				messageSend: ''
-			})
-			
+		for(var i = 0; i < userList.length; i++) {
+			if(userList[i].userID === currentUser) {
+			  notifier_socketID = userList[i].socketID;
+			}
 		}
+
+		var res = await axios.post('/api/findAllConversations');
+		this.props.requestMessages(res.data, currentUser, notifier_socketID);
 	}
 
-	async openTchat(conversation) {
+	handleChange (event) {
+		this.setState({
+		  directMessage: event.target.value
+		})
+	}
+
+	handleSubmit(e) {
+		e.preventDefault();
+		var conversation_id = this.state.conversation_id;
+		var participant_id = this.props.currentUser[0].user_id;
+		var directMessage = this.state.directMessage;
+		this.props.sendDirectMessage(conversation_id, participant_id, directMessage);
+	}
+
+	openTchat(conversation) {
 		var currentUser = this.props.currentUser[0].user_id;
 		var messagesSent = filterByProperty(conversation.messages, "participant_id", currentUser);
 		var messagesReceived = filterByProperty(conversation.messages, "participant_id", conversation.user_id);
 		this.setState ({
 			open: true,
 			messagesSent: messagesSent,
-			messagesReceived: messagesReceived
+			messagesReceived: messagesReceived,
+			conversation_id: conversation.conversation_id,
+			firstname: conversation.firstname,
+			lastname: conversation.lastname
 		});
-		
+		this.props.joinRoom(conversation.conversation_id);
 	}
 
 	renderMessagesSent() {
@@ -73,7 +73,7 @@ class Conversation extends Component {
 			return this.state.messagesSent.map((message, i) => {
 				return (
 					<p key={i}>
-							{message.message}
+						{message.message}
 					</p>
 				)
 			});
@@ -85,7 +85,7 @@ class Conversation extends Component {
 			return this.state.messagesReceived.map((message, i) => {
 				return (
 					<p key={i}>
-							{message.message}
+						{message.message}
 					</p>
 				)
 			});
@@ -130,12 +130,16 @@ class Conversation extends Component {
 		}
 	}
 
+	renderDirectMessage() {
+		console.log(this.props.socket.directMessage);
+	}
+
 	renderTchat() {
 		if (this.state.open) {
 			return (
 					<div className="TchatSection">
 						<div className="HeadTchat">
-							<p className="has-text-centered labelNameTchat">Conversation</p>
+							<p className="has-text-centered labelNameTchat">Conversation with {this.state.firstname} {this.state.lastname}</p>
 						</div>
 						<div className="columns BodyTchat">
 							<div className="column is-5 is-offset-1 yourMessage">
@@ -145,10 +149,11 @@ class Conversation extends Component {
 								{this.renderMessagesReceived()}
 							</div>
 						</div>
+						<div>{this.renderDirectMessage()}</div>
 						<div className="InputTchat">
 							<form className="columns" onSubmit={this.handleSubmit}>
 								<div className="input_msg_write column is-10">
-								<input className="write_msg" type="text"  placeholder="type a message" value={this.state.messageSend} onChange={this.onChange}/>
+								<input className="write_msg" type="text"  placeholder="type a message" value={this.state.directMessage} onChange={this.handleChange}/>
 								{/* <input type="hidden" value={this.state.id = user[0].user_id}/> */}
 								</div>
 								<p className="column is-1">
@@ -169,7 +174,7 @@ class Conversation extends Component {
 
 	render() {
 		return (
-			<div className="columns">
+			<div className="columns blocChat">
 				<div className="column is-4">
 					{this.renderConversation()}
 				</div>
@@ -184,13 +189,16 @@ class Conversation extends Component {
 function mapStateToProps(state) {
     return {
 		currentUser: state.auth.currentUser,
-		chat: state.conversations
+		chat: state.conversations,
+		socket: state.socket
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({ 
-		requestMessages: requestMessages
+		requestMessages: requestMessages,
+		joinRoom: joinRoom,
+		sendDirectMessage: sendDirectMessage
     }, dispatch);
 }
 

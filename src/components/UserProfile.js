@@ -49,17 +49,21 @@ class UserProfile extends Component {
             var lastname = ret.data.lastname;
             var entity_type_id = ret.data.entity_type_id;
             var notifier_id = ret.data.notifier_id;
-            
+      
+            var userList = this.props.socket.connectedUsers;
+            var socketID = this.props.socket.socketID;
+            var notifier_socketID;
+        
             for(var i = 0; i < userList.length; i++) {
                 if(userList[i].userID === notifier_id) {
-                  window.selectedUser = userList[i].socketID;
+                  notifier_socketID = userList[i].socketID;
                 }
             }
-            if (window.selectedUser != null) {
+
+            if (notifier_socketID != null) {
                 if (entity_type_id === 4) {
-                    var notifier_id = window.selectedUser;
                     var message = firstname + " " + lastname + " viewed your profile.";
-                    this.props.sendNotification(notifier_id, message);
+                    this.props.sendNotification(notifier_socketID, message);
                 }
             }
         }
@@ -86,25 +90,26 @@ class UserProfile extends Component {
                 var entity_type_id = ret.data.entity_type_id;
                 var notifier_id = ret.data.notifier_id;
                 
+                var userList = this.props.socket.connectedUsers;
+                var socketID = this.props.socket.socketID;
+                var notifier_socketID;
+
                 for(var i = 0; i < userList.length; i++) {
                     if(userList[i].userID === notifier_id) {
-                      window.selectedUser = userList[i].socketID;
+                    notifier_socketID = userList[i].socketID;
                     }
                 }
 
-                if (window.selectedUser != null) {
+                if (notifier_socketID != null) {
                     if (entity_type_id === 1) {
-                        var notifier_id = window.selectedUser;
                         var message = firstname + " " + lastname + " liked your profile."
-                        this.props.sendNotification(notifier_id, message);
+                        this.props.sendNotification(notifier_socketID, message);
                     } else if (entity_type_id === 2) {
-                        var notifier_id = window.selectedUser;
                         var message = firstname + " " + lastname + " unliked your profile."
-                        this.props.sendNotification(notifier_id, message);
+                        this.props.sendNotification(notifier_socketID, message);
                     } else if (entity_type_id === 3) {
-                        var notifier_id = window.selectedUser;
                         var message = firstname + " " + lastname + " matches with you."
-                        this.props.sendNotification(notifier_id, message);
+                        this.props.sendNotification(notifier_socketID, message);
                     }
                 }
             }

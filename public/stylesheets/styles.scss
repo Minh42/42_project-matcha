@@ -25,6 +25,8 @@ body {
     font-size: 16px;
     line-height: 1.2;
     color: black;
+    height:100%; 
+    min-width: 900px
     // padding: 30px;
 }
 
@@ -723,9 +725,17 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
     font-weight: bold;
 }
 
-.columnTchat {
-    overflow:auto;
-    height: 40%;
+#blocChat {
+	position:static;
+	display:block;
+	max-height:500px;
+}
+
+#blocMatch {
+    overflow: auto;
+    margin: 0 auto;
+	display:block;
+	height:70%; 
 }
 
 .size_image {
