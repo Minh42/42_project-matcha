@@ -6,7 +6,7 @@ const socket = io('http://localhost:8080', { transports: ['websocket'] });
 // initialising listeners
 export const init = (store) => {
 	Object.keys(messageTypes).forEach(type => socket.on(type, (payload) => 
-		store.dispatch({type, payload}) 
+		store.dispatch({type, payload})
 	));
 };
 

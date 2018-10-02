@@ -42,22 +42,16 @@ class Conversation extends Component {
 	async componentDidUpdate() {
 		const objDiv = document.getElementsByClassName('BodyTchat');
 		objDiv.scrollTop = objDiv.scrollHeight;
-
-		console.log(this.props.chat.directMessage);
-
-		// if (this.props.chat != null) {
-		// 	if (this.props.chat.directMessage != null) {
-		// 		var message = { 
-		// 			firstname: this.props.currentUser[0].firstname,
-		// 			lastname: this.props.currentUser[0].lastname,
-		// 			imageProfile_path: this.props.currentUser[0].imageProfile_path,
-		// 			message: this.props.chat.directMessage,
-		// 			participant_id: this.props.currentUser[0].user_id
-		// 		}
-		// 		this.addMessage(message);
-		// 	}
-		// }
-
+		if (this.props.chat.directMessage != undefined) {
+			var message = { 
+				firstname: this.props.currentUser[0].firstname,
+				lastname: this.props.currentUser[0].lastname,
+				imageProfile_path: this.props.currentUser[0].imageProfile_path,
+				message: this.props.chat.directMessage,
+				participant_id: this.props.currentUser[0].user_id
+			}
+			this.addMessage(message);
+		}
 	}
 
 	handleChange (event) {
@@ -97,9 +91,7 @@ class Conversation extends Component {
 
 	addMessage(message) {
 		var messages = this.state.messages;
-		console.log(messages)
 		messages.push(message);
-		console.log(messages)
 		this.setState({ messages });
 	}
 
@@ -117,7 +109,7 @@ class Conversation extends Component {
 
 	renderMessages() {
 		if (this.state.messages != '') {
-			console.log(this.state.messages);
+			console.log(this.state.messages)
 			const messages = this.state.messages.map((message, i) => {
 				return (
 					<MessageComponent
