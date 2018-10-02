@@ -5,6 +5,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getMatchProfiles } from '../selectors/index';
 import { fetchCurrentUser } from '../actions/actionUsers';
+import { requestMessages } from '../actions/actionConversations';
+import { joinSocket } from '../actions/actionNotifications';
 
 class Match extends Component {
 	constructor(props) {
@@ -14,10 +16,25 @@ class Match extends Component {
 
 	async componentDidMount() {
 		this.props.fetchCurrentUser();
+		this.props.joinSocket(this.props.currentUser[0].user_id);
 	}
 
 	async openConversation(user_id) {
-		await axios.post('/api/createConversationParticipant', {user_match : user_id})
+		await axios.post('/api/createConversationParticipant', {user_match : user_id});
+		
+		var currentUser = this.props.currentUser[0].user_id;
+		var userList = this.props.socket.connectedUsers;
+		var socketID = this.props.socket.socketID;
+		var notifier_socketID;
+
+		for(var i = 0; i < userList.length; i++) {
+			if(userList[i].userID === currentUser) {
+			  notifier_socketID = userList[i].socketID;
+			}
+		}
+
+		var res = await axios.post('/api/findAllConversations');
+		this.props.requestMessages(res.data, currentUser, notifier_socketID);
 	}
 
 	render() {
@@ -43,10 +60,8 @@ class Match extends Component {
 			})
 		} else {
 			return (
-				<div className="columns">
-					<div className="column is-10 is-offset-1">
-						No match
-					</div>
+				<div className="column is-10 is-offset-1">
+					No match
 				</div>
 			)
 		}
@@ -55,14 +70,17 @@ class Match extends Component {
 
 function mapStateToProps(state) {
     return {
-		users : getMatchProfiles(state)
+		currentUser: state.auth.currentUser,
+		users : getMatchProfiles(state),
+		socket: state.socket
     }
 }
 
-
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({ 
-        fetchCurrentUser: fetchCurrentUser
+		fetchCurrentUser: fetchCurrentUser,
+		requestMessages: requestMessages,
+		joinSocket : joinSocket
     }, dispatch);
 }
 

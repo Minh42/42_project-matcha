@@ -112,10 +112,12 @@ CREATE TABLE IF NOT EXISTS `participant` (
 
 CREATE TABLE IF NOT EXISTS `message` (
     `message_id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `conversation_id` BIGINT UNSIGNED,
     `participant_id` BIGINT UNSIGNED,
     `message` TEXT,
     `time_sent` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (participant_id) REFERENCES participant(participant_id)
+    FOREIGN KEY (participant_id) REFERENCES participant(participant_id),
+    FOREIGN KEY (conversation_id) REFERENCES participant(conversation_id)
 );
 
 CREATE TABLE IF NOT EXISTS `grade` (

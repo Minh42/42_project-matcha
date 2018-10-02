@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import { sendNotification } from '../actions/actionNotifications';
+import { bindActionCreators } from 'redux';
 import axios from 'axios';
 
 class UserProfile extends Component {
@@ -37,8 +39,6 @@ class UserProfile extends Component {
     }
 
     async showProfile() {
-        // const { socket } = this.props; 
-        const socket = this.props.socket.socket;
         const res = await axios.post('/api/addUserViews', {user_id : this.props.id});
         var notificationData = res.data;
         const ret = await axios.post('/api/notifications', notificationData);
@@ -49,18 +49,21 @@ class UserProfile extends Component {
             var lastname = ret.data.lastname;
             var entity_type_id = ret.data.entity_type_id;
             var notifier_id = ret.data.notifier_id;
-            
+      
+            var userList = this.props.socket.connectedUsers;
+            var socketID = this.props.socket.socketID;
+            var notifier_socketID;
+        
             for(var i = 0; i < userList.length; i++) {
                 if(userList[i].userID === notifier_id) {
-                  window.selectedUser = userList[i].socketID;
+                  notifier_socketID = userList[i].socketID;
                 }
             }
-            if (window.selectedUser != null) {
+
+            if (notifier_socketID != null) {
                 if (entity_type_id === 4) {
-                    socket.emit('new_notification', {
-                        notifier_id : window.selectedUser,
-                        message: firstname + " " + lastname + " viewed your profile."
-                    });
+                    var message = firstname + " " + lastname + " viewed your profile.";
+                    this.props.sendNotification(notifier_socketID, message);
                 }
             }
         }
@@ -68,8 +71,6 @@ class UserProfile extends Component {
     }
 
     async handleLike() {
-        // const { socket } = this.props;
-        const socket = this.props.socket.socket;
         var data = { user_id : this.props.id}
         const res = await axios.post('/api/addLike', data);
         if (res.data) {
@@ -89,28 +90,26 @@ class UserProfile extends Component {
                 var entity_type_id = ret.data.entity_type_id;
                 var notifier_id = ret.data.notifier_id;
                 
+                var userList = this.props.socket.connectedUsers;
+                var socketID = this.props.socket.socketID;
+                var notifier_socketID;
+
                 for(var i = 0; i < userList.length; i++) {
                     if(userList[i].userID === notifier_id) {
-                      window.selectedUser = userList[i].socketID;
+                    notifier_socketID = userList[i].socketID;
                     }
                 }
 
-                if (window.selectedUser != null) {
+                if (notifier_socketID != null) {
                     if (entity_type_id === 1) {
-                        socket.emit('new_notification', {
-                            notifier_id : window.selectedUser,
-                            message: firstname + " " + lastname + " liked your profile."
-                        });
+                        var message = firstname + " " + lastname + " liked your profile."
+                        this.props.sendNotification(notifier_socketID, message);
                     } else if (entity_type_id === 2) {
-                        socket.emit('new_notification', {
-                            notifier_id : window.selectedUser,
-                            message: firstname + " " + lastname + " unliked your profile."
-                        });
+                        var message = firstname + " " + lastname + " unliked your profile."
+                        this.props.sendNotification(notifier_socketID, message);
                     } else if (entity_type_id === 3) {
-                        socket.emit('new_notification', {
-                            notifier_id : window.selectedUser,
-                            message: firstname + " " + lastname + " matches with you."
-                        });
+                        var message = firstname + " " + lastname + " matches with you."
+                        this.props.sendNotification(notifier_socketID, message);
                     }
                 }
             }
@@ -198,4 +197,10 @@ function mapStateToProps(state) {
     };
 }
 
-export default withRouter(connect(mapStateToProps, null)(UserProfile));
+function mapDispatchToProps(dispatch) {
+	return bindActionCreators({
+		  sendNotification: sendNotification
+	}, dispatch);
+}
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(UserProfile));

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 import { selectUser } from '../actions/actionUsers';
 import { bindActionCreators } from 'redux';
-
+import izitoast from 'izitoast';
 import EditUserProfileContainer from '../containers/EditUserProfileContainer';
 import EditUserOtherInfoContainer from '../containers/EditUserOtherInfoContainer';
 import UserProfileContainer from '../containers/UserProfileContainer';
@@ -25,10 +25,17 @@ class UserProfile extends Component {
 	}
 
 	async componentDidMount() {
-		console.log('here')
 		const res = await axios.get('/api/profile');
-		console.log(res)
 		this.props.selectUser(res);
+	}
+
+	componentDidUpdate() {
+		if (this.props.socket.message != null) {
+			izitoast.show({
+				message: this.props.socket.message,
+				position: 'topRight'
+			});
+		}
 	}
 
 	toggleEditPersonnalInfo() {
@@ -121,7 +128,6 @@ class UserProfile extends Component {
 	}
 
 	render () {
-		console.log(this.props.selectedUser)
 		return (
 		<div className="columns" id="mail-app">
 			<aside className="column is-2 aside backgroundInfoUser">
@@ -141,7 +147,8 @@ class UserProfile extends Component {
 
 function mapStateToProps(state) {
     return { 
-		selectedUser: state.selectedUser
+		selectedUser: state.selectedUser,
+		socket: state.socket
     };
 }
 

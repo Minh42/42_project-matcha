@@ -4,7 +4,7 @@ module.exports = {
   development: {
     client: 'mysql',
     connection: {
-      host: '192.168.99.100',
+      host: '192.168.99.101',
       port: '3306',
       database: 'matcha',
       user: keys.user,

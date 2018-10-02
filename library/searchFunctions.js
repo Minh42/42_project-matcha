@@ -247,8 +247,6 @@ function searchTag(users, tag) {
 // trouver Users by ID
 
 function findUserByID(users, id_users) {
-    console.log(users)
-    console.log(id_users)
     var userConversation = new Array();
     if (id_users.length > 0) {
         for (var y = 0; y < id_users.length; y++) {
@@ -593,8 +591,6 @@ function AllUsersExceptCurrentUser(users, currentUserID) {
     }
     return usersExceptCurrent
 }
-
-
 
 module.exports = {
     filterByProperty : filterByProperty,

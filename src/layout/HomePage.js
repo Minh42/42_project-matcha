@@ -5,16 +5,13 @@ import SortBy from '../containers/SortBy';
 import SearchTags from '../containers/SearchTags';
 import { connect } from 'react-redux';
 import { setUnOnboarding, addFlashMessage } from '../actions/actionUsers';
+import { joinSocket } from '../actions/actionNotifications';
 import { bindActionCreators } from 'redux';
 import { withRouter } from 'react-router-dom';
 import FlashMessagesList from '../components/FlashMessagesList';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import izitoast from 'izitoast';
-import {parse, stringify} from 'flatted/esm';
-// import io from 'socket.io-client';
-
-// const socket = io('http://localhost:8080', { transports: ['websocket'] });
 
 class HomePage extends Component {
     constructor(props) {
@@ -22,32 +19,23 @@ class HomePage extends Component {
 	}
 
 	async componentDidMount() {
-		console.log(this.props.socket.socket)
-		const socket = this.props.socket.socket;
 		const res = await axios.get('/api/onboarding');
 		if(res.data) {
 			this.props.history.push('/onboarding');
 		} else {
 			this.props.setUnOnboarding();
-			socket.emit('new_user', this.props.currentUser[0].user_id);
-			socket.on('userlist', (userList, socketID) => {
-				window.socketID = null;
-				window.selectedUser = null;
-				if (window.socketID === null) {
-					window.socketID = socketID;
-				}
-				window.userList = userList;
-			})
-			socket.on('exit', (userList) => {
-				window.userList = userList;
-			})
-			socket.on('show_notification', (data) => {
+			this.props.joinSocket(this.props.currentUser[0].user_id);
+		}
+	}
+
+	componentDidUpdate() {
+		if (this.props.socket != null) {
+			if (this.props.socket.message != null) {
 				izitoast.show({
-					image: '',
-					message: data.text,
+					message: this.props.socket.message,
 					position: 'topRight'
 				});
-			})
+			}
 		}
 	}
 	
@@ -67,17 +55,18 @@ class HomePage extends Component {
 			</aside>
 			<div className="column is-8 messages hero is-fullheight" id="message-feed">
 					<FlashMessagesList />
-					<UsersContainer 
-						// socket={socket}
-					/>
+					<UsersContainer />
 			</div>
 		</div>
 	)};
 }
 
 HomePage.propTypes = {
+	// currentUser: PropTypes.array.isRequired,
+	// socket: PropTypes.node.isRequired,
 	setUnOnboarding: PropTypes.func.isRequired,
-	addFlashMessage: PropTypes.func.isRequired
+	addFlashMessage: PropTypes.func.isRequired,
+	joinSocket: PropTypes.func.isRequired,
 };
 
 function mapStateToProps(state) {
@@ -89,9 +78,10 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
 	return bindActionCreators({
-		  setUnOnboarding: setUnOnboarding,
-		  addFlashMessage: addFlashMessage
+		setUnOnboarding: setUnOnboarding,
+		addFlashMessage: addFlashMessage,
+		joinSocket: joinSocket
 	}, dispatch);
-  }
+}
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(HomePage));

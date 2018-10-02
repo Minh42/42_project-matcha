@@ -65,42 +65,59 @@ server.listen(PORT, () => {
 })
 
 var users = [];
-var messages = [];
 io.sockets.on('connection', function (socket) {
-  
-  socket.on('new_user', function(user_id) {
+
+  socket.on('joinRequested', function(user_id) {
     users.push({
       userID: user_id,
       socketID: socket.id
     });
-    console.log(users)
 
     let len = users.length;
     len--;
-    io.emit('userlist', users, users[len].socketID);
+    io.emit('userJoined', {users: users, socketID: users[len].socketID})
   })
 
-  socket.on('subscribe', function(room) {
-    console.log('joining room', room)
-    socket.join(room)
-  })
-
-  // socket.on('unsubscribe', function(room) {
-  //   console.log('leaving room', room)
-  //   socket.join(room)
-  // })
-
-  socket.on('send', function (data) {
-    console.log('info', data.id)
-    console.log('room', data.room)
-    console.log('message', data.message)
-    io.sockets.in(data.room).emit('message', data)
-  });
-
-  socket.on('new_notification', async function(data) {
-    socket.broadcast.to(data.notifier_id).emit('show_notification', {
-      text: data.message
+  socket.on('sendNotification', function(data) {
+    io.to(data.notifier_socketID).emit('showNotification', {
+      message: data.message
     })
+  })
+
+  socket.on('requestMessages', async function(data) {
+    var conversations = [];
+    for (var i = 0; i < data.conversationIDs.length; i++) {
+      var res1 = await pool.query('SELECT firstname, lastname, imageProfile_path, participant_id, message FROM `message` INNER JOIN `users` ON users.user_id = message.participant_id WHERE message.conversation_id = ?', [data.conversationIDs[i].conversation_id]);
+      var message = JSON.parse(JSON.stringify(res1));
+      var res2 = await pool.query('SELECT user_id, firstname, lastname, imageProfile_path FROM `participant` INNER JOIN `users` ON users.user_id = participant.participant_id WHERE participant.conversation_id = ?', [data.conversationIDs[i].conversation_id]);
+      var user_id;
+      var firstname;
+      var lastname;
+      var profilePicture;
+      data.currentUser === res2[0].user_id ? user_id = res2[1].user_id : user_id = res2[0].user_id;
+      data.currentUser === res2[0].user_id ? firstname = res2[1].firstname : firstname = res2[0].firstname;
+      data.currentUser === res2[0].user_id ? lastname = res2[1].lastname : lastname = res2[0].lastname;
+      data.currentUser === res2[0].user_id ? profilePicture = res2[1].imageProfile_path : profilePicture = res2[0].imageProfile_path;
+      conversations.push({
+        conversation_id: data.conversationIDs[i].conversation_id,
+        user_id: user_id,
+        firstname: firstname,
+        lastname: lastname,
+        profilePicture: profilePicture,
+        messages: message
+      })
+    }
+    io.to(data.notifier_socketID).emit('sendMessages', conversations);
+  })
+    
+  socket.on('joinRoom', function(conversation_id) {
+    socket.join(conversation_id)
+  })
+
+  socket.on('sendDirectMessage', async function(data) {
+    console.log(data);
+    await pool.query("INSERT INTO `message` SET `conversation_id` = ?, `participant_id` = ?, `message` = ?", [data.conversationID, data.participantID, data.directMessage]);
+    io.sockets.in(data.conversationID).emit('showDirectMessage', data.directMessage);
   })
 
   socket.on('disconnect', function() {
@@ -109,6 +126,6 @@ io.sockets.on('connection', function (socket) {
         users.splice(i,1);
       }
     }
-    io.emit('exit', users);
+    io.emit('userLeft', {users: users});
   })
 });

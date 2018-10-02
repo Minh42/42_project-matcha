@@ -784,6 +784,15 @@ router.post('/api/addLike', authenticate, (req, res) => {
   })
 })
 
+router.get('/api/searchLikeProfileUser', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  var user_id = req.currentUser[0].user_id
+  user.searchUserWhoLike(user_id)
+    .then((ret) => {
+      res.json(ret)
+    })
+})
+
 router.post('/api/savePicture', authenticate, (req, res) => {
   let user = require('../models/user.class');
   var user_id = req.currentUser[0].user_id;
@@ -869,35 +878,18 @@ router.post('/api/createConversationParticipant', authenticate, async (req, res)
   var participant2 = req.body.user_match;
   const ret = await user.addNewConversation(participant1, participant2);
   if (ret) {
-    console.log(ret)
-
-    // var conversation_id = ret;
-    // const ret1 = await user.addParticipant(participant1, conversation_id);
-    // const ret2 = await user.addParticipant(participant2, conversation_id);
-    // if (ret1 && ret2) {
-    //   res.send('success');
-    // } else {
-    //   const ret3 = await user.deleteNewConversation(conversation_id);
-    //   res.send('failure');
-    // }
+    res.send('success');
+  } else {
+    res.send('failure')
   }
 })
 
-// router.post('/api/createConversationParticipant', authenticate, (req, res) => {
-//   let user = require('../models/user.class');
-//   var current_user = req.currentUser[0].user_id;
-//   var user_match = req.body.id_user_match;
-//   user.addNewConversation(current_user).then((ret) => {
-//     var id_conversation = ret.insertId
-//     user.addParticipant(current_user, id_conversation).then((ret1) => {
-//       user.addParticipant(user_match, id_conversation).then((ret2) => {
-//         if(ret2) {
-//           res.send("success");
-//         }
-//       })
-//     })
-//   })
-// })
+router.post('/api/findAllConversations', authenticate, async (req, res) => {
+  let user = require('../models/user.class');
+  var current_user = req.currentUser[0].user_id;
+  const ret = await user.findAllConversationtionID(current_user);
+  res.send(ret);
+})
 
 router.post('/api/findAllConversation', authenticate, (req, res) => {
   let user = require('../models/user.class');
@@ -962,6 +954,7 @@ router.get('/api/searchLikeProfileUser', authenticate, (req, res) => {
       res.json(ret)
     })
 })
+
 router.post('/api/lastNotification', authenticate, async (req, res) => {
   let notification_object_id = req.body.notification_object_id;
   let user = require('../models/user.class');
@@ -971,6 +964,13 @@ router.post('/api/lastNotification', authenticate, async (req, res) => {
   }
 });
 
-
+router.post('/api/findUserByID', async (req, res) => {
+  let user = require('../models/user.class');
+  const user_id = req.body.user_id
+  const ret = await user.findUserByID(user_id)
+  if (ret) {
+    res.json(ret)
+  }
+});
 
 module.exports = router 

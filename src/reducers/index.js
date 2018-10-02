@@ -6,9 +6,8 @@ import flashMessagesReducer from './reducer_flashMessages';
 import usersReducer from './reducer_users';
 import selectedUserReducer from './reducer_selectedUser';
 import filterUsersReducer from './reducer_filter';
-import profileConversationReducer from './reducer_conversation';
-import profileTchatIDReducer from './reducer_tchatProfile';
-import socketOnReducer from './reducer_socket';
+import socketReducer from './reducer_socket';
+import messagesReducer from './reducer_messages';
 import { UNAUTHENTICATED } from '../actions/actionUsers';
 
 // mapping of our state
@@ -20,9 +19,8 @@ const appReducer = combineReducers({
     users: usersReducer,
     selectedUser: selectedUserReducer,
     filterUsers: filterUsersReducer,
-    profileConversation : profileConversationReducer,
-    profileTchatID : profileTchatIDReducer,
-    socket : socketOnReducer
+    conversations: messagesReducer,
+    socket : socketReducer
 });
 
 const rootReducer = (state, action) => {
