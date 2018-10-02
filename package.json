@@ -74,6 +74,7 @@
     "express-session": "^1.15.6",
     "faker": "^4.1.0",
     "fetch": "^1.1.0",
+    "flatted": "^1.0.2",
     "fs": "0.0.1-security",
     "gender": "0.0.1",
     "geocoder": "^0.2.3",

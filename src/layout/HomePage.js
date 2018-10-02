@@ -11,6 +11,7 @@ import FlashMessagesList from '../components/FlashMessagesList';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import izitoast from 'izitoast';
+import {parse, stringify} from 'flatted/esm';
 // import io from 'socket.io-client';
 
 // const socket = io('http://localhost:8080', { transports: ['websocket'] });
