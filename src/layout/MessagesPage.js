@@ -1,11 +1,17 @@
 import React, { Component }  from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import izitoast from 'izitoast';
-import Match from '../containers/Match'
-import Conversation from '../containers/Conversation'
-import Tchat from '../containers/Tchat'
+import Match from '../containers/Match';
+import Conversation from '../containers/Conversation';
+import Tchat from '../containers/Tchat';
+import { joinSocket } from '../actions/actionNotifications';
 
 class MessagesPage extends Component {
+
+	componentDidMount() {
+		this.props.joinSocket(this.props.currentUser[0].user_id);
+	}
 
 	componentDidUpdate() {
 		if (this.props.socket.message != null) {
@@ -20,15 +26,16 @@ class MessagesPage extends Component {
 		return (
 			<div className="columns">
 				<aside className="column is-3 aside backgroundInfoUser">
-					{/* <div className="column"> */}
 					<p className="labelTchat">Match</p>
-						<div className="has-text-centered columnTchat ">
-							<Match />
-						</div>
-					{/* </div> */}
+					<div className="has-text-centered columnTchat ">
+						<Match />
+					</div>
 				</aside>
-				<div className="column is-9 hero is-medium">
+				<div className="column is-3 hero is-fullheigth">
 					<Conversation />
+				</div>
+				<div className="column is-6 hero is-fullheigth">
+					<Tchat />
 				</div>
 			</div>
 		);
@@ -37,8 +44,15 @@ class MessagesPage extends Component {
 
 function mapStateToProps(state) {
     return { 
+		currentUser: state.auth.currentUser,
 		socket: state.socket
     };
 }
 
-export default connect(mapStateToProps, null)(MessagesPage);
+function mapDispatchToProps(dispatch) {
+	return bindActionCreators({
+		joinSocket: joinSocket
+	}, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(MessagesPage);

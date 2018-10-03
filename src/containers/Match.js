@@ -6,7 +6,6 @@ import { bindActionCreators } from 'redux';
 import { getMatchProfiles } from '../selectors/index';
 import { fetchCurrentUser } from '../actions/actionUsers';
 import { requestMessages } from '../actions/actionConversations';
-import { joinSocket } from '../actions/actionNotifications';
 
 class Match extends Component {
 	constructor(props) {
@@ -16,7 +15,6 @@ class Match extends Component {
 
 	async componentDidMount() {
 		this.props.fetchCurrentUser();
-		this.props.joinSocket(this.props.currentUser[0].user_id);
 	}
 
 	async openConversation(user_id) {
@@ -79,8 +77,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({ 
 		fetchCurrentUser: fetchCurrentUser,
-		requestMessages: requestMessages,
-		joinSocket : joinSocket
+		requestMessages: requestMessages
     }, dispatch);
 }
 
