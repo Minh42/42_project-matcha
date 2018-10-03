@@ -13,8 +13,8 @@ export function joinRoom(conversationID) {
     };
 }
 
-export function sendDirectMessage(conversationID, participantID, directMessage) {
+export function sendDirectMessage(conversationID, participantID, input, messages) {
     return (dispatch, getState, {emit}) => {
-        emit(messageTypes.sendDirectMessage, {conversationID: conversationID, participantID: participantID, directMessage: directMessage});
+        emit(messageTypes.sendDirectMessage, {conversationID: conversationID, participantID: participantID, input: input, messages: messages});
     };
 }

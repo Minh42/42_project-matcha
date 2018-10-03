@@ -12,8 +12,8 @@ class Conversation extends Component {
 		super(props)
 		this.state = {
 			open: false,
-			messages: '',
 			conversation_id: '',
+			messages: '',
 			firstname: '',
 			lastname: '',
 			input: ''
@@ -42,16 +42,6 @@ class Conversation extends Component {
 	async componentDidUpdate() {
 		const objDiv = document.getElementsByClassName('BodyTchat');
 		objDiv.scrollTop = objDiv.scrollHeight;
-		if (this.props.chat.directMessage != undefined) {
-			var message = { 
-				firstname: this.props.currentUser[0].firstname,
-				lastname: this.props.currentUser[0].lastname,
-				imageProfile_path: this.props.currentUser[0].imageProfile_path,
-				message: this.props.chat.directMessage,
-				participant_id: this.props.currentUser[0].user_id
-			}
-			this.addMessage(message);
-		}
 	}
 
 	handleChange (event) {
@@ -65,28 +55,20 @@ class Conversation extends Component {
 		var conversation_id = this.state.conversation_id;
 		var participant_id = this.props.currentUser[0].user_id;
 		var input = this.state.input;
-		this.props.sendDirectMessage(conversation_id, participant_id, input);
+
 		var message = { 
 			firstname: this.props.currentUser[0].firstname,
 			lastname: this.props.currentUser[0].lastname,
 			imageProfile_path: this.props.currentUser[0].imageProfile_path,
-			message: input,
-			participant_id: this.props.currentUser[0].user_id
+			participant_id: this.props.currentUser[0].user_id,
+			message: input
 		}
 		this.addMessage(message);
-
-		// var currentUser = this.props.currentUser[0].user_id;
-		// var userList = this.props.socket.connectedUsers;
-		// var notifier_socketID;
-
-		// for(var i = 0; i < userList.length; i++) {
-		// 	if(userList[i].userID === currentUser) {
-		// 	  notifier_socketID = userList[i].socketID;
-		// 	}
-		// }
-
-		// var res = await axios.post('/api/findAllConversations');		
-		// this.props.requestMessages(res.data, currentUser, notifier_socketID);
+		console.log(this.props.chat.conversations)
+		var messages = this.props.chat.conversations[0].messages;
+		console.log(messages)
+		this.props.sendDirectMessage(conversation_id, participant_id, input, messages);
+		// this.setState({ messages: null });
 	}
 
 	addMessage(message) {
@@ -96,10 +78,10 @@ class Conversation extends Component {
 	}
 
 	openTchat(conversation) {
-		var messages = conversation.messages;
+		console.log(conversation)
 		this.setState ({
 			open: true,
-			messages: messages,
+			messages: conversation.messages,
 			conversation_id: conversation.conversation_id,
 			firstname: conversation.firstname,
 			lastname: conversation.lastname
@@ -108,8 +90,10 @@ class Conversation extends Component {
 	}
 
 	renderMessages() {
-		if (this.state.messages != '') {
-			console.log(this.state.messages)
+		console.log(this.state.messages)
+		console.log(this.props.chat.active)
+		if (this.state.messages != null && this.props.chat.active === null) {
+			console.log('i came here')
 			const messages = this.state.messages.map((message, i) => {
 				return (
 					<MessageComponent
@@ -126,13 +110,51 @@ class Conversation extends Component {
 				   { messages }
      		 	</div>
 			)
-
 		}
+		if (this.state.messages != null && this.props.chat.active) {
+			console.log('i came here 2')
+			const messages = this.props.chat.messages.map((message, i) => {
+				return (
+					<MessageComponent
+						key={i}
+						firstname={message.firstname}
+						lastname={message.lastname}
+						message={message.message}
+						from={message.participant_id}
+					/>
+				)
+			});
+			return (
+				<div className='messages' id='messageList'>
+				   { messages }
+     		 	</div>
+			)
+		}
+		// if (this.props.chat.messages != null) {
+		// 	console.log('but should be there')
+		// 	const messages = this.props.chat.messages.map((message, i) => {
+		// 		return (
+		// 			<MessageComponent
+		// 				key={i}
+		// 				firstname={message.firstname}
+		// 				lastname={message.lastname}
+		// 				message={message.message}
+		// 				from={message.participant_id}
+		// 			/>
+		// 		)
+		// 	});
+		// 	return (
+		// 		<div className='messages' id='messageList'>
+		// 		   { messages }
+     	// 	 	</div>
+		// 	)
+		// }
 	}
 
 	renderConversation() {
 		if (this.props.chat != null) {
 			return this.props.chat.conversations.map((conversation) => {
+				console.log(this.props.chat.conversations)
 				if (conversation.messages.length > 0) {
 					var len = conversation.messages.length;
 					var message;

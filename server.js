@@ -106,6 +106,7 @@ io.sockets.on('connection', function (socket) {
         profilePicture: profilePicture,
         messages: message
       })
+
     }
     io.to(data.notifier_socketID).emit('sendMessages', conversations);
   })
@@ -117,9 +118,10 @@ io.sockets.on('connection', function (socket) {
   socket.on('sendDirectMessage', async function(data) {
     console.log(data.conversationID)
     console.log(data.participantID)
-    console.log(data.directMessage)
-    await pool.query("INSERT INTO `message` SET `conversation_id` = ?, `participant_id` = ?, `message` = ?", [data.conversationID, data.participantID, data.directMessage]);
-    io.sockets.in(data.conversationID).emit('showDirectMessage', data.directMessage);
+    console.log(data.input)
+    console.log(data)
+    await pool.query("INSERT INTO `message` SET `conversation_id` = ?, `participant_id` = ?, `message` = ?", [data.conversationID, data.participantID, data.input]);
+    io.sockets.in(data.conversationID).emit('showDirectMessage', data.messages);
   })
 
   socket.on('disconnect', function() {

@@ -11,7 +11,8 @@ export default function (state = null, action) {
 		case messageTypes.showDirectMessage:
 			return {
 				...state,
-				directMessage: action.payload
+				messages: action.payload,
+				active: true
 			};
 		default:
 		  return state;
