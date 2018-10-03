@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { joinSocket } from '../actions/actionNotifications';
 import { requestMessages, joinRoom, showConversation } from '../actions/actionConversations';
 import ConversationComponent from '../components/ConversationComponent';
 
@@ -12,16 +13,20 @@ class Conversation extends Component {
 	}
 
 	async componentDidMount() {
+		this.props.joinSocket(this.props.currentUser[0].user_id);
 		var currentUser = this.props.currentUser[0].user_id;
 		var userList = this.props.socket.connectedUsers;
 		var notifier_socketID;
+
+		console.log(userList);
 
 		for(var i = 0; i < userList.length; i++) {
 			if(userList[i].userID === currentUser) {
 			  notifier_socketID = userList[i].socketID;
 			}
 		}
-		var res = await axios.post('/api/findAllConversations');		
+		var res = await axios.post('/api/findAllConversations');
+		console.log(notifier_socketID)
 		this.props.requestMessages(res.data, currentUser, notifier_socketID);
 	}
 
@@ -31,7 +36,6 @@ class Conversation extends Component {
 	}
 
 	renderConversation() {
-		console.log(this.props.chat.conversations)
 		if (this.props.chat != null) {
 			if(this.props.chat.conversations != null) {
 				return this.props.chat.conversations.map((conversation) => {
@@ -92,6 +96,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({ 
+		joinSocket: joinSocket,
 		joinRoom: joinRoom,
 		showConversation: showConversation,
 		requestMessages: requestMessages

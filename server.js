@@ -108,7 +108,9 @@ io.sockets.on('connection', function (socket) {
         messages: message
       })
     }
-    console.log(conversations)
+    console.log('im here')
+    console.log(data.notifier_socketID)
+    console.log('im here')
     io.to(data.notifier_socketID).emit('sendMessages', conversations);
   })
     

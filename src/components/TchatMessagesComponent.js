@@ -37,9 +37,7 @@ class TchatMessagesComponent extends Component {
 	}
 
 	renderMessages() {
-		console.log(this.props.socket.conversation)
 		if (this.props.socket.conversation != undefined) {		
-			console.log(this.props.socket.conversation.messages);
 			const messages = this.props.socket.conversation.messages.map((message, i) => {
 				return (
 					<MessageComponent
