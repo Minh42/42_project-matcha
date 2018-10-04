@@ -11,50 +11,34 @@ class TchatMessagesComponent extends Component {
 		super(props);
 	}
 
-	async componentDidMount() {
-		// var currentUser = this.props.currentUser[0].user_id;
-		// var userList = this.props.socket.connectedUsers;
-		// var notifier_socketID;
+	renderMessages() {	
+		var conversation_id = this.props.socket.conversation;
+		var conversations = this.props.chat.conversations;
 
-		// for(var i = 0; i < userList.length; i++) {
-		// 	if(userList[i].userID === currentUser) {
-		// 	  notifier_socketID = userList[i].socketID;
-		// 	}
-		// }
-
-		// var res = await axios.post('/api/findAllConversations');
-		// this.props.requestMessages(res.data, currentUser, notifier_socketID);
-
-
-
-		// console.log(this.props.socket.conversation)
-		// if (this.props.socket.conversation != undefined) {
-		// 	console.log('i came here')
-		// 	var conversation = this.props.socket.conversation;
-		// 	this.props.showConversation(conversation);
-		// }
-
-	}
-
-	renderMessages() {
-		if (this.props.socket.conversation != undefined) {		
-			const messages = this.props.socket.conversation.messages.map((message, i) => {
+		for (var i = 0; i < conversations.length; i++) {
+			if (conversations[i].conversation_id === conversation_id) {
+				const messages = conversations[i].messages.map((message, i) => {
+					return (
+						<MessageComponent
+							key={i}
+							firstname={message.firstname}
+							lastname={message.lastname}
+							message={message.message}
+							from={message.participant_id}
+						/>
+					)
+				});
 				return (
-					<MessageComponent
-						key={i}
-						firstname={message.firstname}
-						lastname={message.lastname}
-						message={message.message}
-						from={message.participant_id}
-					/>
+					<div className='messages' id='messageList'>
+					{ messages }
+					</div>
 				)
-			});
-			return (
-				<div className='messages' id='messageList'>
-				{ messages }
-				</div>
-			)
+			}
 		}
+
+	
+
+		
 	}
 
 	render() {
@@ -70,7 +54,8 @@ class TchatMessagesComponent extends Component {
 function mapStateToProps(state) {
     return { 
 		currentUser: state.auth.currentUser,
-		socket: state.socket
+		socket: state.socket,
+		chat: state.conversations
     };
 }
 

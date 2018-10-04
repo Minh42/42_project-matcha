@@ -68,11 +68,24 @@ var users = [];
 io.sockets.on('connection', function (socket) {
 
   socket.on('joinRequested', function(user_id) {
-    users.push({
-      userID: user_id,
-      socketID: socket.id
-    });
-    console.log(users);
+    if (users.length === 0) {
+      users.push({
+        userID: user_id,
+        socketID: socket.id
+      });
+    } else {
+      for (var i = 0; i < users.length ; i++) {
+        if (users[i].socketID === socket.id) {
+          break;
+        } else if (users[i].socketID != socket.id & i + 1 === users.length) {
+          users.push({
+            userID: user_id,
+            socketID: socket.id
+          });
+          break;
+        }
+      }
+    }
 
     let len = users.length;
     len--;
@@ -108,9 +121,6 @@ io.sockets.on('connection', function (socket) {
         messages: message
       })
     }
-    console.log('im here')
-    console.log(data.notifier_socketID)
-    console.log('im here')
     io.to(data.notifier_socketID).emit('sendMessages', conversations);
   })
     
@@ -120,7 +130,7 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('sendDirectMessage', async function(data) {
     await pool.query("INSERT INTO `message` SET `conversation_id` = ?, `participant_id` = ?, `message` = ?", [data.conversationID, data.participantID, data.input]);
-    io.sockets.in(data.conversationID).emit('showDirectMessage', data.conversation);
+    io.sockets.in(data.conversationID).emit('showDirectMessage', data.conversations);
   })
 
   socket.on('disconnect', function() {
@@ -132,3 +142,5 @@ io.sockets.on('connection', function (socket) {
     io.emit('userLeft', {users: users});
   })
 });
+
+

@@ -1,14 +1,13 @@
 import React, { Component }  from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import izitoast from 'izitoast';
 import Match from '../containers/Match';
+import { bindActionCreators } from 'redux';
+import { joinSocket } from '../actions/actionNotifications';
 import Conversation from '../containers/Conversation';
 import Tchat from '../containers/Tchat';
-import { joinSocket } from '../actions/actionNotifications';
 
 class MessagesPage extends Component {
-
 	componentDidMount() {
 		this.props.joinSocket(this.props.currentUser[0].user_id);
 	}
@@ -48,6 +47,7 @@ function mapStateToProps(state) {
 		socket: state.socket
     };
 }
+
 
 function mapDispatchToProps(dispatch) {
 	return bindActionCreators({

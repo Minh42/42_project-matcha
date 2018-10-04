@@ -21,13 +21,12 @@ class TchatInputComponent extends Component {
 	}
 
 	handleSubmit(e) {
-		e.preventDefault();
-		// console.log('avant:', this.props.socket.conversation)   
+		e.preventDefault(); 
 
-		var conversation_id = this.props.socket.conversation.conversation_id;
+		var conversation_id = this.props.socket.conversation;
 		var participant_id = this.props.currentUser[0].user_id;
 		var input = this.state.input;
-		var conversation = this.props.socket.conversation;
+		var conversations = this.props.chat.conversations;
 		
 		var message = { 
 			firstname: this.props.currentUser[0].firstname,
@@ -36,9 +35,16 @@ class TchatInputComponent extends Component {
 			participant_id: this.props.currentUser[0].user_id,
 			message: input
 		}
-		conversation.messages.push(message);
-		// console.log('apres:', conversation)
-		this.props.sendDirectMessage(conversation_id, participant_id, input, conversation);
+
+		for (var i = 0; i < conversations.length; i++) {
+			if (conversations[i].conversation_id === conversation_id) {
+				conversations[i].messages.push(message);
+			}
+		}
+
+		console.log(conversations)
+	
+		this.props.sendDirectMessage(conversation_id, participant_id, input, conversations);
 	}
 
 	render() {
@@ -58,7 +64,8 @@ class TchatInputComponent extends Component {
 function mapStateToProps(state) {
     return { 
 		currentUser: state.auth.currentUser,
-		socket: state.socket
+		socket: state.socket,
+		chat: state.conversations
     };
 }
 

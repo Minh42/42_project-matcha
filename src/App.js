@@ -22,7 +22,6 @@ import NotFound from './components/NotFound';
 setAuthorizationToken(localStorage.jwtToken);
 
 class App extends Component {
-
     componentDidMount() {
         this.props.fetchCurrentUser();
     }

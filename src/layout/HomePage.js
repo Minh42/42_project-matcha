@@ -14,7 +14,7 @@ import axios from 'axios';
 import izitoast from 'izitoast';
 
 class HomePage extends Component {
-    constructor(props) {
+    constructor(props) {    
 		super(props);
 	}
 

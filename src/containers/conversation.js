@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { joinSocket } from '../actions/actionNotifications';
 import { requestMessages, joinRoom, showConversation } from '../actions/actionConversations';
 import ConversationComponent from '../components/ConversationComponent';
 
@@ -13,7 +12,6 @@ class Conversation extends Component {
 	}
 
 	async componentDidMount() {
-		this.props.joinSocket(this.props.currentUser[0].user_id);
 		var currentUser = this.props.currentUser[0].user_id;
 		var userList = this.props.socket.connectedUsers;
 		var notifier_socketID;
@@ -32,12 +30,13 @@ class Conversation extends Component {
 
 	openTchat(conversation) {
 		this.props.joinRoom(conversation.conversation_id);
-		this.props.showConversation(conversation);
+		this.props.showConversation(conversation.conversation_id);
 	}
 
 	renderConversation() {
 		if (this.props.chat != null) {
 			if(this.props.chat.conversations != null) {
+				console.log(this.props.chat.conversations)
 				return this.props.chat.conversations.map((conversation) => {
 					if (conversation.messages.length > 0) {
 						var len = conversation.messages.length;
@@ -91,12 +90,12 @@ function mapStateToProps(state) {
 		currentUser: state.auth.currentUser,
 		socket: state.socket,
 		chat: state.conversations,
+		convers : state.convers
     };
 }
 
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({ 
-		joinSocket: joinSocket,
 		joinRoom: joinRoom,
 		showConversation: showConversation,
 		requestMessages: requestMessages

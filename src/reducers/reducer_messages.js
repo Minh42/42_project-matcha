@@ -11,7 +11,7 @@ export default function (state = null, action) {
 		case messageTypes.showDirectMessage:
 			return {
 				...state,
-				conversation: action.payload
+				conversations: action.payload
 			};
 		default:
 		  return state;
