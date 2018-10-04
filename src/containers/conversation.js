@@ -16,21 +16,17 @@ class Conversation extends Component {
 		var userList = this.props.socket.connectedUsers;
 		var notifier_socketID;
 
-		console.log(userList);
-
 		for(var i = 0; i < userList.length; i++) {
 			if(userList[i].userID === currentUser) {
 			  notifier_socketID = userList[i].socketID;
 			}
 		}
 		var res = await axios.post('/api/findAllConversations');
-		console.log(notifier_socketID)
 		this.props.requestConversations(res.data, currentUser, notifier_socketID);
 		this.props.requestMessages(res.data, currentUser, notifier_socketID);
 	}
 
 	openTchat(conversation) {
-		console.log(conversation)
 		this.props.joinRoom(conversation.conversation_id);
 		this.props.showConversation(conversation.conversation_id);
 	}
@@ -38,14 +34,13 @@ class Conversation extends Component {
 	renderConversation() {
 		if (this.props.chat != null) {
 			if(this.props.chat.conversations_list != null) {
-				console.log(this.props.chat.conversations_list)
 				return this.props.chat.conversations_list.map((conversation) => {
-					console.log(this.props.chat.conversations)
 					if (conversation.messages.length > 0) {
 						var len = conversation.messages.length;
 						var message;
 						conversation.messages[len - 1].participant_id === this.props.currentUser[0].user_id ? 
 						message = 'Vous: ' + conversation.messages[len - 1].message : message = conversation.messages[len - 1].message;
+						console.log(message)
 						return (
 							<ConversationComponent
 								key={conversation.conversation_id}

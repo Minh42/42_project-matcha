@@ -14,8 +14,6 @@ class TchatMessagesComponent extends Component {
 	renderMessages() {	
 		var conversation_id = this.props.socket.conversation;
 		var conversations = this.props.chat.conversations;
-		console.log(conversations)
-		console.log(conversation_id)
 		for (var i = 0; i < conversations.length; i++) {
 			if (conversations[i].conversation_id === conversation_id) {
 				const messages = conversations[i].messages.map((message, i) => {

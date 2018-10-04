@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { sendDirectMessage } from '../actions/actionConversations';
+import { sendDirectMessage, requestConversations } from '../actions/actionConversations';
 
 class TchatInputComponent extends Component {
 
@@ -39,10 +39,7 @@ class TchatInputComponent extends Component {
 			if (conversations[i].conversation_id === conversation_id) {
 				conversations[i].messages.push(message);
 			}
-		}
-
-		console.log(conversations)
-	
+		}	
 		this.props.sendDirectMessage(conversation_id, participant_id, input, conversations);
 	}
 
@@ -71,7 +68,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({ 
-		sendDirectMessage: sendDirectMessage
+		sendDirectMessage: sendDirectMessage,
+		requestConversations: requestConversations
     }, dispatch);
 }
 

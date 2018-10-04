@@ -147,6 +147,7 @@ io.sockets.on('connection', function (socket) {
         messages: message
       })
     }
+    console.log(conversations_list);
     io.to(data.notifier_socketID).emit('sendConversations', conversations_list);
   })
     
