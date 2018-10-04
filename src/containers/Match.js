@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getMatchProfiles } from '../selectors/index';
 import { fetchCurrentUser } from '../actions/actionUsers';
-import { requestMessages } from '../actions/actionConversations';
+import { requestMessages, requestConversations } from '../actions/actionConversations';
 
 class Match extends Component {
 	constructor(props) {
@@ -32,6 +32,7 @@ class Match extends Component {
 		}
 
 		var res = await axios.post('/api/findAllConversations');
+		this.props.requestConversations(res.data, currentUser, notifier_socketID);
 		this.props.requestMessages(res.data, currentUser, notifier_socketID);
 	}
 
@@ -77,7 +78,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({ 
 		fetchCurrentUser: fetchCurrentUser,
-		requestMessages: requestMessages
+		requestMessages: requestMessages,
+		requestConversations: requestConversations
     }, dispatch);
 }
 

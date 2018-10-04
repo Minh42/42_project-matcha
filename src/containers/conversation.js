@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { requestMessages, joinRoom, showConversation } from '../actions/actionConversations';
+import { requestMessages, requestConversations, joinRoom, showConversation } from '../actions/actionConversations';
 import ConversationComponent from '../components/ConversationComponent';
 
 class Conversation extends Component {
@@ -25,19 +25,22 @@ class Conversation extends Component {
 		}
 		var res = await axios.post('/api/findAllConversations');
 		console.log(notifier_socketID)
+		this.props.requestConversations(res.data, currentUser, notifier_socketID);
 		this.props.requestMessages(res.data, currentUser, notifier_socketID);
 	}
 
 	openTchat(conversation) {
+		console.log(conversation)
 		this.props.joinRoom(conversation.conversation_id);
 		this.props.showConversation(conversation.conversation_id);
 	}
 
 	renderConversation() {
 		if (this.props.chat != null) {
-			if(this.props.chat.conversations != null) {
-				console.log(this.props.chat.conversations)
-				return this.props.chat.conversations.map((conversation) => {
+			if(this.props.chat.conversations_list != null) {
+				console.log(this.props.chat.conversations_list)
+				return this.props.chat.conversations_list.map((conversation) => {
+					console.log(this.props.chat.conversations)
 					if (conversation.messages.length > 0) {
 						var len = conversation.messages.length;
 						var message;
@@ -98,7 +101,8 @@ function mapDispatchToProps(dispatch) {
     return bindActionCreators({ 
 		joinRoom: joinRoom,
 		showConversation: showConversation,
-		requestMessages: requestMessages
+		requestMessages: requestMessages,
+		requestConversations: requestConversations
     }, dispatch);
 }
 

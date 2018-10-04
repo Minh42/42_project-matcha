@@ -8,7 +8,9 @@ export const messageTypes = [
     'sendMessages',
     'joinRoom',
     'sendDirectMessage',
-    'showDirectMessage'
+    'showDirectMessage',
+    'requestConversations',
+    'sendConversations'
   ].reduce((accum, msg) => {
     accum[msg] = msg;
     return accum;

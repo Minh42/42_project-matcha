@@ -8,6 +8,12 @@ export function requestMessages(conversationIDs, currentUser, notifier_socketID)
     };
 }
 
+export function requestConversations(conversationIDs, currentUser, notifier_socketID) {
+    return (dispatch, getState, {emit}) => {
+        emit(messageTypes.requestConversations, {conversationIDs: conversationIDs, currentUser: currentUser, notifier_socketID: notifier_socketID});
+    };
+}
+
 export function joinRoom(conversationID) {
     return (dispatch, getState, {emit}) => {
         emit(messageTypes.joinRoom, conversationID);

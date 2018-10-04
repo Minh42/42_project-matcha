@@ -20,9 +20,8 @@ class TchatInputComponent extends Component {
 		})
 	}
 
-	handleSubmit(e) {
+	async handleSubmit(e) {
 		e.preventDefault(); 
-
 		var conversation_id = this.props.socket.conversation;
 		var participant_id = this.props.currentUser[0].user_id;
 		var input = this.state.input;
