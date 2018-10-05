@@ -100,18 +100,21 @@ router.get('/api/activationMail', function(req, res) {
 //SIGNIN
 router.post('/api/signin', function(req, res) {
   let user = require('../models/user.class');
-  let messages = {};
   let { username, password } = req.body;
-  user.login(username, password).then(function(ret) {
-    if (ret) {
-      user.searchByColName("username", username).then(function(ret) {
-        const token = jwt.sign({ user: ret }, config.jwtSecret);
-        res.json({token})
-      })
-    } else {
-      res.sendStatus(401);
-    }
-  })   
+  if (username === undefined || password === undefined) {
+    res.sendStatus(401);
+  } else {
+    user.login(username, password).then(function(ret) {
+      if (ret) {
+        user.searchByColName("username", username).then(function(ret) {
+          const token = jwt.sign({ user: ret }, config.jwtSecret);
+          res.json({token})
+        })
+      } else {
+        res.sendStatus(401);
+      }
+    })   
+  }
 })
 
 //FORGOT PASSWORD
@@ -170,7 +173,8 @@ router.get('/api/resetPassword', function(req, res) {
   let user = require('../models/user.class');
   var user_id = req.param('user_id');
   var token_reset = req.param('token_reset');
-
+  console.log(user_id);
+  console.log(token_reset);
   user.compareTokenReset(user_id, token_reset).then(function(ret) {
     if (ret) {
       res.redirect('/resetPassword/' + user_id);

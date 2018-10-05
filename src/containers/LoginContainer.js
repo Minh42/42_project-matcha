@@ -4,11 +4,20 @@ import { signInAction } from '../actions/actionUsers';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import LinkButton from "../components/LinkButton";
 import PropTypes from 'prop-types';
 import Button from '../components/Button';
 
-class LoginContainer extends Component {    
+class LoginContainer extends Component {
+    
+    componentDidMount() {
+        const initData = {
+            "username": null,
+            "password": null
+        };
+        this.props.initialize(initData);
+    }
+
     renderField(field) {
         const { meta: { touched, error } } = field;
         const danger = `input ${touched && error ? 'is-danger' : ''}`;
@@ -50,13 +59,17 @@ class LoginContainer extends Component {
         }
     }
 
+
+    handleModal() {
+        document.getElementById('modal_signin').classList.remove("is-active");
+    }
+
     render () {
         
         const { handleSubmit } = this.props;
 
         return (
             <form name="signing" className="signin" onSubmit={handleSubmit(this.onSubmit.bind(this))}>
-                {this.errorMessage()}
                 <Field
                     label="Username"
                     name="username"
@@ -73,6 +86,7 @@ class LoginContainer extends Component {
                     placeholder="Password"
                     component={this.renderField}
                 />
+                {this.errorMessage()}
                 <div className="field">
                     <div>
                         <p className="control">
@@ -81,7 +95,7 @@ class LoginContainer extends Component {
                     </div>
                     <div>
                         <p className="control">
-                            <Link to="/forgotPassword">Forgot password ?</Link>  
+                            <LinkButton to='/forgotPassword' onClick={this.handleModal}>Forgot password ?</LinkButton>
                         </p>
                     </div>
                 </div>

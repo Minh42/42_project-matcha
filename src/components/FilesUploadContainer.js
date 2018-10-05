@@ -1,12 +1,8 @@
 import React, { Component } from 'react';
 import Dropzone from 'react-dropzone';
 import axios from 'axios';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import ImageList from './ImageList';
-import FlashMessagesList from './FlashMessagesList';
-import { addFlashMessage } from '../actions/actionMessages';
+import izitoast from 'izitoast';
 
 class FilesUploadContainer extends Component {
     constructor(props) {
@@ -70,17 +66,17 @@ class FilesUploadContainer extends Component {
             files: this.state.files.concat(`http://localhost:8080/${res.data.file}`),
           });
         } else {
-          this.props.addFlashMessage({
-            type: '',
-            text: res.data.error
+          izitoast.show({
+            message: res.data.error,
+            position: 'topRight'
           });
         }
       }
       else {
-        this.props.addFlashMessage({
-					type: '',
-					text: 'You can upload only 5 photos'
-				});
+        izitoast.show({
+          message: 'You can upload only 5 photos',
+          position: 'topRight'
+        });
       }
     }
 
@@ -112,10 +108,10 @@ class FilesUploadContainer extends Component {
           }
           this.setState(newState); 
         } else {
-          this.props.addFlashMessage({
-					  type: '',
-					  text: res.data.error
-				  });
+          izitoast.show({
+            message: res.data.error,
+            position: 'topRight'
+          });
         }
       }
     }
@@ -152,7 +148,6 @@ class FilesUploadContainer extends Component {
       };
       return (
           <div>
-            <FlashMessagesList />
             <br/>
             { this.renderProfilePic() }
             <div>
@@ -175,12 +170,4 @@ class FilesUploadContainer extends Component {
     }
 }
 
-FilesUploadContainer.propTypes = {
-  addFlashMessage: PropTypes.func.isRequired
-}
-
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ addFlashMessage: addFlashMessage}, dispatch);
-}
-  
-export default connect(null, mapDispatchToProps)(FilesUploadContainer);
+export default FilesUploadContainer;
