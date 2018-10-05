@@ -42,7 +42,7 @@ class Header extends Component {
             return [
                 <Button key="login" className="button is-rounded btn btn-login" title="Sign In" action={this.showModal}/>
             ];
-        } else if (this.props.auth.authenticated && this.props.auth.onboarding) {
+        } else if (!this.props.auth.authenticated && this.props.auth.onboarding) {
             return;
         } else if (this.props.auth.authenticated) {
             switch (this.props.auth.authenticated) {

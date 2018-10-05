@@ -37,8 +37,8 @@ class App extends Component {
                         <Route path="/messages" component={requireAuth(MessagesPage)} />
                         <Route path="/forgotPassword" component={ForgotPassword} />
                         <Route path="/resetPassword/:login" component={ResetPassword} />
-                        <Route path="/profile" component={UserProfile} />
-                        <Route path="/otherProfile/:id" component={profileOtherUser} />
+                        <Route path="/profile" component={requireAuth(UserProfile)} />
+                        <Route path="/otherProfile/:id" component={requireAuth(profileOtherUser)} />
                         <Route path="/onboarding" component={Onboarding} />
                         <Route component={NotFound} />
                     </Switch>

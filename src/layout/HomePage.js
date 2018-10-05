@@ -4,11 +4,10 @@ import Filters from '../containers/Filters';
 import SortBy from '../containers/SortBy';
 import SearchTags from '../containers/SearchTags';
 import { connect } from 'react-redux';
-import { setUnOnboarding, addFlashMessage } from '../actions/actionUsers';
+import { setOnboarding, setUnOnboarding } from '../actions/actionUsers';
 import { joinSocket } from '../actions/actionNotifications';
 import { bindActionCreators } from 'redux';
 import { withRouter } from 'react-router-dom';
-import FlashMessagesList from '../components/FlashMessagesList';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import izitoast from 'izitoast';
@@ -21,6 +20,7 @@ class HomePage extends Component {
 	async componentDidMount() {
 		const res = await axios.get('/api/onboarding');
 		if(res.data) {
+			this.props.setOnboarding();
 			this.props.history.push('/onboarding');
 		} else {
 			this.props.setUnOnboarding();
@@ -54,7 +54,6 @@ class HomePage extends Component {
 				</div>
 			</aside>
 			<div className="column is-8 messages hero is-fullheight" id="message-feed">
-					<FlashMessagesList />
 					<UsersContainer />
 			</div>
 		</div>
@@ -64,8 +63,8 @@ class HomePage extends Component {
 HomePage.propTypes = {
 	// currentUser: PropTypes.array.isRequired,
 	// socket: PropTypes.node.isRequired,
+	setOnboarding: PropTypes.func.isRequired,
 	setUnOnboarding: PropTypes.func.isRequired,
-	addFlashMessage: PropTypes.func.isRequired,
 	joinSocket: PropTypes.func.isRequired,
 };
 
@@ -78,8 +77,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
 	return bindActionCreators({
+		setOnboarding: setOnboarding,
 		setUnOnboarding: setUnOnboarding,
-		addFlashMessage: addFlashMessage,
 		joinSocket: joinSocket
 	}, dispatch);
 }
