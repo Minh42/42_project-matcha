@@ -113,12 +113,12 @@ function validate(values) {
 	if (!values.firstName)
 		errors.firstName = "Please enter your firstname";
 	else if (!check.isFirstname(values.firstName))
-		errors.firstName = "Firstname must contain only alphabetic characters";
+		errors.firstName = "Firstname must contain between 1 and 32 alphabetic characters";
 
 	if (!values.lastName)
 		errors.lastName = "Please enter your lastname";
 	else if (!check.isLastname(values.lastName))
-		errors.lastName = "Lastname must contain only alphabetic characters";
+		errors.lastName = "Lastname must contain between 1 and 32 alphabetic characters";
 
 	if (!values.login)
 		errors.login = "Please enter your username";

@@ -91,7 +91,6 @@ export function signUpAction(values, history) {
 			}
 		}		
 		catch (error) {
-			console.log('failed');
 			dispatch({
 				type: REGISTERATION_FAILED,
 				payload: 'Registeration failed'
