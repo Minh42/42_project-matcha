@@ -71,6 +71,7 @@ export function signUpAction(values, history) {
 	return async (dispatch) => {
 		try {
 			const res = await axios.post('/api/signup', values);
+			console.log(res.data.error)
 			if (res.data.success === "success")
 			{
 				dispatch({ 
@@ -83,6 +84,20 @@ export function signUpAction(values, history) {
 				// history.push('/success');
 			}
 			if (res.data.error !== null)
+			{
+				dispatch({ 
+					type: REGISTERATION_ERROR,
+					payload : res.data.error
+				});
+			}
+			if (res.data.error === "Please enter all the informations")
+			{
+				dispatch({ 
+					type: REGISTERATION_ERROR,
+					payload : res.data.error
+				});
+			}
+			if (res.data.error === "Your passwords not match")
 			{
 				dispatch({ 
 					type: REGISTERATION_ERROR,

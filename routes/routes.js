@@ -40,42 +40,53 @@ router.post('/api/signup', checkSignupValidation, function(req, res) {
   let check = require('../library/tools');
   let messages = {};
 
-  var hashNewPassword = check.isHash(req.body.newPassword);
-  let token = jwt.sign( {  foo : req.body.login } , config.jwtSecret );
+  if (req.body.newPassword)
+  {
+    if (req.body.newPassword === req.body.confirmedPassword) {
+      var hashNewPassword = check.isHash(req.body.newPassword);
+      let token = jwt.sign( {  foo : req.body.login } , config.jwtSecret );
 
-  user.addUser(req.body.firstName, req.body.lastName, req.body.login, req.body.email, hashNewPassword, token)
-    .then(function(ret) {
-      if (ret) {
-        var mail = {
-					from: "matcha.appli@gmail.com",
-					to: req.body.email,
-					subject: "Welcome to  Matcha",
-          html: '<h3> Hello ' + req.body.firstName + '</h3>' +
-          '<p>To activate your account, please click on the link below.</p>' +
-          '<p>http://localhost:3000/api/activationMail?login='+ req.body.login +'&token=' + token + '</p>' +
-          '<p> --------------- /p>' +
-          '<p>This is an automatic mail, Please do not reply.</p>'
-        }
+      user.addUser(req.body.firstName, req.body.lastName, req.body.login, req.body.email, hashNewPassword, token)
+        .then(function(ret) {
+          if (ret) {
+            var mail = {
+              from: "matcha.appli@gmail.com",
+              to: req.body.email,
+              subject: "Welcome to  Matcha",
+              html: '<h3> Hello ' + req.body.firstName + '</h3>' +
+              '<p>To activate your account, please click on the link below.</p>' +
+              '<p>http://localhost:3000/api/activationMail?login='+ req.body.login +'&token=' + token + '</p>' +
+              '<p> --------------- /p>' +
+              '<p>This is an automatic mail, Please do not reply.</p>'
+            }
+            
+            transporter.sendMail(mail, function (err, info) {
+              if(err)
+                console.log(err)
+              else
+                console.log(info);
+          });
+          
+            messages.error = null;
+            messages.success = "success";
         
-        transporter.sendMail(mail, function (err, info) {
-          if(err)
-            console.log(err)
-          else
-            console.log(info);
-       });
-       
-        messages.error = null;
-        messages.success = "success";
-    
-        res.send(messages);
-      }
-      else {
-        console.log('error');
-      }
-    })
-    .catch(err => {
-			console.error('loginExists error: ', err);
-		})
+            res.send(messages);
+          }
+          else {
+            console.log('error');
+          }
+        })
+        .catch(err => {
+          console.error('loginExists error: ', err);
+        })
+    } else {
+      messages.error = "Your passwords not match";
+      res.send(messages);
+    }
+  } else {
+    messages.error = "Please enter all the informations";
+    res.send(messages);
+  }
 })
 
 //ACTIVATIOM BY EMAIL
