@@ -54,16 +54,16 @@ class Header extends Component {
                     ];
                 default:
                     return [
-                        <p key="homepage" className="control">
+                        <p key="homepage" className="control navbar-item">
                             <Link to="/homepage"><Button className="button buttonHeader" title=" Homepage"/></Link>
                         </p>,
-                        <p key = "messages" className="control">
+                        <p key = "messages" className="control navbar-item">
                             <Link to="/messages"><Button className="button buttonHeader" title="My messages"/></Link>
                         </p>,
-                        <p key = "profile" className="control">
+                        <p key = "profile" className="control navbar-item">
                             <LinkButton to='/profile' className="button buttonHeader">My profile</LinkButton>
                         </p>,
-                        <p key = "logout" className="control">
+                        <p key = "logout" className="control navbar-item">
                             <LinkButton to='/' onClick={this.handleLogout} className="button buttonHeader">Signout</LinkButton>
                         </p>
                     ];
@@ -85,7 +85,7 @@ class Header extends Component {
                        <span> MATCHA </span>
                     </a>
 
-                    <div className="navbar-burger burger" data-target="mobile-app">
+                    <div id="navbar-burger-id" class="navbar-burger">
                         <span></span>
                         <span></span>
                         <span></span>
@@ -98,10 +98,10 @@ class Header extends Component {
                 </div>
 
                 <div className="navbar-end">
-                    <div className="navbar-item">
-                        <div className="field is-grouped">
-							{this.showNavbar()}
-					</div>
+                    <div id="navbar-menu-id" className="navbar-menu">
+                        <div className="navbar-start navbar-item">
+                            {this.showNavbar()}
+                        </div>
                     </div>
                     <div className="modal" id='modal_signin'>
 			        <div className="modal-background"></div>
