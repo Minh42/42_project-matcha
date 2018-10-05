@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { sendDirectMessage, requestConversations } from '../actions/actionConversations';
+import { sendNotification } from '../actions/actionNotifications';
+import axios from 'axios';
 
 class TchatInputComponent extends Component {
 
@@ -35,12 +37,52 @@ class TchatInputComponent extends Component {
 			message: input
 		}
 
+		var user_id_send;
 		for (var i = 0; i < conversations.length; i++) {
 			if (conversations[i].conversation_id === conversation_id) {
+				user_id_send = conversations[i].user_id;
 				conversations[i].messages.push(message);
 			}
 		}	
 		this.props.sendDirectMessage(conversation_id, participant_id, input, conversations);
+
+		var notificationData = {
+			action_type: "add message",
+			entity_type_id: 5,
+			entity_id: 6,
+			actor_id: participant_id,
+			notifier_id: user_id_send
+		}
+		console.log(notificationData)
+		const res = await axios.post('/api/notificationMessage', notificationData)
+		console.log(res.data)
+		var notification_object_id = res.data;
+		if (res.data) {
+			const ret = await axios.post('/api/lastNotification', { "notification_object_id" : notification_object_id })
+			var firstname = ret.data.firstname;
+			var lastname = ret.data.lastname;
+			var entity_type_id = ret.data.entity_type_id;
+			var notifier_id = ret.data.notifier_id;
+			
+			var userList = this.props.socket.connectedUsers;
+			var socketID = this.props.socket.socketID;
+			var notifier_socketID;
+
+			for(var i = 0; i < userList.length; i++) {
+				if(userList[i].userID === notifier_id) {
+				notifier_socketID = userList[i].socketID;
+				}
+			}
+
+			if (notifier_socketID != null) {
+				if (entity_type_id === 5) {
+					var message = firstname + " " + lastname + " send you a message."
+					console.log(message)
+					console.log(notifier_socketID)
+					this.props.sendNotification(notifier_socketID, message);
+				}
+			}
+		}
 	}
 
 	render() {
@@ -69,7 +111,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({ 
 		sendDirectMessage: sendDirectMessage,
-		requestConversations: requestConversations
+		requestConversations: requestConversations,
+		sendNotification: sendNotification
     }, dispatch);
 }
 

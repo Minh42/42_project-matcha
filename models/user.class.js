@@ -701,6 +701,7 @@ class User {
     static async addUserViews(current_user, user_id) {
         try {
             let ret = await pool.query("INSERT INTO `views` SET `from_user_id` = ?, `to_user_id` = ? ", [current_user, user_id]);
+            console.log('views info:', ret)
             if (ret) {
                 var notificationData = {
                 action_type: "add view",
@@ -861,6 +862,7 @@ class User {
             await pool.query("INSERT INTO `notification_change` SET `notification_object_id` = ?, `actor_id` = ? ", [notification_object_id, actor_id]);
             await pool.query("INSERT INTO `notification` SET `notification_object_id` = ?, `notifier_id` = ? ", [notification_object_id, notifier_id]);
             if (ret) {
+                console.log(notification_object_id)
                 return notification_object_id;
             }
         } catch(err) {

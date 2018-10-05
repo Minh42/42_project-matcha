@@ -953,7 +953,7 @@ router.get('/api/searchLikeProfileUser', authenticate, (req, res) => {
     .then((ret) => {
       res.json(ret)
     })
-})
+});
 
 router.post('/api/lastNotification', authenticate, async (req, res) => {
   let notification_object_id = req.body.notification_object_id;
@@ -971,6 +971,15 @@ router.post('/api/findUserByID', async (req, res) => {
   if (ret) {
     res.json(ret)
   }
+});
+
+router.post('/api/notificationMessage', authenticate, async (req, res) => {
+    let user = require('../models/user.class');
+    console.log(req.body)
+    const ret = await user.insertNotification(req.body.entity_type_id, req.body.entity_id, req.body.actor_id, req.body.notifier_id);
+    if (ret) {
+      res.json(ret)
+    }
 });
 
 module.exports = router 

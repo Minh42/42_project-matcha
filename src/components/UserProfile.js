@@ -81,6 +81,7 @@ class UserProfile extends Component {
                 document.getElementById(this.props.id).style.color = "grey";
             }
             var notificationData = res.data;
+            console.log('notiflike:', notificationData)
             const ret = await axios.post('/api/notifications', notificationData);
             var notification_object_id = ret.data;
             if (ret.data) {
