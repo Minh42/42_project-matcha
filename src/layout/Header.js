@@ -37,42 +37,36 @@ class Header extends Component {
     }
 
     showNavbar() {
-    if (this.props.auth) {
-        if (!this.props.auth.authenticated && this.props.auth.onboarding === undefined) {
-            return [
-                <Button key="login" className="button is-rounded btn btn-login" title="Sign In" action={this.showModal}/>
-            ];
-        } else if (!this.props.auth.authenticated && this.props.auth.onboarding) {
-            return;
-        } else if (this.props.auth.authenticated) {
-            switch (this.props.auth.authenticated) {
-                case null:
-                    return;
-                case false:
-                    return [
-                        <Button key="login" className="button is-rounded btn btn-login" title="Sign In" action={this.showModal}/>
-                    ];
-                default:
-                    return [
-                        <p key="homepage" className="control navbar-item">
-                            <Link to="/homepage"><Button className="button buttonHeader" title=" Homepage"/></Link>
-                        </p>,
-                        <p key = "messages" className="control navbar-item">
-                            <Link to="/messages"><Button className="button buttonHeader" title="My messages"/></Link>
-                        </p>,
-                        <p key = "profile" className="control navbar-item">
-                            <LinkButton to='/profile' className="button buttonHeader">My profile</LinkButton>
-                        </p>,
-                        <p key = "logout" className="control navbar-item">
-                            <LinkButton to='/' onClick={this.handleLogout} className="button buttonHeader">Signout</LinkButton>
-                        </p>
-                    ];
+    if(this.props.history.location.pathname === '/onboarding') {
+        return;
+    } else {
+        if (this.props.auth) {
+            if (this.props.auth.authenticated != undefined) {
+                switch (this.props.auth.authenticated) {
+                    case null:
+                        return;
+                    case false:
+                        return [
+                            <Button key="login" className="button is-rounded btn btn-login" title="Sign In" action={this.showModal}/>
+                        ];
+                    default:
+                        return [
+                            <p key="homepage" className="control navbar-item">
+                                <Link to="/homepage"><Button className="button buttonHeader" title=" Homepage"/></Link>
+                            </p>,
+                            <p key = "messages" className="control navbar-item">
+                                <Link to="/messages"><Button className="button buttonHeader" title="My messages"/></Link>
+                            </p>,
+                            <p key = "profile" className="control navbar-item">
+                                <LinkButton to='/profile' className="button buttonHeader">My profile</LinkButton>
+                            </p>,
+                            <p key = "logout" className="control navbar-item">
+                                <LinkButton to='/' onClick={this.handleLogout} className="button buttonHeader">Signout</LinkButton>
+                            </p>
+                        ];
+                    }
                 }
-            }
-        } else {
-            return [
-                <Button key="login" className="button is-rounded btn btn-login" title="Sign In" action={this.showModal}/>
-            ];  
+            } 
         }
     }
 

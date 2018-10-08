@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import SignupContainer from '../containers/SignupContainer';
-import FlashMessagesList from '../components/FlashMessagesList';
-import image from '../../public/img/test.jpg';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
 
 class LandingPage extends Component {
     
@@ -21,14 +18,8 @@ class LandingPage extends Component {
                 <section className="hero is-fullheight">
                     <div className="hero-body firstPage">
                         <div className="container">
-                            <FlashMessagesList />
-                            <div className="columns">
-                                {/* <div className="column is-4 is-offset-1">
-                                    <img src={image} alt="image" class="responsive-image"/>
-                                </div> */}
-                                <div className="column">
-                                    <SignupContainer />
-                                </div>
+                            <div className="column">
+                                <SignupContainer />
                             </div>
                         </div>
                     </div>

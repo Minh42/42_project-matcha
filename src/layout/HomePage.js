@@ -20,10 +20,8 @@ class HomePage extends Component {
 	async componentDidMount() {
 		const res = await axios.get('/api/onboarding');
 		if(res.data) {
-			this.props.setOnboarding();
 			this.props.history.push('/onboarding');
 		} else {
-			this.props.setUnOnboarding();
 			this.props.joinSocket(this.props.currentUser[0].user_id);
 		}
 	}

@@ -22,7 +22,6 @@ class WizardForm extends Component {
   }
 
   async componentDidMount() {
-    this.props.setOnboarding();
     const res = await axios.get('/api/onboarding');
     if (!res.data) {
       this.props.fetchCurrentUser().then(() => {

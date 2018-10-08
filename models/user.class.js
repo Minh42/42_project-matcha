@@ -176,6 +176,10 @@ class User {
     static async compareTokenReset(user_id, token_reset) {
         try {
             let ret = await pool.query("SELECT `token_reset` FROM `users` WHERE `user_id` = ?", [user_id]);
+            console.log('im here')
+            console.log(ret[0].token_reset)
+            console.log(token_reset)
+            console.log('im here')
             if (ret[0].token_reset === token_reset)
                 return true;
             else
@@ -213,18 +217,22 @@ class User {
     static async login(username, password) {
         try {
             let ret = await pool.query('SELECT * FROM `users` WHERE `username` = ? LIMIT 1', [username]);
-            let hash = ret[0]['password'];
-            if(Object.keys(ret).length > 0 && ret[0]['status'] === 1) {
-                const res = await bcrypt.compare(password, hash);
-                if(res) {
-                    console.log('Passwords match');
-                    return true;
-                } else {
-                    console.log('Passwords don\'t match');
+            if (ret[0] != undefined) {
+                let hash = ret[0]['password'];
+                if(Object.keys(ret).length > 0 && ret[0]['status'] === 1) {
+                    const res = await bcrypt.compare(password, hash);
+                    if(res) {
+                        console.log('Passwords match');
+                        return true;
+                    } else {
+                        console.log('Passwords don\'t match');
+                        return false;
+                    } 
+                }
+                else {
                     return false;
-                } 
-            }
-            else {
+                }
+            } else {
                 return false;
             }
         } catch(err) {
@@ -250,12 +258,18 @@ class User {
 
     static async changeUserInfo(user_id, login, firstname, lastname, email) {
         try {
-            let ret = await pool.query("UPDATE `users` SET `username` = ?, `firstname` = ?, `lastname` = ?, `email`= ? WHERE `user_id` = ?", [login, firstname, lastname, email, user_id]);
-            if (ret) {
+            let ret1 = await pool.query("SELECT username FROM `users` WHERE `user_id` = ?", [user_id]);
+            let ret2 = await pool.query("SELECT count(*) as value_exists FROM `users` WHERE `username` = ?", [login]);
+            if (ret1[0].username === login) {
+                await pool.query("UPDATE `users` SET `username` = ?, `firstname` = ?, `lastname` = ?, `email`= ? WHERE `user_id` = ?", [login, firstname, lastname, email, user_id]);
                 return true;
-            }
-            else {
-                return false;
+            } else {
+                if (ret2[0].value_exists > '0') {         
+                    return false;
+                } else {
+                    await pool.query("UPDATE `users` SET `username` = ?, `firstname` = ?, `lastname` = ?, `email`= ? WHERE `user_id` = ?", [login, firstname, lastname, email, user_id]);
+                    return true;
+                }
             }
         }
         catch(err) {

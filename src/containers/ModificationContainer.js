@@ -9,7 +9,8 @@ class ModificationContainer extends React.Component{
 	constructor() {
         super()
         this.state = {
-            messagesSuccess : ""
+			messagesSuccess : "",
+			messagesErrors: ""
         }
     }
 
@@ -33,6 +34,23 @@ class ModificationContainer extends React.Component{
 			this.setState({
 				messagesSuccess: 'modifications changed'
 			})
+		} else if (res.data === "failure") {
+			this.setState({
+				messagesErrors: 'please use a unique username or email'
+			})
+		}
+	}
+
+	renderMessages() {
+		if (this.state.messagesSuccess) {
+			return (
+				<p className="help is-success">{this.state.messagesSuccess}</p>
+			)
+		}
+		if (this.state.messagesErrors) {
+			return (
+				<p className="help is-danger">{this.state.messagesErrors}</p>	
+			)
 		}
 	}
 
@@ -70,7 +88,7 @@ class ModificationContainer extends React.Component{
 				component= {renderField}
 				placeholder="Email"
 			/>
-			<p className="help is-success">{this.state.messagesSuccess}</p>
+	         { this.renderMessages() }
 			<Button type="submit" className="button is-small is-fullwidth buttonOnboarding" title="Change these informations"/>
 			</form>
 	)}

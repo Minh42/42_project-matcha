@@ -173,8 +173,6 @@ router.get('/api/resetPassword', function(req, res) {
   let user = require('../models/user.class');
   var user_id = req.param('user_id');
   var token_reset = req.param('token_reset');
-  console.log(user_id);
-  console.log(token_reset);
   user.compareTokenReset(user_id, token_reset).then(function(ret) {
     if (ret) {
       res.redirect('/resetPassword/' + user_id);
@@ -720,7 +718,12 @@ router.post('/api/modifData', authenticate, (req, res) => {
   const email = req.body.email
   user.changeUserInfo(user_id, login, firstname, lastname, email)
     .then(function(ret) {
-      res.send("success");
+      if (ret) {
+        res.send("success");
+      }
+      else {
+        res.send("failure");
+      }
     })
 })
 
@@ -800,7 +803,13 @@ router.get('/api/searchLikeProfileUser', authenticate, (req, res) => {
 router.post('/api/savePicture', authenticate, (req, res) => {
   let user = require('../models/user.class');
   var user_id = req.currentUser[0].user_id;
-  var path = req.body.picture.replace('http://localhost:8080/', '');
+  var path;
+  if (req.body.picture.includes("cloudinary")) {
+    path = req.body.picture;
+  } else {
+    path = req.body.picture.replace('http://localhost:8080/', '');
+  }
+  console.log(path)
   user.addProfilePicture(user_id, path).then((ret) => {
     res.send("success");
   })

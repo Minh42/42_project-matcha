@@ -16,12 +16,25 @@ class FilesUploadContainer extends Component {
 
     async componentDidMount() {
       const res = await axios.get('/api/displayPicture');
-      if (res.data) {
-        res.data.map((file) => {
-          this.setState({
-            files: this.state.files.concat(`http://localhost:8080/${file.image_path}`),
-          });
-        })
+      if (res.data[0]) {
+        var user = this.props;        
+        if (res.data[0].image_path === null) {
+          if (user.user.imageProfile_path.includes('cloudinary')) {
+            this.setState({
+              files: this.state.files.concat(user.user.imageProfile_path),
+            });
+          } else {
+            this.setState({
+              files: this.state.files.concat(`http://localhost:8080/${user.user.imageProfile_path}`),
+            });
+          }
+        } else {
+          res.data.map((file) => {
+            this.setState({
+              files: this.state.files.concat(`http://localhost:8080/${file.image_path}`),
+            });
+          })
+        }
         if (this.state.files[0]) {
           if (document.getElementById("next")) {
             document.getElementById("next").disabled = false;
@@ -58,7 +71,6 @@ class FilesUploadContainer extends Component {
         const data = new FormData();
         data.append('file', files[0]);
         data.append('filename', files[0].name);
-  
         const res = await axios.post('/api/upload', data);
         if (res.data.file) {
           this.setState({
@@ -83,10 +95,17 @@ class FilesUploadContainer extends Component {
     renderProfilePic() {
       var count = Object.keys(this.state.files).length;
       if (count > 0) {
+        if (this.state.files[0].includes("cloudinary")) {
+          var path = this.state.files[0];
+        } else if (this.state.files[0].includes("localhost")) {
+          var path = this.state.files[0];
+        } else {
+          var path = 'http://localhost:8080/' + this.state.files[0];
+        }
         return (
           <div className="columns">
             <div className="column is-6 is-offset-3">
-                <img src={this.state.files[0]} alt="Placeholder image"/>
+                <img src={path} alt="Placeholder image"/>
             </div>
           </div>
         )
@@ -124,19 +143,32 @@ class FilesUploadContainer extends Component {
         border: "8px solid rgba(255,255,255,.5)",
         borderRadius: 20
       };
-      return this.state.files.map((file) => {
-        const uuidv4 = require('uuid/v4');
-        var id = uuidv4();
-        return (
+      if (this.state.files.length > 0) {
+        if (this.state.files.includes('cloudinary')) {
+          return (
             <ImageList
-                key={id}
-                src={file}
-                style={style}
-                alt="preview"
-                removePicture={this.removePicture.bind(this)} 
-            />
-        );
-    });
+            src={this.state.files}
+            style={style}
+            alt="preview"
+            removePicture={this.removePicture.bind(this)} 
+          />
+          )
+        } else {
+          return this.state.files.map((file) => {
+            const uuidv4 = require('uuid/v4');
+            var id = uuidv4();
+            return (
+                <ImageList
+                    key={id}
+                    src={file}
+                    style={style}
+                    alt="preview"
+                    removePicture={this.removePicture.bind(this)} 
+                />
+            );
+          });
+        }
+      }
     }
 
     render() {

@@ -11,7 +11,7 @@ class Filters extends Component {
 	
 		this.state = {
 		  valueAge: {
-			min: 18,
+			min: 0,
 			max: 100,
 		  },
 		  valueDistance: {
@@ -43,6 +43,10 @@ class Filters extends Component {
 				max: (this.props.popularityRange === undefined) ? 100 : this.props.popularityRange.max,
 				},
 			})
+		}
+
+		componentDidUpdate() {
+			console.log(this.state)
 		}
 
 	  handleAge(values) {

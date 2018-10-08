@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import axios from 'axios';
 import moment from 'moment';
 import { connect } from 'react-redux';
@@ -13,27 +12,38 @@ class UserProfileContainer extends Component {
             blocked : "",
             reported : ""
         }
+        this.signal = axios.CancelToken.source();
         this.handleReport = this.handleReport.bind(this);
         this.handleBlock = this.handleBlock.bind(this);
     }
     
     async componentDidMount() {
-        var user_id = this.props.id;
-        const res1 = await axios.get('/api/showBlockProfile/?user_id=' + user_id);
-        var block_status = res1.data;
-        const res2 = await axios.get('/api/showReportProfile/?user_id=' + user_id);
-        var report_status = res2.data;
-        if (block_status === "blocked") {
-            this.setState({ blocked: true });
-        } else if (block_status === "unblocked") {
-            this.setState({ blocked: false });
-        }
-        if (report_status === "reported") {
-            this.setState({ reported: true });  
-        } else if (report_status === "unreported") {
-            this.setState({ reported: false });
+        try {
+            var user_id = this.props.id;
+            const res1 = await axios.get('/api/showBlockProfile/?user_id=' + user_id, { cancelToken: this.signal.token });
+            const res2 = await axios.get('/api/showReportProfile/?user_id=' + user_id, { cancelToken: this.signal.token });
+            var block_status = res1.data;
+            var report_status = res2.data;
+            if (block_status === "blocked") {
+                this.setState({ blocked: true });
+            } else if (block_status === "unblocked") {
+                this.setState({ blocked: false });
+            }
+            if (report_status === "reported") {
+                this.setState({ reported: true });  
+            } else if (report_status === "unreported") {
+                this.setState({ reported: false });
+            }
+        } catch (err) {
+            if (axios.isCancel(err)) {
+              console.log(err.message); // => prints: Api is being canceled
+            }
         }
     }
+
+    componentWillUnmount() {
+        this.signal.cancel('Api is being canceled');
+      }
 
     showTitle() {
         var getAge = require('get-age')
