@@ -145,6 +145,7 @@
     "redux-persist-transform-immutable": "^5.0.0",
     "redux-promise": "^0.6.0",
     "redux-thunk": "^2.3.0",
+    "request": "^2.88.0",
     "request-ip": "^2.1.1",
     "require-context": "^1.1.0",
     "reselect": "^3.0.1",

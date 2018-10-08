@@ -10,8 +10,8 @@ function showLocation(lat, lng) {
 			divCreate.style.height = "300px"
 
 			var platform = new H.service.Platform({
-				'app_id': 'TkAwMXsQgIP4twImK7dp',
-				'app_code': '1Q-M1hLt8XlyymmOOwNxlw'
+				'app_id': 'NW3IbPfKVKwkgrLwqzjJ',
+				'app_code': '7ZZoQFPP7h15raobMe2NYQ'
 				});
 			var defaultLayers = platform.createDefaultLayers();		
 			var map = new H.Map(document.getElementById('mapContainer'),

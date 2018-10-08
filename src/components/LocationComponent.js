@@ -21,41 +21,59 @@ class LocationComponent extends React.Component {
 	}
 
 		async componentDidMount(){
+			var lat;
+			var lng;
+			const stateGeolocalisation = await axios.post('/api/localisationAllowedORnot')
+			console.log(stateGeolocalisation.data)
+			if (stateGeolocalisation.data === 1) {
+				const res = await axios.get('/api/findLocalisation')
+				lat = res.data.lat
+				lng = res.data.lng
+				var title = res.data.message
 
-			const res = await axios.get('/api/findLocalisation')
-			var lat = res.data.lat
-			var lng = res.data.lng
-			var title = res.data.message
+				if (lat === undefined && lng === undefined) {
+					lat = 52.5
+					lng = 13.4
+				}
+				location.showLocation(lat, lng)	
 
-			if (lat === undefined && lng === undefined) {
-				lat = 52.5
-				lng = 13.4
+				this.setState({
+					allow: title
+				})
+			} else {
+				lat = null
+				lng = null
+				location.showLocation(lat, lng)	
 			}
-
-			location.showLocation(lat, lng)	
-
-			this.setState({
-				allow: title
-			})
 		}
 
-		async handleFormSubmit() {
-			const address = document.getElementById("address").value;
-			const res = await axios.get('/api/geocoder/?address=' + address)
-			const lat = res.data.lat
-			const lng = res.data.lng
-			var error = res.data.error
+	async handleFormSubmit() {
+		var message = "Disable localisation";
+		const address = document.getElementById("address").value;
+		const res = await axios.get('/api/geocoder/?address=' + address)
+		const lat = res.data.lat
+		const lng = res.data.lng
+		var error = res.data.error
 
-			if (error === undefined) {
-				error = ""
+		const res1 = await axios.get('https://ipinfo.io?token=517ce1a907a9ec')
+		const data = {
+			ip : res1.data.ip,
+			lat: lat,
+			lng: lng
+		}
+		await axios.post('/api/localisationAllowed', data)
+
+		if (error === undefined) {
+			error = ""
 		
 			location.showLocation(lat, lng)	
-			}
-
-			this.setState({
-					message: error
-				})
 		}
+
+		this.setState({
+				allow: message,
+				message: error
+			})
+	}
 
 	handleSubmitIP() {
 		var message;
@@ -71,7 +89,7 @@ class LocationComponent extends React.Component {
 					.then((ret) => {
 						if (ret.data === 0) {
 							message = "Disable localisation"
-							axios.get('https://ipinfo.io')
+							axios.get('https://ipinfo.io?token=517ce1a907a9ec')
 								.then((res) => {
 									var loc = res.data.loc
 									var locationSplit = loc.split(',')						

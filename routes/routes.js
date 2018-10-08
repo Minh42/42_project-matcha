@@ -16,7 +16,7 @@ const path = require('path');
 const uuidv4 = require('uuid/v4');
 
 //LOCALISATION
-var geocoder = require('geocoder');
+var request = require("request");
 
 //PARAMETER EMAIL (nodemailer)
 const nodemailer = require("nodemailer");
@@ -297,6 +297,8 @@ router.get('/api/onboarding', authenticate, (req, res) => {
 router.post('/api/addTags', authenticate, (req, res) => {
   let user = require('../models/user.class');
   const user_id = req.currentUser[0].user_id
+  const tag = req.body.text
+  console.log(tag)
 
   function processArray(tag, user_id) 
   {
@@ -338,8 +340,15 @@ router.post('/api/addTags', authenticate, (req, res) => {
           }
         })
   }
-  processArray(req.body.text, user_id);
-  res.send("success")
+
+  console.log(tag.length)
+  if (tag.length > 32) {
+    console.log('here')
+    res.send("error")
+  } else {
+    processArray(tag, user_id);
+    res.send("success")
+  }
 })
 
 // FIND TAGS USER BDD
@@ -498,13 +507,11 @@ router.get('/api/profile', authenticate, async (req, res) => {
   let user = require('../models/user.class');
   async function getData() {
     const id = req.currentUser[0].user_id;
-    console.log('id', req.currentUser[0].user_id)
     const infos = JSON.parse(JSON.stringify(await user.selectAllUserInfos(id)));
     const photos = await user.selectAllUserPhotos(id);
     const tags = await user.selectAllUserTags(id);
     const interest = await user.selectNameGenders(id);
     const relationship = await user.selectNameRelationship(id)
-    console.log(interest)
   
     const customData = {
       infos: infos[0],
@@ -524,6 +531,7 @@ router.get('/api/profile', authenticate, async (req, res) => {
 //LOCALISATION
 
 router.get('/api/geocoder/', authenticate, (req, res) => {
+  
   let user = require('../models/user.class');
   let check = require('../library/tools');
   const location= {}
@@ -531,15 +539,28 @@ router.get('/api/geocoder/', authenticate, (req, res) => {
 
   const address = req.param('address')
   const user_id = req.currentUser[0].user_id
+  console.log('address', address)
+
+  var options = { method: 'GET',
+  url: 'https://maps.googleapis.com/maps/api/geocode/json',
+  qs: { 
+  address: address,
+   key: 'AIzaSyBjuKElQlsRx1YhCfTHe-tN7kXVk4nL1r0'
+  },
+ };
+ console.log(options)
 
   if (check.isAddress(address) === true)
   {
-    geocoder.geocode(address, function ( err, data ) {
-    if (data.results[0] === undefined) {
-      messages.error = "address doesn't exist"
-      res.json(messages)
+    request(options, function (error, response, body) {
+    //   if (error) throw new Error(error);
+      console.log('body', body);
+      var bodyParse = JSON.parse(body)
+      if (bodyParse.results[0] === undefined) {
+        messages.error = "address doesn't exist"
+        res.json(messages)
       } else {
-        const newData = data.results[0].geometry
+        const newData = bodyParse.results[0].geometry
         const lat = newData.location.lat
         location.lat = lat
         const lng = newData.location.lng
@@ -551,7 +572,7 @@ router.get('/api/geocoder/', authenticate, (req, res) => {
           }
         })
       }
-    });
+    })
   } else {
     messages.error = "ex: 18 rue de la paix Paris"
     res.json(messages)
@@ -609,19 +630,33 @@ router.post('/api/localisationAllowed', authenticate, (req, res) => {
     })
 })
 
+router.post('/api/localisationNotAllowed', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  const lat = req.body.lat
+  const lng = req.body.lng
+  const user_id = req.currentUser[0].user_id
+  user.addIP(user_id, req.body.ip)
+    .then ((ret) => {
+      user.addLatLng(lat, lng, user_id) 
+        .then((ret) => {
+            res.json("success")
+        })
+    })
+})
+
 router.post('/api/localisationDisable', authenticate, (req, res) => {
   let user = require('../models/user.class');
   const user_id = req.currentUser[0].user_id
   user.changeGeolocalisationAllow(user_id, 0)
     .then((ret) => {
-      user.addIP(user_id, req.body.ip)
-        .then ((ret) => {
-          user.addLatLng(req.body.lat, req.body.lng, user_id) 
-            .then((ret) => {
+      // user.addIP(user_id, req.body.ip)
+      //   .then ((ret) => {
+      //     user.addLatLng(req.body.lat, req.body.lng, user_id) 
+      //       .then((ret) => {
               res.json("success")
             })
-        })
-    })
+    //     })
+    // })
 })
 
 
@@ -670,17 +705,17 @@ router.post('/api/addRelationshipBDD', authenticate, (req, res) => {
     .then((ret) => {
     var relationship_id = ret[0].relationship_type_id
     user.findUserId("interested_in_relation", user_id)
-    .then((ret) => {
-      if (ret) {
+    .then((ret1) => {
+      if (ret1 === true) {
         user.updateInterestedInRelation(user_id, relationship_id)
-        .then((ret) => {
+        .then((ret2) => {
           res.send("success")
         })
       } else {
-      user.addInsideinterestedInRelation(relationship_id, user_id)
-        .then((ret) => {
-          res.send("success")
-        })
+        user.addInsideinterestedInRelation(relationship_id, user_id)
+          .then((ret2) => {
+            res.send("success")
+          })
       }
     })
   })

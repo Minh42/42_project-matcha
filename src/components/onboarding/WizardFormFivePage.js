@@ -17,11 +17,38 @@ class WizardFormFivePage extends Component{
 }
 
 	async handleOnboardingSubmit() {
-		const res = await axios.post('/api/changeOnboardingStatus')
-		if (res.data === "success") {
-			this.props.fetchCurrentUser().then(() => {
-				this.props.history.push('/homepage');
-			})
+		const stateGeolocalisation = await axios.post('/api/localisationAllowedORnot')
+		console.log(stateGeolocalisation.data)
+		console.log('im here')
+		if (stateGeolocalisation.data === 0) {
+			console.log('hey')
+			const ret = await axios.get('https://ipinfo.io?token=517ce1a907a9ec')
+			console.log(ret.data)
+			var loc = ret.data.loc
+			var locationSplit = loc.split(',')						
+			var lat = locationSplit[0]
+			var lng = locationSplit[1]
+			const data = {
+				ip : ret.data.ip,
+				lat: lat,
+				lng: lng
+			}
+			console.log(data)
+			await axios.post('/api/localisationNotAllowed', data)
+			const res1 = await axios.post('/api/changeOnboardingStatus')
+				if (res1.data === "success") {
+					this.props.fetchCurrentUser().then(() => {
+						this.props.history.push('/homepage');
+					})
+				}
+		} else if (stateGeolocalisation.data === 1) {
+			console.log('here')
+			const res = await axios.post('/api/changeOnboardingStatus')
+			if (res.data === "success") {
+				this.props.fetchCurrentUser().then(() => {
+					this.props.history.push('/homepage');
+				})
+			}
 		}
 	}
 
@@ -34,7 +61,7 @@ class WizardFormFivePage extends Component{
 		<h2 className="has-text-centered titleOnboarding">Where are you...</h2>
 		<progress className="progress progressOnboarding" value="100" max="100">100%</progress>
 		<br></br>
-		<LocationComponent/>
+			<LocationComponent/>
 		<div className="columns">
 			<div className="column is-2">
 				<button type="button" className="previous button buttonOnboarding" onClick={previousPage}>
@@ -55,9 +82,9 @@ class WizardFormFivePage extends Component{
 const selector = formValueSelector('wizard') // <-- same as form name
 WizardFormFivePage = connect(
   state => {
+	console.log(state.form.wizard.values)
 	axios.post('/api/addNewinfoBDD', state.form.wizard.values)
 		.then((ret) => {
-			if (ret)
 				axios.post('/api/addRelationshipBDD', state.form.wizard.values)
 		})
     return {
