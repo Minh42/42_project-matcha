@@ -150,14 +150,14 @@ CREATE TABLE IF NOT EXISTS `notification_object` (
     `entity_type_id` INT UNSIGNED NOT NULL,
     `entity_id` INT UNSIGNED NOT NULL,
     `created_on` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `status` TINYINT DEFAULT 1 NOT NULL
+    `status` TINYINT DEFAULT 0 NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS `notification` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `notification_object_id` BIGINT UNSIGNED NOT NULL,
     `notifier_id` BIGINT UNSIGNED NOT NULL,
-    `status` TINYINT DEFAULT 1 NOT NULL,
+    `status` TINYINT DEFAULT 0 NOT NULL,
     FOREIGN KEY (notification_object_id) REFERENCES notification_object(id),
     FOREIGN KEY (notifier_id) REFERENCES users(user_id)
 );

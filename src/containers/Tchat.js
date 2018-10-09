@@ -12,12 +12,6 @@ class Tchat extends Component {
 		this.props.socket.conversation = undefined;
 	}
 
-	// componentDidUpdate() {
-	// 	// get the messagelist container and set the scrollTop to the height of the container
-	// 	const objDiv = document.getElementById('messageList');
-	// 	objDiv.scrollTop = objDiv.scrollHeight;
-	//   }
-
 	renderTchat() {
 		if (this.props.socket.conversation != undefined) {
 			var conversation_id = this.props.socket.conversation;

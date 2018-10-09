@@ -912,6 +912,27 @@ class User {
         } 
     }
 
+    static async searchNotifications(user_id) {
+        try {
+            var infoNotif = {};
+            var ret = await pool.query("SELECT `entity_type_id`, `actor_id` FROM `notification_object` INNER JOIN `notification` ON notification.notification_object_id = notification_object.id INNER JOIN `notification_change` ON notification_change.notification_object_id = notification_object.id WHERE notification.notifier_id = ? AND notification.status = ?", [user_id, 0]);
+            console.log(ret[0].actor_id)
+            console.log(ret.length)
+            for (var i = 0; ret.length < i; i++) {
+                console.log('here')
+                console.log(ret[0].actor_id)
+                var ret1 = await pool.query("SELECT `firstname`, `lastname` FROM `users` INNER JOIN `notification_change` ON notification_change.actor_id = users.user_id INNER JOIN `notification_object` ON notification_object.id = notification_change.notification_object_id WHERE user.user_id = ?", [ret[0].actor_id]);
+                console.log('ret1', ret1)
+                infoNotif[i] = ret1
+            }
+            console.log(infoNotif)
+            // return ret;
+        } catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+
 }
 
 module.exports = User

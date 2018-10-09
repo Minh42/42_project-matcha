@@ -1032,12 +1032,23 @@ router.post('/api/findUserByID', async (req, res) => {
 });
 
 router.post('/api/notificationMessage', authenticate, async (req, res) => {
-    let user = require('../models/user.class');
-    const ret = await user.insertNotification(req.body.entity_type_id, req.body.entity_id, req.body.actor_id, req.body.notifier_id);
+  let user = require('../models/user.class');
+  console.log(req.body)
+  const ret = await user.insertNotification(req.body.entity_type_id, req.body.entity_id, req.body.actor_id, req.body.notifier_id);
+  if (ret) {
+    res.json(ret)
+  }
+});
+
+router.post('/api/searchNotifications', authenticate, async (req, res) => {
+  let user = require('../models/user.class');
+  var current_user = req.currentUser[0].user_id;
+  const ret = await user.searchNotifications(current_user);
+  console.log(ret)
     if (ret) {
       res.json(ret)
     }
-});
+})
 
 router.post('/api/blockedUsers', authenticate, async (req, res) => {
   let user = require('../models/user.class');
