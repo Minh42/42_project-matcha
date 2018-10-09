@@ -4,11 +4,10 @@ import Filters from '../containers/Filters';
 import SortBy from '../containers/SortBy';
 import SearchTags from '../containers/SearchTags';
 import { connect } from 'react-redux';
-import { setUnOnboarding, addFlashMessage } from '../actions/actionUsers';
+import { setOnboarding, setUnOnboarding } from '../actions/actionUsers';
 import { joinSocket } from '../actions/actionNotifications';
 import { bindActionCreators } from 'redux';
 import { withRouter } from 'react-router-dom';
-import FlashMessagesList from '../components/FlashMessagesList';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import izitoast from 'izitoast';
@@ -16,6 +15,9 @@ import izitoast from 'izitoast';
 class HomePage extends Component {
     constructor(props) {    
 		super(props);
+		this.state = {
+			isUpdated: false,
+		};
 	}
 
 	async componentDidMount() {
@@ -23,18 +25,19 @@ class HomePage extends Component {
 		if(res.data) {
 			this.props.history.push('/onboarding');
 		} else {
-			this.props.setUnOnboarding();
 			this.props.joinSocket(this.props.currentUser[0].user_id);
 		}
 	}
 
-	componentDidUpdate() {
-		if (this.props.socket != null) {
-			if (this.props.socket.message != null) {
-				izitoast.show({
-					message: this.props.socket.message,
-					position: 'topRight'
-				});
+	componentDidUpdate(prevProps) {
+		if (prevProps.socket.message != this.props.socket.message) {
+			if (this.props.socket != null && !this.state.isUpdated) {
+				if (this.props.socket.message != null) {
+					izitoast.show({
+						message: this.props.socket.message,
+						position: 'topRight'
+					});
+				}
 			}
 		}
 	}
@@ -54,7 +57,6 @@ class HomePage extends Component {
 				</div>
 			</aside>
 			<div className="column is-8 messages hero is-fullheight" id="message-feed">
-					<FlashMessagesList />
 					<UsersContainer />
 			</div>
 		</div>
@@ -64,8 +66,8 @@ class HomePage extends Component {
 HomePage.propTypes = {
 	// currentUser: PropTypes.array.isRequired,
 	// socket: PropTypes.node.isRequired,
+	setOnboarding: PropTypes.func.isRequired,
 	setUnOnboarding: PropTypes.func.isRequired,
-	addFlashMessage: PropTypes.func.isRequired,
 	joinSocket: PropTypes.func.isRequired,
 };
 
@@ -78,8 +80,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
 	return bindActionCreators({
+		setOnboarding: setOnboarding,
 		setUnOnboarding: setUnOnboarding,
-		addFlashMessage: addFlashMessage,
 		joinSocket: joinSocket
 	}, dispatch);
 }

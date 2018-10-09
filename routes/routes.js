@@ -16,7 +16,7 @@ const path = require('path');
 const uuidv4 = require('uuid/v4');
 
 //LOCALISATION
-var geocoder = require('geocoder');
+var request = require("request");
 
 //PARAMETER EMAIL (nodemailer)
 const nodemailer = require("nodemailer");
@@ -40,42 +40,53 @@ router.post('/api/signup', checkSignupValidation, function(req, res) {
   let check = require('../library/tools');
   let messages = {};
 
-  var hashNewPassword = check.isHash(req.body.newPassword);
-  let token = jwt.sign( {  foo : req.body.login } , config.jwtSecret );
+  if (req.body.newPassword)
+  {
+    if (req.body.newPassword === req.body.confirmedPassword) {
+      var hashNewPassword = check.isHash(req.body.newPassword);
+      let token = jwt.sign( {  foo : req.body.login } , config.jwtSecret );
 
-  user.addUser(req.body.firstName, req.body.lastName, req.body.login, req.body.email, hashNewPassword, token)
-    .then(function(ret) {
-      if (ret) {
-        var mail = {
-					from: "matcha.appli@gmail.com",
-					to: req.body.email,
-					subject: "Welcome to  Matcha",
-          html: '<h3> Hello ' + req.body.firstName + '</h3>' +
-          '<p>To activate your account, please click on the link below.</p>' +
-          '<p>http://localhost:3000/api/activationMail?login='+ req.body.login +'&token=' + token + '</p>' +
-          '<p> --------------- /p>' +
-          '<p>This is an automatic mail, Please do not reply.</p>'
-        }
+      user.addUser(req.body.firstName, req.body.lastName, req.body.login, req.body.email, hashNewPassword, token)
+        .then(function(ret) {
+          if (ret) {
+            var mail = {
+              from: "matcha.appli@gmail.com",
+              to: req.body.email,
+              subject: "Welcome to  Matcha",
+              html: '<h3> Hello ' + req.body.firstName + '</h3>' +
+              '<p>To activate your account, please click on the link below.</p>' +
+              '<p>http://localhost:3000/api/activationMail?login='+ req.body.login +'&token=' + token + '</p>' +
+              '<p> --------------- /p>' +
+              '<p>This is an automatic mail, Please do not reply.</p>'
+            }
+            
+            transporter.sendMail(mail, function (err, info) {
+              if(err)
+                console.log(err)
+              else
+                console.log(info);
+          });
+          
+            messages.error = null;
+            messages.success = "success";
         
-        transporter.sendMail(mail, function (err, info) {
-          if(err)
-            console.log(err)
-          else
-            console.log(info);
-       });
-       
-        messages.error = null;
-        messages.success = "success";
-    
-        res.send(messages);
-      }
-      else {
-        console.log('error');
-      }
-    })
-    .catch(err => {
-			console.error('loginExists error: ', err);
-		})
+            res.send(messages);
+          }
+          else {
+            console.log('error');
+          }
+        })
+        .catch(err => {
+          console.error('loginExists error: ', err);
+        })
+    } else {
+      messages.error = "Your passwords not match";
+      res.send(messages);
+    }
+  } else {
+    messages.error = "Please enter all the informations";
+    res.send(messages);
+  }
 })
 
 //ACTIVATIOM BY EMAIL
@@ -100,18 +111,21 @@ router.get('/api/activationMail', function(req, res) {
 //SIGNIN
 router.post('/api/signin', function(req, res) {
   let user = require('../models/user.class');
-  let messages = {};
   let { username, password } = req.body;
-  user.login(username, password).then(function(ret) {
-    if (ret) {
-      user.searchByColName("username", username).then(function(ret) {
-        const token = jwt.sign({ user: ret }, config.jwtSecret);
-        res.json({token})
-      })
-    } else {
-      res.sendStatus(401);
-    }
-  })   
+  if (username === undefined || password === undefined) {
+    res.sendStatus(401);
+  } else {
+    user.login(username, password).then(function(ret) {
+      if (ret) {
+        user.searchByColName("username", username).then(function(ret) {
+          const token = jwt.sign({ user: ret }, config.jwtSecret);
+          res.json({token})
+        })
+      } else {
+        res.sendStatus(401);
+      }
+    })   
+  }
 })
 
 //FORGOT PASSWORD
@@ -170,7 +184,6 @@ router.get('/api/resetPassword', function(req, res) {
   let user = require('../models/user.class');
   var user_id = req.param('user_id');
   var token_reset = req.param('token_reset');
-
   user.compareTokenReset(user_id, token_reset).then(function(ret) {
     if (ret) {
       res.redirect('/resetPassword/' + user_id);
@@ -245,7 +258,6 @@ router.get('/api/current_user', authenticate, async (req, res) => {
   }
   else {
     let user_id = req.currentUser[0].user_id;
-    // user.updateLastLogin(user_id);
     const ret = await user.selectAllUsersInformations(user_id);
     if (ret) {
       res.send(ret);
@@ -282,6 +294,8 @@ router.get('/api/onboarding', authenticate, (req, res) => {
 router.post('/api/addTags', authenticate, (req, res) => {
   let user = require('../models/user.class');
   const user_id = req.currentUser[0].user_id
+  const tag = req.body.text
+  console.log(tag)
 
   function processArray(tag, user_id) 
   {
@@ -323,8 +337,15 @@ router.post('/api/addTags', authenticate, (req, res) => {
           }
         })
   }
-  processArray(req.body.text, user_id);
-  res.send("success")
+
+  console.log(tag.length)
+  if (tag.length > 32) {
+    console.log('here')
+    res.send("error")
+  } else {
+    processArray(tag, user_id);
+    res.send("success")
+  }
 })
 
 // FIND TAGS USER BDD
@@ -483,13 +504,11 @@ router.get('/api/profile', authenticate, async (req, res) => {
   let user = require('../models/user.class');
   async function getData() {
     const id = req.currentUser[0].user_id;
-    console.log('id', req.currentUser[0].user_id)
     const infos = JSON.parse(JSON.stringify(await user.selectAllUserInfos(id)));
     const photos = await user.selectAllUserPhotos(id);
     const tags = await user.selectAllUserTags(id);
     const interest = await user.selectNameGenders(id);
     const relationship = await user.selectNameRelationship(id)
-    console.log(interest)
   
     const customData = {
       infos: infos[0],
@@ -509,6 +528,7 @@ router.get('/api/profile', authenticate, async (req, res) => {
 //LOCALISATION
 
 router.get('/api/geocoder/', authenticate, (req, res) => {
+  
   let user = require('../models/user.class');
   let check = require('../library/tools');
   const location= {}
@@ -516,15 +536,28 @@ router.get('/api/geocoder/', authenticate, (req, res) => {
 
   const address = req.param('address')
   const user_id = req.currentUser[0].user_id
+  console.log('address', address)
+
+  var options = { method: 'GET',
+  url: 'https://maps.googleapis.com/maps/api/geocode/json',
+  qs: { 
+  address: address,
+   key: 'AIzaSyBjuKElQlsRx1YhCfTHe-tN7kXVk4nL1r0'
+  },
+ };
+ console.log(options)
 
   if (check.isAddress(address) === true)
   {
-    geocoder.geocode(address, function ( err, data ) {
-    if (data.results[0] === undefined) {
-      messages.error = "address doesn't exist"
-      res.json(messages)
+    request(options, function (error, response, body) {
+    //   if (error) throw new Error(error);
+      console.log('body', body);
+      var bodyParse = JSON.parse(body)
+      if (bodyParse.results[0] === undefined) {
+        messages.error = "address doesn't exist"
+        res.json(messages)
       } else {
-        const newData = data.results[0].geometry
+        const newData = bodyParse.results[0].geometry
         const lat = newData.location.lat
         location.lat = lat
         const lng = newData.location.lng
@@ -536,7 +569,7 @@ router.get('/api/geocoder/', authenticate, (req, res) => {
           }
         })
       }
-    });
+    })
   } else {
     messages.error = "ex: 18 rue de la paix Paris"
     res.json(messages)
@@ -594,19 +627,33 @@ router.post('/api/localisationAllowed', authenticate, (req, res) => {
     })
 })
 
+router.post('/api/localisationNotAllowed', authenticate, (req, res) => {
+  let user = require('../models/user.class');
+  const lat = req.body.lat
+  const lng = req.body.lng
+  const user_id = req.currentUser[0].user_id
+  user.addIP(user_id, req.body.ip)
+    .then ((ret) => {
+      user.addLatLng(lat, lng, user_id) 
+        .then((ret) => {
+            res.json("success")
+        })
+    })
+})
+
 router.post('/api/localisationDisable', authenticate, (req, res) => {
   let user = require('../models/user.class');
   const user_id = req.currentUser[0].user_id
   user.changeGeolocalisationAllow(user_id, 0)
     .then((ret) => {
-      user.addIP(user_id, req.body.ip)
-        .then ((ret) => {
-          user.addLatLng(req.body.lat, req.body.lng, user_id) 
-            .then((ret) => {
+      // user.addIP(user_id, req.body.ip)
+      //   .then ((ret) => {
+      //     user.addLatLng(req.body.lat, req.body.lng, user_id) 
+      //       .then((ret) => {
               res.json("success")
             })
-        })
-    })
+    //     })
+    // })
 })
 
 
@@ -655,17 +702,17 @@ router.post('/api/addRelationshipBDD', authenticate, (req, res) => {
     .then((ret) => {
     var relationship_id = ret[0].relationship_type_id
     user.findUserId("interested_in_relation", user_id)
-    .then((ret) => {
-      if (ret) {
+    .then((ret1) => {
+      if (ret1 === true) {
         user.updateInterestedInRelation(user_id, relationship_id)
-        .then((ret) => {
+        .then((ret2) => {
           res.send("success")
         })
       } else {
-      user.addInsideinterestedInRelation(relationship_id, user_id)
-        .then((ret) => {
-          res.send("success")
-        })
+        user.addInsideinterestedInRelation(relationship_id, user_id)
+          .then((ret2) => {
+            res.send("success")
+          })
       }
     })
   })
@@ -716,7 +763,12 @@ router.post('/api/modifData', authenticate, (req, res) => {
   const email = req.body.email
   user.changeUserInfo(user_id, login, firstname, lastname, email)
     .then(function(ret) {
-      res.send("success");
+      if (ret) {
+        res.send("success");
+      }
+      else {
+        res.send("failure");
+      }
     })
 })
 
@@ -786,7 +838,7 @@ router.post('/api/addLike', authenticate, (req, res) => {
 
 router.get('/api/searchLikeProfileUser', authenticate, (req, res) => {
   let user = require('../models/user.class');
-  var user_id = req.currentUser[0].user_id
+  var user_id = req.currentUser[0].user_id;
   user.searchUserWhoLike(user_id)
     .then((ret) => {
       res.json(ret)
@@ -796,7 +848,13 @@ router.get('/api/searchLikeProfileUser', authenticate, (req, res) => {
 router.post('/api/savePicture', authenticate, (req, res) => {
   let user = require('../models/user.class');
   var user_id = req.currentUser[0].user_id;
-  var path = req.body.picture.replace('http://localhost:8080/', '');
+  var path;
+  if (req.body.picture.includes("cloudinary")) {
+    path = req.body.picture;
+  } else {
+    path = req.body.picture.replace('http://localhost:8080/', '');
+  }
+  console.log(path)
   user.addProfilePicture(user_id, path).then((ret) => {
     res.send("success");
   })
@@ -953,7 +1011,7 @@ router.get('/api/searchLikeProfileUser', authenticate, (req, res) => {
     .then((ret) => {
       res.json(ret)
     })
-})
+});
 
 router.post('/api/lastNotification', authenticate, async (req, res) => {
   let notification_object_id = req.body.notification_object_id;
@@ -972,5 +1030,37 @@ router.post('/api/findUserByID', async (req, res) => {
     res.json(ret)
   }
 });
+
+router.post('/api/notificationMessage', authenticate, async (req, res) => {
+  let user = require('../models/user.class');
+  console.log(req.body)
+  const ret = await user.insertNotification(req.body.entity_type_id, req.body.entity_id, req.body.actor_id, req.body.notifier_id);
+  if (ret) {
+    res.json(ret)
+  }
+});
+
+router.post('/api/searchNotifications', authenticate, async (req, res) => {
+  let user = require('../models/user.class');
+  var current_user = req.currentUser[0].user_id;
+  const ret = await user.searchNotifications(current_user);
+  console.log(ret)
+    if (ret) {
+      res.json(ret)
+    }
+})
+
+router.post('/api/blockedUsers', authenticate, async (req, res) => {
+  let user = require('../models/user.class');
+  console.log('im here 2')
+  let user_id = req.body.notifier_id;
+  console.log(user_id)
+  console.log('im here 2')
+  const ret = await user.selectAllUsersInformations(user_id);
+  console.log('im here')
+  console.log(ret);
+  console.log('im here')
+  res.send(ret);
+})
 
 module.exports = router 

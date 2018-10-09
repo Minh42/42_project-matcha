@@ -10,7 +10,7 @@ const renderField = ({ input, label, type, className, meta: { touched, error } }
       placeholder={label} 
       type={type} 
       className={className}
-      />
+      required/>
       {touched && error && <span className="help is-danger">{error}</span>}
     </div>
   </div>

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import LoginContainer from '../containers/LoginContainer';
-import Button from "../components/Button";
 import LinkButton from "../components/LinkButton";
 import { withRouter } from 'react-router-dom';
 import { Link } from 'react-router-dom';
@@ -9,17 +8,24 @@ import { signOutAction } from '../actions/actionUsers';
 import { bindActionCreators } from 'redux';
 import io from 'socket.io-client';
 
+import { Badge, Button, SVGIcon } from 'react-md';
+import axios from 'axios';
+
 class Header extends Component {
 	constructor(props) {
 		super(props);
 		this.showModal = this.showModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
         this.handleLogout = this.handleLogout.bind(this);
+        this.showDialog = this.showDialog.bind(this);
 
         this.state = {
             firstname : "",
             lastname : "",
+            notification: '',
+            user: ''
         }
+
         this.socket = io('ws://localhost:8080', {transports: ['websocket']});
 	  }
 
@@ -31,48 +37,92 @@ class Header extends Component {
 		document.getElementById('modal_signin').classList.remove("is-active");
     }
 
+    // NOTIFICATIONS
+    async showDialog() {
+        document.getElementById('modal_dialog').classList.add("is-active");
+        const res = await axios.post('/api/searchNotifications')
+        console.log(res.data)
+        if (res.data.length === 0) {
+            this.setState ({
+                notification: 'no notifications'
+            })
+        } else {
+            this.setState ({
+                notification: res.data
+            })
+        }
+	}
+	
+	closeDialog() {
+		document.getElementById('modal_dialog').classList.remove("is-active");
+    }
+
+    allNotifiactions() {
+        if (this.state.notification != '') {
+            console.log(this.state.notification)
+            return this.state.notification.map((notif, i) => {
+                axios.post('/api/findUserByID', {user_id : notif.actor_id}).then((user) => {
+                    console.log(user.data[i].firstname)
+                    // this.setState ({
+                    //     user: user.data[i]
+                    // })
+                    return user
+                })
+                return (
+                    <div key={i}>
+                        <div>
+                            <p> {this.state.user.firstname}</p>
+                            <p> {notif.entity_type_id} </p>
+                        </div>
+                    </div>
+                )
+            })
+               
+        }
+    }
+
+    //END
+
+
     handleLogout() {
         this.socket.emit('disconnect_user', this.props.currentUser[0].user_id);
         this.props.signOutAction(this.props.history);
     }
 
     showNavbar() {
-    if (this.props.auth) {
-        if (!this.props.auth.authenticated && this.props.auth.onboarding === undefined) {
-            return [
-                <Button key="login" className="button is-rounded btn btn-login" title="Sign In" action={this.showModal}/>
-            ];
-        } else if (this.props.auth.authenticated && this.props.auth.onboarding) {
-            return;
-        } else if (this.props.auth.authenticated) {
-            switch (this.props.auth.authenticated) {
-                case null:
-                    return;
-                case false:
-                    return [
-                        <Button key="login" className="button is-rounded btn btn-login" title="Sign In" action={this.showModal}/>
-                    ];
-                default:
-                    return [
-                        <p key="homepage" className="control">
-                            <Link to="/homepage"><Button className="button buttonHeader" title=" Homepage"/></Link>
-                        </p>,
-                        <p key = "messages" className="control">
-                            <Link to="/messages"><Button className="button buttonHeader" title="My messages"/></Link>
-                        </p>,
-                        <p key = "profile" className="control">
-                            <LinkButton to='/profile' className="button buttonHeader">My profile</LinkButton>
-                        </p>,
-                        <p key = "logout" className="control">
-                            <LinkButton to='/' onClick={this.handleLogout} className="button buttonHeader">Signout</LinkButton>
-                        </p>
-                    ];
+    if(this.props.history.location.pathname === '/onboarding') {
+        return;
+    } else {
+        if (this.props.auth) {
+            if (this.props.auth.authenticated != undefined) {
+                switch (this.props.auth.authenticated) {
+                    case null:
+                        return;
+                    case false:
+                        return [
+                            <button key="login" className="button is-rounded btn btn-login" onClick={this.showModal}>Sign In</button>
+                        ];
+                    default:
+                        return [
+                            <Badge key="badge" id="icontext" badgeContent={0} primary badgeId="notifications-1" onClick={this.showDialog}>
+                               <i className="fas fa-envelope" id="icon"></i>
+                            </Badge>,
+                            <p key="homepage" className="control navbar-item">
+                                <LinkButton to="/homepage" className="button buttonHeader">Homepage</LinkButton>
+                            </p>,
+                            <p key = "messages" className="control navbar-item">
+                                <LinkButton to="/messages" className="button buttonHeader">My messages</LinkButton>
+                            </p>,
+                            <p key = "profile" className="control navbar-item">
+                                <LinkButton to='/profile' className="button buttonHeader">My profile</LinkButton>
+                            </p>,
+                            <p key = "logout" className="control navbar-item">
+                                <LinkButton to='/' onClick={this.handleLogout} className="button buttonHeader">Signout</LinkButton>
+                            </p>
+                        ];
+                    }
                 }
-            }
-        } else {
-            return [
-                <Button key="login" className="button is-rounded btn btn-login" title="Sign In" action={this.showModal}/>
-            ];  
+            } 
         }
     }
 
@@ -85,7 +135,7 @@ class Header extends Component {
                        <span> MATCHA </span>
                     </a>
 
-                    <div className="navbar-burger burger" data-target="mobile-app">
+                    <div id="navbar-burger-id" className="navbar-burger">
                         <span></span>
                         <span></span>
                         <span></span>
@@ -98,10 +148,10 @@ class Header extends Component {
                 </div>
 
                 <div className="navbar-end">
-                    <div className="navbar-item">
-                        <div className="field is-grouped">
-							{this.showNavbar()}
-					</div>
+                    <div id="navbar-menu-id" className="navbar-menu">
+                        <div className="navbar-start navbar-item">
+                            {this.showNavbar()}
+                        </div>
                     </div>
                     <div className="modal" id='modal_signin'>
 			        <div className="modal-background"></div>
@@ -115,6 +165,20 @@ class Header extends Component {
                             </section>
                         </div>
 			        </div>
+
+                    <div className="modal" id='modal_dialog'>
+			        <div className="modal-background"></div>
+                        <div className="modal-card">
+                            <header className="modal-card-head modalHeader">
+                                <p className="modal-card-title titleSign">your notifications</p>
+                                <button className="delete" aria-label="close" onClick={this.closeDialog}></button>
+                            </header>
+                            <section className="modal-card-body">
+                                {this.allNotifiactions()}
+                            </section>
+                        </div>
+			        </div>
+
                 </div>
             </nav>
         );                 

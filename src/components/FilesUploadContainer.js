@@ -1,12 +1,8 @@
 import React, { Component } from 'react';
 import Dropzone from 'react-dropzone';
 import axios from 'axios';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import ImageList from './ImageList';
-import FlashMessagesList from './FlashMessagesList';
-import { addFlashMessage } from '../actions/actionMessages';
+import izitoast from 'izitoast';
 
 class FilesUploadContainer extends Component {
     constructor(props) {
@@ -20,12 +16,25 @@ class FilesUploadContainer extends Component {
 
     async componentDidMount() {
       const res = await axios.get('/api/displayPicture');
-      if (res.data) {
-        res.data.map((file) => {
-          this.setState({
-            files: this.state.files.concat(`http://localhost:8080/${file.image_path}`),
-          });
-        })
+      if (res.data[0]) {
+        var user = this.props;        
+        if (res.data[0].image_path === null) {
+          if (user.user.imageProfile_path.includes('cloudinary')) {
+            this.setState({
+              files: this.state.files.concat(user.user.imageProfile_path),
+            });
+          } else {
+            this.setState({
+              files: this.state.files.concat(`http://localhost:8080/${user.user.imageProfile_path}`),
+            });
+          }
+        } else {
+          res.data.map((file) => {
+            this.setState({
+              files: this.state.files.concat(`http://localhost:8080/${file.image_path}`),
+            });
+          })
+        }
         if (this.state.files[0]) {
           if (document.getElementById("next")) {
             document.getElementById("next").disabled = false;
@@ -62,7 +71,6 @@ class FilesUploadContainer extends Component {
         const data = new FormData();
         data.append('file', files[0]);
         data.append('filename', files[0].name);
-  
         const res = await axios.post('/api/upload', data);
         if (res.data.file) {
           this.setState({
@@ -70,27 +78,34 @@ class FilesUploadContainer extends Component {
             files: this.state.files.concat(`http://localhost:8080/${res.data.file}`),
           });
         } else {
-          this.props.addFlashMessage({
-            type: '',
-            text: res.data.error
+          izitoast.show({
+            message: res.data.error,
+            position: 'topRight'
           });
         }
       }
       else {
-        this.props.addFlashMessage({
-					type: '',
-					text: 'You can upload only 5 photos'
-				});
+        izitoast.show({
+          message: 'You can upload only 5 photos',
+          position: 'topRight'
+        });
       }
     }
 
     renderProfilePic() {
       var count = Object.keys(this.state.files).length;
       if (count > 0) {
+        if (this.state.files[0].includes("cloudinary")) {
+          var path = this.state.files[0];
+        } else if (this.state.files[0].includes("localhost")) {
+          var path = this.state.files[0];
+        } else {
+          var path = 'http://localhost:8080/' + this.state.files[0];
+        }
         return (
           <div className="columns">
             <div className="column is-6 is-offset-3">
-                <img src={this.state.files[0]} alt="Placeholder image"/>
+                <img src={path} alt="Placeholder image"/>
             </div>
           </div>
         )
@@ -112,10 +127,10 @@ class FilesUploadContainer extends Component {
           }
           this.setState(newState); 
         } else {
-          this.props.addFlashMessage({
-					  type: '',
-					  text: res.data.error
-				  });
+          izitoast.show({
+            message: res.data.error,
+            position: 'topRight'
+          });
         }
       }
     }
@@ -128,19 +143,32 @@ class FilesUploadContainer extends Component {
         border: "8px solid rgba(255,255,255,.5)",
         borderRadius: 20
       };
-      return this.state.files.map((file) => {
-        const uuidv4 = require('uuid/v4');
-        var id = uuidv4();
-        return (
+      if (this.state.files.length > 0) {
+        if (this.state.files.includes('cloudinary')) {
+          return (
             <ImageList
-                key={id}
-                src={file}
-                style={style}
-                alt="preview"
-                removePicture={this.removePicture.bind(this)} 
-            />
-        );
-    });
+            src={this.state.files}
+            style={style}
+            alt="preview"
+            removePicture={this.removePicture.bind(this)} 
+          />
+          )
+        } else {
+          return this.state.files.map((file) => {
+            const uuidv4 = require('uuid/v4');
+            var id = uuidv4();
+            return (
+                <ImageList
+                    key={id}
+                    src={file}
+                    style={style}
+                    alt="preview"
+                    removePicture={this.removePicture.bind(this)} 
+                />
+            );
+          });
+        }
+      }
     }
 
     render() {
@@ -152,7 +180,6 @@ class FilesUploadContainer extends Component {
       };
       return (
           <div>
-            <FlashMessagesList />
             <br/>
             { this.renderProfilePic() }
             <div>
@@ -175,12 +202,4 @@ class FilesUploadContainer extends Component {
     }
 }
 
-FilesUploadContainer.propTypes = {
-  addFlashMessage: PropTypes.func.isRequired
-}
-
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ addFlashMessage: addFlashMessage}, dispatch);
-}
-  
-export default connect(null, mapDispatchToProps)(FilesUploadContainer);
+export default FilesUploadContainer;

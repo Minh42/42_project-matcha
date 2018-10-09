@@ -37,9 +37,9 @@ class Conversation extends Component {
 				return this.props.chat.conversations_list.map((conversation) => {
 					if (conversation.messages.length > 0) {
 						var len = conversation.messages.length;
-						var message;
-						conversation.messages[len - 1].participant_id === this.props.currentUser[0].user_id ? 
-						message = 'Vous: ' + conversation.messages[len - 1].message : message = conversation.messages[len - 1].message;
+						var message = 'write a message';
+						// conversation.messages[len - 1].participant_id === this.props.currentUser[0].user_id ? 
+						// message = 'Vous: ' + conversation.messages[len - 1].message : message = conversation.messages[len - 1].message;
 						console.log(message)
 						return (
 							<ConversationComponent

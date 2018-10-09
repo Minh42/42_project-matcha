@@ -57,13 +57,22 @@ class UserProfile extends Component {
 	}
 
 	async toggleBack() {
-		const ret = await axios.get('/api/profile')
-		this.props.selectUser(ret);
-		this.setState({
+		const ret = await axios.post('/api/searchTags');
+		if (ret.data === true) {
+			const ret = await axios.get('/api/profile')
+			this.props.selectUser(ret);
+			this.setState({
 			isEditingProfilePicture: false,
 			isEditingPersonnalInfo: false,
 			isEditingOtherInfo: false
-		})
+			})	
+		} else {
+			iziToast.show({
+				title: 'warning',
+				message: 'Please add at least one tag',
+				position: 'topRight'
+			});
+		}
 	}
 
 	showEditFeature() {
@@ -84,7 +93,9 @@ class UserProfile extends Component {
 			}
 			else if (this.state.isEditingProfilePicture) {
 				return (
-					<FilesUploadContainer/>
+					<FilesUploadContainer
+						user={this.props.selectedUser.data.infos}
+					/>
 				)
 			}
 			else if ((!this.state.isEditingPersonnalInfo) && (!this.state.isEditingOtherInfo) && (!this.state.isEditingProfilePicture)) {
@@ -105,7 +116,7 @@ class UserProfile extends Component {
 		if ((this.state.isEditingPersonnalInfo) || (this.state.isEditingOtherInfo) || (this.state.isEditingProfilePicture)) {
 			return (
 				<div>
-					<a className="button is-small is-fullwidth buttonProfile" onClick={this.toggleBack}>Back</a>
+					<a type="button" className="button is-small is-fullwidth buttonProfile" onClick={this.toggleBack}>Back</a>
 				</div>
 			)
 		} else {

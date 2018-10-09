@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import axios from 'axios';
 import moment from 'moment';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import CarouselContainer from './CarouselContainer';
 
 class UserProfileContainer extends Component {
@@ -11,28 +11,57 @@ class UserProfileContainer extends Component {
 		super(props);
         this.state = {
             blocked : "",
-            reported : ""
+            reported : "",
+            isMounted: false,
+            like: false
         }
+        this.signal = axios.CancelToken.source();
         this.handleReport = this.handleReport.bind(this);
         this.handleBlock = this.handleBlock.bind(this);
+        this.handleLike = this.handleLike.bind(this);
     }
     
     async componentDidMount() {
-        var user_id = this.props.id;
-        const res1 = await axios.get('/api/showBlockProfile/?user_id=' + user_id);
-        var block_status = res1.data;
-        const res2 = await axios.get('/api/showReportProfile/?user_id=' + user_id);
-        var report_status = res2.data;
-        if (block_status === "blocked") {
-            this.setState({ blocked: true });
-        } else if (block_status === "unblocked") {
-            this.setState({ blocked: false });
+        try {
+            var user_id = this.props.id;
+            const res1 = await axios.get('/api/showBlockProfile/?user_id=' + user_id, { cancelToken: this.signal.token });
+            const res2 = await axios.get('/api/showReportProfile/?user_id=' + user_id, { cancelToken: this.signal.token });
+            var block_status = res1.data;
+            var report_status = res2.data;
+            if (block_status === "blocked") {
+                this.setState({ blocked: true });
+            } else if (block_status === "unblocked") {
+                this.setState({ blocked: false });
+            }
+            if (report_status === "reported") {
+                this.setState({ reported: true });  
+            } else if (report_status === "unreported") {
+                this.setState({ reported: false });
+            }
+        } catch (err) {
+            if (axios.isCancel(err)) {
+            //   console.log(err.message);
+            }
         }
-        if (report_status === "reported") {
-            this.setState({ reported: true });  
-        } else if (report_status === "unreported") {
-            this.setState({ reported: false });
-        }
+
+        this.setState({ isMounted: true }, () => {
+            axios.get('/api/searchLikeProfileUser').then(res => {
+                for (var i = 0; i < res.data.length; i++) {
+                    if (parseInt(res.data[i].to_user_id) === parseInt(this.props.id)) {
+                        if (this.state.isMounted) {
+                            this.setState({like : true})
+                        }
+                    }
+                }
+            })
+            .catch(function (error) {
+                this.setState({like : false})
+            });
+        });
+    }
+
+    componentWillUnmount() {
+        this.signal.cancel('Api is being canceled');
     }
 
     showTitle() {
@@ -162,7 +191,49 @@ class UserProfileContainer extends Component {
         }
     }
 
+    async handleLike() {
+        var data = { user_id : this.props.id}
+        const res = await axios.post('/api/addLike', data);
+        if (res.data) {
+            if (res.data.action_type === "add like" || res.data.action_type === "match") {
+                document.getElementById(this.props.id).style.color = "red";
+            }
+            else if (res.data.action_type === "delete like") {
+                document.getElementById(this.props.id).style.color = "grey";
+            }
+        }
+    }
+
+    showLike(id) {
+        if(this.props.history.location.pathname === '/otherProfile/' + id) {
+            return (
+                <a className="button is-rounded round-button buttonLike">
+                    {this.renderLike(id)}
+                </a>
+            )
+        } else {
+            return
+        }
+    }
+
+    renderLike(id) {
+        if (this.state.like) {
+            return (
+                <span id={id} className="icon" onClick={this.handleLike} style={{color: "red"}}>
+                    <i className="fas fa-heart"></i>
+                </span>
+            )
+        } else {
+            return (
+                <span id={id} className="icon" onClick={this.handleLike} style={{color: "grey"}}>
+                    <i className="fas fa-heart"></i>
+                </span>
+            )
+        }
+    }
+
     render () {
+        console.log(this.props.id)
         return (
         <div className="container is-fluid">
                 <div className="header">
@@ -178,6 +249,9 @@ class UserProfileContainer extends Component {
                         user={this.props.user}
                         photos={this.props.photos}
                     />
+                </div>
+                <div className="control">
+                    {this.showLike(this.props.id)}
                 </div>
                 <div className="card-content">
                     <div className="content">
@@ -238,4 +312,4 @@ function mapStateToProps(state) {
     }
 }
 
-export default connect(mapStateToProps, null)(UserProfileContainer);
+export default withRouter(connect(mapStateToProps, null)(UserProfileContainer));

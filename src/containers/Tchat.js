@@ -14,14 +14,21 @@ class Tchat extends Component {
 
 	renderTchat() {
 		if (this.props.socket.conversation != undefined) {
-			var firstname = this.props.socket.conversation.firstname;
-			var lastname = this.props.socket.conversation.lastname;
+			var conversation_id = this.props.socket.conversation;
+			var conversations = this.props.chat.conversations;
+
+			for (var i = 0; i < conversations.length; i++) {
+				if (conversations[i].conversation_id === conversation_id) {
+					var firstname = conversations[i].firstname;
+					var lastname = conversations[i].lastname;
+				}
+			}	
 			return (
 				<div className="TchatSection">
 					<div className="HeadTchat">
 						<p className="has-text-centered labelNameTchat">Conversation with {firstname} {lastname} </p>
 					</div>
-					<div className="columns BodyTchat">
+					<div className="columns BodyTchat" id="messageList">
 						<TchatMessagesComponent />
 					</div>
 					<div className="InputTchat">
@@ -49,7 +56,8 @@ function mapStateToProps(state) {
     return { 
 		currentUser: state.auth.currentUser,
 		chat: state.conversations,
-		socket: state.socket
+		socket: state.socket,
+		chat: state.conversations
     };
 }
 

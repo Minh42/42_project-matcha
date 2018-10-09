@@ -7,7 +7,8 @@ let config = {
     entry: "./src/index.js",
     output: {
       filename: "bundle.js",
-      path: path.resolve(__dirname, "dist") // create a bubdle.js file in dist directory
+      path: path.resolve(__dirname, "dist"), // create a bubdle.js file in dist directory
+      publicPath: '/'
     },
     module: {
         rules: [
@@ -18,7 +19,7 @@ let config = {
               loader: "babel-loader", // run preprocessors to transpile ES6 down to ES5 that runs in all browsers
               options: {
                 cacheDirectory: true, // cache the results of the loader to avoid running recompilation process 
-                presets: ['env', 'react', 'stage-3', 'stage-0'] 
+                presets: ['env', 'react', 'es2015', 'stage-3', 'stage-0'] 
               }
             }
           }, 

@@ -8,6 +8,19 @@ import PropTypes from 'prop-types';
 import Button from '../components/Button';
 
 class FormContainer extends Component {
+
+	componentDidMount() {
+		const initData = {
+			"firstName": null,
+			"lastName": null,
+			"login" : null,
+			"email": null,
+			"newPassword": null,
+			"confirmedPassword": null
+		};
+		this.props.initialize(initData)
+	}
+
 	renderField(field) {
 		const { meta: { touched, error } } = field;
 		const className= `input ${touched && error ? 'is-danger' : ''}`;
@@ -39,11 +52,26 @@ class FormContainer extends Component {
 
 	errorMessage() {
 		if (this.props.errorMessage) {
-            return (
-                <p className="help is-danger">
-                    {this.props.errorMessage}
-                </p>
-            );
+			console.log(this.props.errorMessage)
+			if (this.props.errorMessage === "Please enter all the informations") {
+				return (
+					<p className="help is-danger">
+						{this.props.errorMessage}
+					</p>
+				);
+			} else if (this.props.errorMessage === "Your passwords not match") {
+				return (
+					<p className="help is-danger">
+						{this.props.errorMessage}
+					</p>
+				);
+			} else {
+				return (
+					<p className="help is-danger">
+						{this.props.errorMessage}
+					</p>
+				);
+			}
 		}
 	}
 
@@ -108,17 +136,17 @@ class FormContainer extends Component {
 
 function validate(values) {
 	let check = require('../../library/tools');
-	let errors = {};
+	const errors = {};
 
 	if (!values.firstName)
 		errors.firstName = "Please enter your firstname";
 	else if (!check.isFirstname(values.firstName))
-		errors.firstName = "Firstname must contain only alphabetic characters";
+		errors.firstName = "Firstname must contain between 1 and 32 alphabetic characters";
 
 	if (!values.lastName)
 		errors.lastName = "Please enter your lastname";
 	else if (!check.isLastname(values.lastName))
-		errors.lastName = "Lastname must contain only alphabetic characters";
+		errors.lastName = "Lastname must contain between 1 and 32 alphabetic characters";
 
 	if (!values.login)
 		errors.login = "Please enter your username";
@@ -159,8 +187,8 @@ function mapDispatchToProps(dispatch) {
 } 
 
 const reduxFormSignUp = reduxForm({
-	validate,
-	form : 'signup'
+	form : 'signup',
+	validate
 })(FormContainer);
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(reduxFormSignUp));
