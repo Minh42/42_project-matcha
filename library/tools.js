@@ -57,6 +57,8 @@ function isHash(password) {
 	const saltRounds = 10;
 	var salt = bcrypt.genSaltSync(saltRounds);
 	var hash; 
+	console.log(password)
+	console.log(salt)
 	hash = bcrypt.hashSync(password, salt);
 	return hash;
 }

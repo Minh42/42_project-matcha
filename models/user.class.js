@@ -530,8 +530,9 @@ class User {
     static async findUserId(table, user_id) {
         try {
             let ret = await pool.query("SELECT count(*) as id_exists FROM "+ table +" WHERE `user_id` = ?", [user_id]);
-            if (ret[0].id_exists > '0')
+            if (ret[0].id_exists > '0') {
                 return true;
+            }
             else
                 return false;
         }

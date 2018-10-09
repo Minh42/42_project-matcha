@@ -62,6 +62,7 @@ class TagsComponent extends React.Component{
 	const res = await axios.post('/api/deleteTags', currentTag)
 	const ret = await axios.post('/api/searchTags');
 
+	console.log(ret.data)
 	if (document.getElementById("disabled")) {
 		if (ret.data === false) {
 			document.getElementById("disabled").disabled = true; 
@@ -69,44 +70,32 @@ class TagsComponent extends React.Component{
 			document.getElementById("disabled").disabled = false;
 		}
 	}
-
 		this.setState({
 			tags: tags.filter((tag, index) => index !== i),
-			message: (ret.data === false) ? 'at least one tag' : ''
+			message: (ret.data === false) ? 'at least one tag' : '',
+			messageSuccess: (ret.data === false) ? '' : ''
 		});
 	}
 
 	handleAddition(tag) {
 		axios.post(`/api/addTags`, tag)
 		.then((res) => {
-			if (res) {
-				axios.post('/api/searchTags')
-					.then((ret) => {
-					if (document.getElementById("disabled")) {
-							if (ret.tag === 0) {
-								document.getElementById("disabled").disabled = true;
-								this.setState({
-									message: 'at least one tag',
-									messageSuccess: 'tags added'
-								}); 
-							} else {
-								document.getElementById("disabled").disabled = false;
-								this.setState({
-									message: '',
-									messageSuccess: 'tags added'
-								});
-							}
-						} else {
-							this.setState({
-								message: '',
-								messageSuccess: 'tags added'
-							});
-						}
-					})
+			if (res.data === "success") {
+				this.setState(state => ({ tags: [...state.tags, tag] }));
+				this.setState({
+					message: '',
+					messageSuccess: 'Tag added'
+				});
+				if (document.getElementById("disabled")) {
+					document.getElementById("disabled").disabled = false;
+				}
+			} else if (res.data === "error") {
+				this.setState({
+					message: 'Tag is too long',
+					messageSuccess: ''
+				});
 			}
 		})		
-
-        this.setState(state => ({ tags: [...state.tags, tag] }));
 	}
 
 	render () {
@@ -120,6 +109,7 @@ class TagsComponent extends React.Component{
 					handleDelete={this.handleDelete}
 					handleAddition={this.handleAddition}
 					delimiters={delimiters}
+					required
 					/>
 					<p className='help is-danger'>{this.state.message}</p>
 					<p className='help is-success'>{this.state.messageSuccess}</p>
