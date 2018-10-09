@@ -7,11 +7,32 @@ import { bindActionCreators } from 'redux';
 import UserProfileContainer from '../containers/UserProfileContainer';
 
 class ProfileOtherUser extends Component {
-
+    constructor(props) {    
+		super(props);
+		this.state = {
+			isUpdated: false,
+		};
+	}
+	
 	async componentDidMount() {
 		var user_id = this.props.match.params.id;
 		const res = await axios.get('/api/otherProfile/?user_id=' + user_id);
 		this.props.selectUser({data: res.data});
+	}
+
+	componentDidUpdate(prevProps) {
+		if (prevProps.socket != null && this.props.socket != null) {
+			if (prevProps.socket.message != this.props.socket.message) {
+				if (this.props.socket != null && !this.state.isUpdated) {
+					if (this.props.socket.message != null) {
+						izitoast.show({
+							message: this.props.socket.message,
+							position: 'topRight'
+						});
+					}
+				}
+			}
+		}
 	}
 
 	renderProfile() {
@@ -42,7 +63,8 @@ class ProfileOtherUser extends Component {
 
 function mapStateToProps(state) {
     return { 
-		selectedUser: state.selectedUser
+		selectedUser: state.selectedUser,
+		socket: state.socket
     };
 }
 

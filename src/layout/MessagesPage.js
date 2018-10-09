@@ -8,16 +8,29 @@ import Conversation from '../containers/Conversation';
 import Tchat from '../containers/Tchat';
 
 class MessagesPage extends Component {
+	constructor(props) {    
+		super(props);
+		this.state = {
+			isUpdated: false,
+		};
+	}
+	
 	componentDidMount() {
 		this.props.joinSocket(this.props.currentUser[0].user_id);
 	}
 
-	componentDidUpdate() {
-		if (this.props.socket.message != null) {
-			izitoast.show({
-				message: this.props.socket.message,
-				position: 'topRight'
-			});
+	componentDidUpdate(prevProps) {
+		if (prevProps.socket != null && this.props.socket != null) {
+			if (prevProps.socket.message != this.props.socket.message) {
+				if (this.props.socket != null && !this.state.isUpdated) {
+					if (this.props.socket.message != null) {
+						izitoast.show({
+							message: this.props.socket.message,
+							position: 'topRight'
+						});
+					}
+				}
+			}
 		}
 	}
 

@@ -239,7 +239,7 @@ class UserProfile extends Component {
 function mapStateToProps(state) {
     return {
         currentUser: state.auth.currentUser,
-	  socket: state.socket
+	    socket: state.socket
     };
 }
 

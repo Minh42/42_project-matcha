@@ -18,12 +18,8 @@ class WizardFormFivePage extends Component{
 
 	async handleOnboardingSubmit() {
 		const stateGeolocalisation = await axios.post('/api/localisationAllowedORnot')
-		console.log(stateGeolocalisation.data)
-		console.log('im here')
 		if (stateGeolocalisation.data === 0) {
-			console.log('hey')
 			const ret = await axios.get('https://ipinfo.io?token=517ce1a907a9ec')
-			console.log(ret.data)
 			var loc = ret.data.loc
 			var locationSplit = loc.split(',')						
 			var lat = locationSplit[0]
@@ -33,7 +29,6 @@ class WizardFormFivePage extends Component{
 				lat: lat,
 				lng: lng
 			}
-			console.log(data)
 			await axios.post('/api/localisationNotAllowed', data)
 			const res1 = await axios.post('/api/changeOnboardingStatus')
 				if (res1.data === "success") {
@@ -42,7 +37,6 @@ class WizardFormFivePage extends Component{
 					})
 				}
 		} else if (stateGeolocalisation.data === 1) {
-			console.log('here')
 			const res = await axios.post('/api/changeOnboardingStatus')
 			if (res.data === "success") {
 				this.props.fetchCurrentUser().then(() => {
@@ -82,7 +76,6 @@ class WizardFormFivePage extends Component{
 const selector = formValueSelector('wizard') // <-- same as form name
 WizardFormFivePage = connect(
   state => {
-	console.log(state.form.wizard.values)
 	axios.post('/api/addNewinfoBDD', state.form.wizard.values)
 		.then((ret) => {
 				axios.post('/api/addRelationshipBDD', state.form.wizard.values)

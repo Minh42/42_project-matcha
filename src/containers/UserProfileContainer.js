@@ -3,7 +3,9 @@ import axios from 'axios';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import { bindActionCreators } from 'redux';
 import CarouselContainer from './CarouselContainer';
+import { sendNotification } from '../actions/actionNotifications';
 
 class UserProfileContainer extends Component {
 
@@ -38,26 +40,17 @@ class UserProfileContainer extends Component {
             } else if (report_status === "unreported") {
                 this.setState({ reported: false });
             }
+            const res3 = await axios.get('/api/searchLikeProfileUser', { cancelToken: this.signal.token });
+            for (var i = 0; i < res3.data.length; i++) {
+                if (res3.data[i].to_user_id === this.props.id) {
+                    this.setState({like : true})
+                }
+            }
         } catch (err) {
             if (axios.isCancel(err)) {
             //   console.log(err.message);
             }
         }
-
-        this.setState({ isMounted: true }, () => {
-            axios.get('/api/searchLikeProfileUser').then(res => {
-                for (var i = 0; i < res.data.length; i++) {
-                    if (parseInt(res.data[i].to_user_id) === parseInt(this.props.id)) {
-                        if (this.state.isMounted) {
-                            this.setState({like : true})
-                        }
-                    }
-                }
-            })
-            .catch(function (error) {
-                this.setState({like : false})
-            });
-        });
     }
 
     componentWillUnmount() {
@@ -201,6 +194,51 @@ class UserProfileContainer extends Component {
             else if (res.data.action_type === "delete like") {
                 document.getElementById(this.props.id).style.color = "grey";
             }
+            var notificationData = res.data;
+            const ret = await axios.post('/api/notifications', notificationData);
+            var notification_object_id = ret.data;
+            if (ret.data) {
+                const ret = await axios.post('/api/lastNotification', { "notification_object_id" : notification_object_id })
+                var firstname = ret.data.firstname;
+                var lastname = ret.data.lastname;
+                var entity_type_id = ret.data.entity_type_id;
+                var notifier_id = ret.data.notifier_id;
+                
+                var userList = this.props.socket.connectedUsers;
+                var socketID = this.props.socket.socketID;
+                var notifier_socketID;
+
+                for(var i = 0; i < userList.length; i++) {
+                    if(userList[i].userID === notifier_id) {
+                    notifier_socketID = userList[i].socketID;
+                    }
+                }
+
+                var isBlocked = false;
+                var currentUser = this.props.currentUser[0].user_id;
+                const ret1 = await axios.post('/api/blockedUsers', { "notifier_id" : notifier_id })
+                if (ret1.data[0].usersBlockedByMe != null) {
+                    var blockedUsers = ret1.data[0].usersBlockedByMe.split(',');
+                    for (var j = 0; j < blockedUsers.length; j++) {
+                        if (parseInt(blockedUsers[j]) === currentUser) {
+                            isBlocked = true;
+                        }
+                    }
+                }
+
+                if (notifier_socketID != null && !isBlocked) {
+                    if (entity_type_id === 1) {
+                        var message = firstname + " " + lastname + " liked your profile."
+                        this.props.sendNotification(notifier_socketID, message);
+                    } else if (entity_type_id === 2) {
+                        var message = firstname + " " + lastname + " unliked your profile."
+                        this.props.sendNotification(notifier_socketID, message);
+                    } else if (entity_type_id === 3) {
+                        var message = firstname + " " + lastname + " matches with you."
+                        this.props.sendNotification(notifier_socketID, message);
+                    }
+                }
+            }
         }
     }
 
@@ -233,7 +271,6 @@ class UserProfileContainer extends Component {
     }
 
     render () {
-        console.log(this.props.id)
         return (
         <div className="container is-fluid">
                 <div className="header">
@@ -308,8 +345,15 @@ class UserProfileContainer extends Component {
 
 function mapStateToProps(state) {
     return {
-		currentUser: state.auth.currentUser
+        currentUser: state.auth.currentUser,
+        socket: state.socket
     }
 }
 
-export default withRouter(connect(mapStateToProps, null)(UserProfileContainer));
+function mapDispatchToProps(dispatch) {
+	return bindActionCreators({
+		  sendNotification: sendNotification
+	}, dispatch);
+}
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(UserProfileContainer));

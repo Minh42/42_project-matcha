@@ -18,7 +18,7 @@ class WizardFormFourPage extends Component {
 					</button>
 				</div>
 				<div className="column is-2 is-offset-8">
-					<button id="next" type="submit" className="next button buttonOnboarding" disabled="false">
+					<button id="next" type="submit" className="next button buttonOnboarding" disabled={false}>
 						Next
 					</button>
 				</div>

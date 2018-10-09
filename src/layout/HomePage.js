@@ -30,13 +30,15 @@ class HomePage extends Component {
 	}
 
 	componentDidUpdate(prevProps) {
-		if (prevProps.socket.message != this.props.socket.message) {
-			if (this.props.socket != null && !this.state.isUpdated) {
-				if (this.props.socket.message != null) {
-					izitoast.show({
-						message: this.props.socket.message,
-						position: 'topRight'
-					});
+		if (prevProps.socket != null && this.props.socket != null) {
+			if (prevProps.socket.message != this.props.socket.message) {
+				if (this.props.socket != null && !this.state.isUpdated) {
+					if (this.props.socket.message != null) {
+						izitoast.show({
+							message: this.props.socket.message,
+							position: 'topRight'
+						});
+					}
 				}
 			}
 		}
