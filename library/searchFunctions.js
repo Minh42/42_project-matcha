@@ -24,21 +24,6 @@ function filterByProperty(array, prop, value) {
     return filtered;
 }
 
-// function filterByProperty(array, prop, value) {
-//     var filtered = new Array();
-//     for (var i = 0; i < array.length; i++) {
-//         var obj = array[i];
-//         for (var key in obj) {
-//             var item = obj[prop];
-//             if (item === value) {
-//                 filtered.push(obj);
-//                 break;
-//             }
-//         }
-//     } 
-//     return filtered;
-// }
-
 function filterByAge(array, prop, min, max) {
     var filtered = new Array();
     for (var i = 0; i < array.length; i++) {
@@ -310,9 +295,6 @@ function getScore(person1, person2, users) {
         "age": 0.1,
         "coordinates": 0.4
     }
-    // var stemmer = require('stemmer');
-    // var getAge = require('get-age');
-    // var turf = require('@turf/turf');
     var score = 0.0;
     var interest_list1 = person1[0].tags.split(',');
     var interest_list2 = person2["tags"].split(',');

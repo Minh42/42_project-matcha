@@ -193,7 +193,7 @@ function validate(values) {
 		if (array_birthdate[0] > 2000) {
 			errors.birthdate = 'You must be at least 18'
 		} else if (array_birthdate[0] < 1900) {
-			errors.birthdate = 'You are too old'
+			errors.birthdate = 'Please enter a valid birth year'
 		}
 	}
 
@@ -203,7 +203,7 @@ function validate(values) {
 	else if (values.occupation !== undefined)
 	{
 		if (values.occupation.length > 50) {
-		errors.occupation = 'too long'
+		errors.occupation = 'Please write a shorter description of your occupation'
 		}
 	}
 
@@ -221,7 +221,7 @@ function validate(values) {
 	else if (values.bio !== undefined)
 	{
 		if (values.bio.length > 300) {
-		errors.bio = 'too long'
+		errors.bio = 'Please write a shorter description of yourself'
 		}
 	}
 	
