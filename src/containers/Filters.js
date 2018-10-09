@@ -44,11 +44,7 @@ class Filters extends Component {
 				},
 			})
 		}
-
-		componentDidUpdate() {
-			console.log(this.state)
-		}
-
+		
 	  handleAge(values) {
 		  this.props.FilterAgeAction(values, this.props.history);
 	  }

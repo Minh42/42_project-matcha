@@ -36,14 +36,14 @@ class UserProfileContainer extends Component {
             }
         } catch (err) {
             if (axios.isCancel(err)) {
-              console.log(err.message); // => prints: Api is being canceled
+            //   console.log(err.message);
             }
         }
     }
 
     componentWillUnmount() {
         this.signal.cancel('Api is being canceled');
-      }
+    }
 
     showTitle() {
         var getAge = require('get-age')

@@ -258,7 +258,6 @@ router.get('/api/current_user', authenticate, async (req, res) => {
   }
   else {
     let user_id = req.currentUser[0].user_id;
-    // user.updateLastLogin(user_id);
     const ret = await user.selectAllUsersInformations(user_id);
     if (ret) {
       res.send(ret);
@@ -839,7 +838,7 @@ router.post('/api/addLike', authenticate, (req, res) => {
 
 router.get('/api/searchLikeProfileUser', authenticate, (req, res) => {
   let user = require('../models/user.class');
-  var user_id = req.currentUser[0].user_id
+  var user_id = req.currentUser[0].user_id;
   user.searchUserWhoLike(user_id)
     .then((ret) => {
       res.json(ret)
@@ -1034,11 +1033,23 @@ router.post('/api/findUserByID', async (req, res) => {
 
 router.post('/api/notificationMessage', authenticate, async (req, res) => {
     let user = require('../models/user.class');
-    console.log(req.body)
     const ret = await user.insertNotification(req.body.entity_type_id, req.body.entity_id, req.body.actor_id, req.body.notifier_id);
     if (ret) {
       res.json(ret)
     }
 });
+
+router.post('/api/blockedUsers', authenticate, async (req, res) => {
+  let user = require('../models/user.class');
+  console.log('im here 2')
+  let user_id = req.body.notifier_id;
+  console.log(user_id)
+  console.log('im here 2')
+  const ret = await user.selectAllUsersInformations(user_id);
+  console.log('im here')
+  console.log(ret);
+  console.log('im here')
+  res.send(ret);
+})
 
 module.exports = router 

@@ -72,6 +72,7 @@
     "express-flash": "0.0.2",
     "express-layout": "^0.1.0",
     "express-session": "^1.15.6",
+    "express-socket.io-session": "^1.3.5",
     "faker": "^4.1.0",
     "fetch": "^1.1.0",
     "flatted": "^1.0.2",

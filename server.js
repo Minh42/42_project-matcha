@@ -147,7 +147,6 @@ io.sockets.on('connection', function (socket) {
         messages: message
       })
     }
-    console.log(conversations_list);
     io.to(data.notifier_socketID).emit('sendConversations', conversations_list);
   })
     
@@ -161,13 +160,13 @@ io.sockets.on('connection', function (socket) {
   })
 
   socket.on('disconnect', function() {
+    let user = require('./models/user.class');
     for(let i = 0; i < users.length; i++) {
       if(users[i].socketID === socket.id) {
+        user.updateLastLogin(users[i].userID);
         users.splice(i,1);
       }
     }
     io.emit('userLeft', {users: users});
   })
 });
-
-

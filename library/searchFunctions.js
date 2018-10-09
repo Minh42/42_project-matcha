@@ -385,6 +385,22 @@ function multiFilter(users, filters){
     });
   };
 
+function filterBlockedUsers(user, users) {
+    if (user[0].usersBlockedByMe != null) {
+        var usersBlockedByMe = user[0].usersBlockedByMe.split(',');
+        for (var i = 0; i < users.length; i++) {
+            for (var j = 0; j < usersBlockedByMe.length; j++) {
+                if (users[i]["user_id"] == usersBlockedByMe[j]) {
+                    users.splice(i, 1);
+                  }
+            }
+        }
+        return users;
+    } else {
+        return users;
+    }     
+}
+
 function filterByLikesProfile(user, users) {
     if (user[0].usersWholikedMe !=  null) {
         var likedByUsers = user[0].usersWholikedMe.split(',');
@@ -595,6 +611,7 @@ module.exports = {
     filterByAge: filterByAge,
     filterByPopularity: filterByPopularity,
     filterByDistance: filterByDistance,
+    filterBlockedUsers: filterBlockedUsers,
     findAge: findAge,
     sortByAge: sortByAge,
     findPop: findPop,

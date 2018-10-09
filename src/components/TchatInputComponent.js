@@ -77,8 +77,6 @@ class TchatInputComponent extends Component {
 			if (notifier_socketID != null) {
 				if (entity_type_id === 5) {
 					var message = firstname + " " + lastname + " send you a message."
-					console.log(message)
-					console.log(notifier_socketID)
 					this.props.sendNotification(notifier_socketID, message);
 				}
 			}
