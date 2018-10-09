@@ -93,7 +93,9 @@ class UserProfile extends Component {
 			}
 			else if (this.state.isEditingProfilePicture) {
 				return (
-					<FilesUploadContainer/>
+					<FilesUploadContainer
+						user={this.props.selectedUser.data.infos}
+					/>
 				)
 			}
 			else if ((!this.state.isEditingPersonnalInfo) && (!this.state.isEditingOtherInfo) && (!this.state.isEditingProfilePicture)) {

@@ -58,6 +58,24 @@ class Filters extends Component {
 	  }
 	
 	  render() {
+		if (this.state.valueAge.min < 0){
+			this.state.valueAge.min = 0;
+		}
+		if (this.state.valueAge.max > 100){
+			this.state.valueAge.max = 100;
+		}
+		if (this.state.valueDistance.min < 0){
+			this.state.valueDistance.min = 0;
+		}
+		if (this.state.valueDistance.max > 100){
+			this.state.valueDistance.max = 100;
+		}
+		if (this.state.valuePopularity.min < 0){
+			this.state.valuePopularity.min = 0;
+		}
+		if (this.state.valuePopularity.max > 100){
+			this.state.valuePopularity.max = 100;
+		}
 		return (
 			<div className="column">
 	<div className="formRange">

@@ -158,7 +158,7 @@ exports.seed = function(knex, Promise) {
         .then(function () {
             let usersPhotos = [];
             for (let id = 1; id <= 100; id++) {
-                for (var i = 0; i < 5; i++) {
+                for (var i = 0; i < 1; i++) {
                     usersPhotos.push(createUserPhoto(knex, id))
                 }
             }

@@ -48,7 +48,7 @@ class LocationComponent extends React.Component {
 		}
 
 	async handleFormSubmit() {
-		var message = "Disable localisation";
+		var message;
 		const address = document.getElementById("address").value;
 		const res = await axios.get('/api/geocoder/?address=' + address)
 		const lat = res.data.lat
@@ -65,12 +65,14 @@ class LocationComponent extends React.Component {
 
 		if (error === undefined) {
 			error = ""
-		
+			message = "Disable localisation";
+			this.setState({
+				allow: message
+			})
 			location.showLocation(lat, lng)	
 		}
 
 		this.setState({
-				allow: message,
 				message: error
 			})
 	}

@@ -15,7 +15,6 @@ import ForgotPassword from './containers/ForgotPasswordContainer';
 import ResetPassword from './containers/ResetPasswordContainer';
 import UserProfile from './layout/UserProfile';
 import profileOtherUser from './layout/ProfileOtherUser';
-// import ModifProfile from './layout/ModifProfile';
 import Onboarding from './components/Onboarding/wizardForm';
 import NotFound from './components/NotFound';
 
@@ -25,12 +24,14 @@ class App extends Component {
     componentDidMount() {
         this.props.fetchCurrentUser();
     }
+
  
     render() {
+
         return (
             <Router>
                 <div>
-                    <Header/>
+                    <Header />
                     <Switch>
                         <Route exact path="/" component={LandingPage} />
                         <Route path="/homepage" component={requireAuth(HomePage)} />
