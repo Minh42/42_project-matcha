@@ -1047,8 +1047,17 @@ router.post('/api/searchNotifications', authenticate, async (req, res) => {
   const ret = await user.searchNotifications(current_user);
   console.log(ret)
     if (ret) {
-      res.json(ret)
+      res.send(ret)
     }
+})
+
+router.post('/api/changeStatusNotification', async (req, res) => {
+  let user = require('../models/user.class');
+  var notification_id = req.body.notification_id
+  const ret = await user.changeStatusNotification(notification_id);
+  if (ret) {
+    res.send(true)
+  }
 })
 
 module.exports = router 
