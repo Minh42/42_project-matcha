@@ -1041,26 +1041,29 @@ router.post('/api/notificationMessage', authenticate, async (req, res) => {
   }
 });
 
-router.post('/api/searchNotifications', authenticate, async (req, res) => {
+router.get('/api/searchNotifications', authenticate, async (req, res) => {
   let user = require('../models/user.class');
   var current_user = req.currentUser[0].user_id;
   const ret = await user.searchNotifications(current_user);
   console.log(ret)
     if (ret) {
-      res.json(ret)
+      res.send(ret)
     }
+})
+
+router.post('/api/changeStatusNotification', async (req, res) => {
+  let user = require('../models/user.class');
+  var notification_id = req.body.notification_id
+  const ret = await user.changeStatusNotification(notification_id);
+  if (ret) {
+    res.send(true)
+  }
 })
 
 router.post('/api/blockedUsers', authenticate, async (req, res) => {
   let user = require('../models/user.class');
-  console.log('im here 2')
   let user_id = req.body.notifier_id;
-  console.log(user_id)
-  console.log('im here 2')
   const ret = await user.selectAllUsersInformations(user_id);
-  console.log('im here')
-  console.log(ret);
-  console.log('im here')
   res.send(ret);
 })
 

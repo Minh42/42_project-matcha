@@ -13,36 +13,57 @@ import axios from 'axios';
 
 class Header extends Component {
 	constructor(props) {
-		super(props);
+        super(props);
+        this.state = {
+            firstname : "",
+            lastname : "",
+            notification: false,
+            message: '',
+            numberNotification: 0
+        }
+        this.signal = axios.CancelToken.source();
 		this.showModal = this.showModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
         this.handleLogout = this.handleLogout.bind(this);
         this.showDialog = this.showDialog.bind(this);
+    }
 
-        this.state = {
-            firstname : "",
-            lastname : "",
-            notification: '',
-            user: ''
+    async componentDidMount() {
+        try {
+            const res = await axios.get('/api/searchNotifications', { cancelToken: this.signal.token })
+            console.log(res.data.length)
+            if (res.data) {
+                this.setState ({
+                    numberNotification: res.data.length
+                })
+            }
+        }  catch (err) {
+            if (axios.isCancel(err)) {
+                // console.log(err.message); 
+            }
         }
-	}
+    }
+
+    componentWillUnmount() {
+        this.signal.cancel('Api is being canceled');
+    }
 
 	showModal() {
 		document.getElementById('modal_signin').classList.add("is-active");
-	}
-	
+    }
+  
 	closeModal() {
-		document.getElementById('modal_signin').classList.remove("is-active");
+        document.getElementById('modal_signin').classList.remove("is-active");
     }
 
     // NOTIFICATIONS
     async showDialog() {
         document.getElementById('modal_dialog').classList.add("is-active");
-        const res = await axios.post('/api/searchNotifications')
+        const res = await axios.get('/api/searchNotifications')
         console.log(res.data)
         if (res.data.length === 0) {
             this.setState ({
-                notification: 'no notifications'
+                notification: false
             })
         } else {
             this.setState ({
@@ -51,36 +72,57 @@ class Header extends Component {
         }
 	}
 	
-	closeDialog() {
-		document.getElementById('modal_dialog').classList.remove("is-active");
+    closeDialog() {
+        document.getElementById('modal_dialog').classList.remove("is-active");
+    }
+
+    async closeNotification(notification_id) {
+        // mettre status de notif_object a 1
+        const res = await axios.post('/api/changeStatusNotification', { notification_id : notification_id }) 
+        //parcourir state notification et supprimer le message qui a notification_id
+        if (res) {
+            const res = await axios.get('/api/searchNotifications')
+            if (res.data.length === 0) {
+                this.setState ({
+                    notification: false,
+                    numberNotification: 0
+                })
+            } else {
+                this.setState ({
+                    notification: res.data,
+                    numberNotification: res.data.length
+                })
+            }
+        }
+        //aller sur profile au clic
     }
 
     allNotifiactions() {
-        if (this.state.notification != '') {
-            console.log(this.state.notification)
+        if (this.state.notification !== false ) {
             return this.state.notification.map((notif, i) => {
-                axios.post('/api/findUserByID', {user_id : notif.actor_id}).then((user) => {
-                    console.log(user.data[i].firstname)
-                    // this.setState ({
-                    //     user: user.data[i]
-                    // })
-                    return user
-                })
                 return (
                     <div key={i}>
-                        <div>
-                            <p> {this.state.user.firstname}</p>
-                            <p> {notif.entity_type_id} </p>
+                        <div className="card-content">
+                            <div className="card columns">
+                                <div className="column is-8 is-offset-3">
+                                    <p> {notif[0].firstname} {notif[0].lastname} {notif[notif.length - 2]}</p>
+                                </div>
+                                <div className="column is-1">
+                                    <button className="delete" aria-label="close" onClick={() => this.closeNotification(notif[notif.length - 1])}></button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )
-            })
-               
+            })    
+        } else {
+            return (
+                <div>no notifications</div>
+            )
         }
     }
 
     //END
-
 
     handleLogout() {
         this.props.signOutAction();
@@ -101,7 +143,7 @@ class Header extends Component {
                         ];
                     default:
                         return [
-                            <Badge key="badge" id="icontext" badgeContent={0} primary badgeId="notifications-1" onClick={this.showDialog}>
+                            <Badge key="badge" id="icontext" badgeContent={this.state.numberNotification} primary badgeId="notifications-1" onClick={this.showDialog}>
                                <i className="fas fa-envelope" id="icon"></i>
                             </Badge>,
                             <p key="homepage" className="control navbar-item">
