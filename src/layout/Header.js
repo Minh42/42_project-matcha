@@ -5,8 +5,8 @@ import { withRouter } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { signOutAction } from '../actions/actionUsers';
+import { disconnectSocket } from '../actions/actionSocket';
 import { bindActionCreators } from 'redux';
-import io from 'socket.io-client';
 
 import { Badge, Button, SVGIcon } from 'react-md';
 import axios from 'axios';
@@ -25,9 +25,7 @@ class Header extends Component {
             notification: '',
             user: ''
         }
-
-        this.socket = io('ws://localhost:8080', {transports: ['websocket']});
-	  }
+	}
 
 	showModal() {
 		document.getElementById('modal_signin').classList.add("is-active");
@@ -85,8 +83,7 @@ class Header extends Component {
 
 
     handleLogout() {
-        this.socket.emit('disconnect_user', this.props.currentUser[0].user_id);
-        this.props.signOutAction(this.props.history);
+        this.props.signOutAction();
     }
 
     showNavbar() {
@@ -117,7 +114,7 @@ class Header extends Component {
                                 <LinkButton to='/profile' className="button buttonHeader">My profile</LinkButton>
                             </p>,
                             <p key = "logout" className="control navbar-item">
-                                <LinkButton to='/' onClick={this.handleLogout} className="button buttonHeader">Signout</LinkButton>
+                                <Link to = '' onClick={this.handleLogout} className="button buttonHeader">Signout</Link>
                             </p>
                         ];
                     }
@@ -194,7 +191,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({ 
-        signOutAction: signOutAction
+        signOutAction: signOutAction,
+        disconnectSocket: disconnectSocket
     }, dispatch);
 }
 

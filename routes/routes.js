@@ -935,6 +935,7 @@ router.post('/api/createConversationParticipant', authenticate, async (req, res)
   var participant1 = req.currentUser[0].user_id;
   var participant2 = req.body.user_match;
   const ret = await user.addNewConversation(participant1, participant2);
+  console.log(ret)
   if (ret) {
     res.send('success');
   } else {
@@ -1061,6 +1062,25 @@ router.post('/api/blockedUsers', authenticate, async (req, res) => {
   console.log(ret);
   console.log('im here')
   res.send(ret);
+})
+
+router.post('/api/getConversationsList', authenticate, async (req, res) => {
+  let user = require('../models/user.class');
+  var conversation_id = req.body.conversation_id;
+  const ret = await user.getConversationsList(conversation_id);
+    if (ret) {
+      res.send(ret)
+    }
+})
+
+router.post('/api/getLastParticipantID', authenticate, async (req, res) => {
+  let user = require('../models/user.class');
+  var conversation_id = req.body.conversation_id;
+  const ret = await user.getLastParticipantID(conversation_id);
+    if (ret) {
+      console.log(ret)
+      res.json     (ret)
+    }
 })
 
 module.exports = router 

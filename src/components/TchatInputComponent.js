@@ -37,25 +37,31 @@ class TchatInputComponent extends Component {
 			message: input
 		}
 
-		var user_id_send;
+		console.log(conversations)
 		for (var i = 0; i < conversations.length; i++) {
 			if (conversations[i].conversation_id === conversation_id) {
-				user_id_send = conversations[i].user_id;
 				conversations[i].messages.push(message);
 			}
-		}	
+		}
+
 		this.props.sendDirectMessage(conversation_id, participant_id, input, conversations);
+
+		const lst = await axios.post('/api/getLastParticipantID', {conversation_id: conversation_id});
+		var notifier_id;
+		participant_id === lst.data[0].user_id ? notifier_id = lst.data[1].user_id : notifier_id = lst.data[0].user_id;
+
+		console.log(notifier_id)
 
 		var notificationData = {
 			action_type: "add message",
 			entity_type_id: 5,
 			entity_id: 6,
 			actor_id: participant_id,
-			notifier_id: user_id_send
+			notifier_id: notifier_id
 		}
-		console.log(notificationData)
+		// console.log(notificationData)
 		const res = await axios.post('/api/notificationMessage', notificationData)
-		console.log(res.data)
+		// console.log(res.data)
 		var notification_object_id = res.data;
 		if (res.data) {
 			const ret = await axios.post('/api/lastNotification', { "notification_object_id" : notification_object_id })
@@ -77,7 +83,7 @@ class TchatInputComponent extends Component {
 			if (notifier_socketID != null) {
 				if (entity_type_id === 5) {
 					var message = firstname + " " + lastname + " send you a message."
-					this.props.sendNotification(notifier_socketID, message);
+					this.props.sendNotification(notification_object_id, notifier_socketID, message);
 				}
 			}
 		}

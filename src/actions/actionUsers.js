@@ -55,15 +55,14 @@ export function signInAction({username, password}, history) {
 	};
 }
 
-export function signOutAction(history) {
+export function signOutAction() {
 	return async (dispatch) => {
 		localStorage.removeItem('jwtToken');
 		setAuthorizationToken(false);
 		dispatch({ 
 			type: UNAUTHENTICATED
-		});
+		})
 		await axios.get('/api/signout')
-		history.push('/');
 	}
 }
 

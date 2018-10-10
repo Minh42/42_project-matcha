@@ -750,6 +750,7 @@ class User {
         try {
             let count = await pool.query("SELECT count(conversation.conversation_id) AS `value_exists` FROM `conversation` INNER JOIN `participant` AS p1 ON p1.conversation_id = conversation.conversation_id INNER JOIN `participant` as p2 ON p2.conversation_id = conversation.conversation_id WHERE p1.participant_id = ? AND p2.participant_id = ?", [participant1, participant2]);
             if (count[0].value_exists > '0') {
+                console.log('i came here')
                 return false;
             } else {
                 let ret = await pool.query("INSERT INTO `conversation` SET `user_id` = ?", [participant1]);
@@ -927,6 +928,24 @@ class User {
             }
             console.log(infoNotif)
             // return ret;
+        } catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async getConversationsList(conversation_id) {
+        try {
+            const ret = pool.query('SELECT user_id, firstname, lastname, imageProfile_path FROM `participant` INNER JOIN `users` ON users.user_id = participant.participant_id WHERE participant.conversation_id = ?', [conversation_id]);
+            return ret;
+        } catch(err) {
+            throw new Error(err)
+        } 
+    }
+
+    static async getLastParticipantID(conversation_id) {
+        try {
+            const ret = await pool.query('SELECT user_id, firstname, lastname, imageProfile_path FROM `participant` INNER JOIN `users` ON users.user_id = participant.participant_id WHERE participant.conversation_id = ?', [conversation_id]);
+            return ret;
         } catch(err) {
             throw new Error(err)
         } 

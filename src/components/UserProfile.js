@@ -73,7 +73,7 @@ class UserProfile extends Component {
             if (notifier_socketID != null && !isBlocked) {
                 if (entity_type_id === 4) {
                     var message = firstname + " " + lastname + " viewed your profile.";
-                    this.props.sendNotification(notifier_socketID, message);
+                    this.props.sendNotification(notification_object_id, notifier_socketID, message);
                 }
             }
         }
@@ -125,13 +125,13 @@ class UserProfile extends Component {
                 if (notifier_socketID != null && !isBlocked) {
                     if (entity_type_id === 1) {
                         var message = firstname + " " + lastname + " liked your profile."
-                        this.props.sendNotification(notifier_socketID, message);
+                        this.props.sendNotification(notification_object_id, notifier_socketID, message);
                     } else if (entity_type_id === 2) {
                         var message = firstname + " " + lastname + " unliked your profile."
-                        this.props.sendNotification(notifier_socketID, message);
+                        this.props.sendNotification(notification_object_id, notifier_socketID, message);
                     } else if (entity_type_id === 3) {
                         var message = firstname + " " + lastname + " matches with you."
-                        this.props.sendNotification(notifier_socketID, message);
+                        this.props.sendNotification(notification_object_id, notifier_socketID, message);
                     }
                 }
             }

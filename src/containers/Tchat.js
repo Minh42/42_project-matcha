@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import TchatMessagesComponent from '../components/TchatMessagesComponent';
 import TchatInputComponent from '../components/TchatInputComponent';
+import { requestMessages, requestConversations } from '../actions/actionConversations';
 
 class Tchat extends Component {
 	constructor(props) {
@@ -13,7 +16,7 @@ class Tchat extends Component {
 	}
 
 	renderTchat() {
-		if (this.props.socket.conversation != undefined) {
+		if (this.props.socket.conversation != undefined || this.props.socket.conversation != null || this.props.chat != undefined || this.props.chat != null) {
 			var conversation_id = this.props.socket.conversation;
 			var conversations = this.props.chat.conversations;
 
@@ -61,4 +64,11 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps, null)(Tchat)
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators({ 
+		requestMessages: requestMessages,
+		requestConversations: requestConversations
+    }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Tchat)

@@ -24,7 +24,6 @@ class LocationComponent extends React.Component {
 			var lat;
 			var lng;
 			const stateGeolocalisation = await axios.post('/api/localisationAllowedORnot')
-			console.log(stateGeolocalisation.data)
 			if (stateGeolocalisation.data === 1) {
 				const res = await axios.get('/api/findLocalisation')
 				lat = res.data.lat
