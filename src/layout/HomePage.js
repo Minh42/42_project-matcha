@@ -15,6 +15,9 @@ import izitoast from 'izitoast';
 class HomePage extends Component {
     constructor(props) {    
 		super(props);
+		this.state = {
+			isUpdated: false,
+		};
 	}
 
 	async componentDidMount() {
@@ -26,13 +29,17 @@ class HomePage extends Component {
 		}
 	}
 
-	componentDidUpdate() {
-		if (this.props.socket != null) {
-			if (this.props.socket.message != null) {
-				izitoast.show({
-					message: this.props.socket.message,
-					position: 'topRight'
-				});
+	componentDidUpdate(prevProps) {
+		if (prevProps.socket != null && this.props.socket != null) {
+			if (prevProps.socket.message != this.props.socket.message) {
+				if (this.props.socket != null && !this.state.isUpdated) {
+					if (this.props.socket.message != null) {
+						izitoast.show({
+							message: this.props.socket.message,
+							position: 'topRight'
+						});
+					}
+				}
 			}
 		}
 	}

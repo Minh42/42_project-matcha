@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { filterByLikesProfile, filterByAge, filterByPopularity, filterByDistance, findAge, sortByAge, findPop, sortByPop, findDistance, sortByDistance, searchTag, filterByViewsProfile, profileWhoMatch, findUserByID, sortByScore, match } from '../../library/searchFunctions';
+import { filterBlockedUsers, filterByLikesProfile, filterByAge, filterByPopularity, filterByDistance, findAge, sortByAge, findPop, sortByPop, findDistance, sortByDistance, searchTag, filterByViewsProfile, profileWhoMatch, findUserByID, sortByScore, match } from '../../library/searchFunctions';
 
 const getUsers = (state) => state.users.items
 const getCurrentUser = (state) => state.auth.currentUser
@@ -19,7 +19,8 @@ export const getViewsUsers = createSelector([getUsers, getCurrentUser], (users, 
     
 export const getMatchedUsers = createSelector([getUsers, getCurrentUser], (users, currentUser) => {
     if (users != undefined && currentUser != undefined) {
-        var result = match(currentUser, users);
+        var usersExceptBlockedUsers = filterBlockedUsers(currentUser, users);
+        var result = match(currentUser, usersExceptBlockedUsers);
         var sorted_result = sortByScore(result);
         return sorted_result;
     }

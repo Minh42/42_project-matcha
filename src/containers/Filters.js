@@ -44,7 +44,7 @@ class Filters extends Component {
 				},
 			})
 		}
-
+		
 	  handleAge(values) {
 		  this.props.FilterAgeAction(values, this.props.history);
 	  }

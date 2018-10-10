@@ -258,7 +258,6 @@ router.get('/api/current_user', authenticate, async (req, res) => {
   }
   else {
     let user_id = req.currentUser[0].user_id;
-    // user.updateLastLogin(user_id);
     const ret = await user.selectAllUsersInformations(user_id);
     if (ret) {
       res.send(ret);
@@ -839,7 +838,7 @@ router.post('/api/addLike', authenticate, (req, res) => {
 
 router.get('/api/searchLikeProfileUser', authenticate, (req, res) => {
   let user = require('../models/user.class');
-  var user_id = req.currentUser[0].user_id
+  var user_id = req.currentUser[0].user_id;
   user.searchUserWhoLike(user_id)
     .then((ret) => {
       res.json(ret)
@@ -1058,6 +1057,13 @@ router.post('/api/changeStatusNotification', async (req, res) => {
   if (ret) {
     res.send(true)
   }
+})
+
+router.post('/api/blockedUsers', authenticate, async (req, res) => {
+  let user = require('../models/user.class');
+  let user_id = req.body.notifier_id;
+  const ret = await user.selectAllUsersInformations(user_id);
+  res.send(ret);
 })
 
 module.exports = router 

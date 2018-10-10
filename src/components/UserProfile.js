@@ -10,32 +10,30 @@ class UserProfile extends Component {
         super(props);
 
         this.state = {
-            isMounted: false,
             like : false
         }
+        this.signal = axios.CancelToken.source();
         this.showProfile = this.showProfile.bind(this)
         this.handleLike = this.handleLike.bind(this)
     }
 
-    componentDidMount() {
-        this.setState({ isMounted: true }, () => {
-            axios.get('/api/searchLikeProfileUser').then(res => {
-                for (var i = 0; i < res.data.length; i++) {
-                    if (res.data[i].to_user_id === this.props.id) {
-                        if (this.state.isMounted) {
-                            this.setState({like : true})
-                        }
-                    }
+    async componentDidMount() {
+        try {
+            const res = await axios.get('/api/searchLikeProfileUser', { cancelToken: this.signal.token });
+            for (var i = 0; i < res.data.length; i++) {
+                if (res.data[i].to_user_id === this.props.id) {
+                    this.setState({like : true})
                 }
-            })
-            .catch(function (error) {
-                this.setState({like : false})
-            });
-        });
-      }
+            }
+        } catch (err) {
+            if (axios.isCancel(err)) {
+                // console.log(err.message); 
+            }
+        }
+    }
 
     componentWillUnmount() {
-        this.setState({ isMounted: false });
+        this.signal.cancel('Api is being canceled');
     }
 
     async showProfile() {
@@ -60,7 +58,19 @@ class UserProfile extends Component {
                 }
             }
 
-            if (notifier_socketID != null) {
+            var isBlocked = false;
+            var currentUser = this.props.currentUser[0].user_id;
+            const ret1 = await axios.post('/api/blockedUsers', { "notifier_id" : notifier_id })
+            if (ret1.data[0].usersBlockedByMe != null) {
+                var blockedUsers = ret1.data[0].usersBlockedByMe.split(',');
+                for (var j = 0; j < blockedUsers.length; j++) {
+                    if (parseInt(blockedUsers[j]) === currentUser) {
+                        isBlocked = true;
+                    }
+                }
+            }
+
+            if (notifier_socketID != null && !isBlocked) {
                 if (entity_type_id === 4) {
                     var message = firstname + " " + lastname + " viewed your profile.";
                     this.props.sendNotification(notifier_socketID, message);
@@ -81,7 +91,6 @@ class UserProfile extends Component {
                 document.getElementById(this.props.id).style.color = "grey";
             }
             var notificationData = res.data;
-            console.log('notiflike:', notificationData)
             const ret = await axios.post('/api/notifications', notificationData);
             var notification_object_id = ret.data;
             if (ret.data) {
@@ -101,7 +110,19 @@ class UserProfile extends Component {
                     }
                 }
 
-                if (notifier_socketID != null) {
+                var isBlocked = false;
+                var currentUser = this.props.currentUser[0].user_id;
+                const ret1 = await axios.post('/api/blockedUsers', { "notifier_id" : notifier_id })
+                if (ret1.data[0].usersBlockedByMe != null) {
+                    var blockedUsers = ret1.data[0].usersBlockedByMe.split(',');
+                    for (var j = 0; j < blockedUsers.length; j++) {
+                        if (parseInt(blockedUsers[j]) === currentUser) {
+                            isBlocked = true;
+                        }
+                    }
+                }
+
+                if (notifier_socketID != null && !isBlocked) {
                     if (entity_type_id === 1) {
                         var message = firstname + " " + lastname + " liked your profile."
                         this.props.sendNotification(notifier_socketID, message);
@@ -133,6 +154,28 @@ class UserProfile extends Component {
         }
     }
 
+    renderUsers(id, firstname, lastname) {
+        if (this.props.socket != null) {
+            var userList = this.props.socket.connectedUsers;
+            for(var i = 0; i < userList.length; i++) {
+                if(userList[i].userID === id) {
+                    return (
+                        <span>
+                            <i className="fas fa-circle" style={{color: "green"}}></i> {firstname} {lastname}
+                        </span>
+                    )
+                } else{
+                    return (
+                        <span>
+                            <i className="fas fa-circle" style={{color: "white"}}></i> {firstname} {lastname}
+                        </span>
+                    )      
+                }
+            }
+        }
+    }
+
+
     render() {
         const { id, firstname, lastname, age, src } = this.props;
         var getAge = require('get-age');
@@ -143,6 +186,7 @@ class UserProfile extends Component {
 				var path = 'http://localhost:8080/' + src;
             }
         }
+
         return (
                 <div className="cardProfile">
                     <div className="card-image">
@@ -152,7 +196,7 @@ class UserProfile extends Component {
                         <div className="card-content is-overlay is-clipped">
                         <div className="columns">
                             <div className="homepageInfo">
-                                {firstname} {lastname}
+                                {this.renderUsers(id, firstname, lastname)}
                             </div>
                         </div>
                         <div className="columns">
@@ -177,13 +221,13 @@ class UserProfile extends Component {
                                         {this.renderLike(id)}
                                     </a>
                                 </p>
-                                <p className="control">
+                                {/* <p className="control">
                                     <a className="button is-rounded round-button buttonLike">
                                         <span className="icon">
-                                            <i className="fas fa-comment"></i>
+                                            <i className="fas fa-circle"></i>
                                         </span>
                                     </a>
-                                </p>
+                                </p> */}
                             </div>
                         </div>
                     </div>
@@ -194,7 +238,8 @@ class UserProfile extends Component {
 
 function mapStateToProps(state) {
     return {
-	  socket: state.socket
+        currentUser: state.auth.currentUser,
+	    socket: state.socket
     };
 }
 

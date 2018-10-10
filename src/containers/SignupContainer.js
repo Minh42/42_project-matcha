@@ -89,7 +89,7 @@ class SignupContainer extends Component{
 				<div className="modal-card">
 					<section className="modal-card-body">
 						<p className="is-primary">
-							Veuillez confirmer votre compte :)
+							Please confirm your account
 						</p>
 					<button className="modal-close is-large" aria-label="close" onClick={this.closeModalEmail}></button>
 					</section>

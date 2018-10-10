@@ -40,7 +40,6 @@ class Conversation extends Component {
 						var message = 'write a message';
 						// conversation.messages[len - 1].participant_id === this.props.currentUser[0].user_id ? 
 						// message = 'Vous: ' + conversation.messages[len - 1].message : message = conversation.messages[len - 1].message;
-						console.log(message)
 						return (
 							<ConversationComponent
 								key={conversation.conversation_id}

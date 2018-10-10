@@ -24,21 +24,6 @@ function filterByProperty(array, prop, value) {
     return filtered;
 }
 
-// function filterByProperty(array, prop, value) {
-//     var filtered = new Array();
-//     for (var i = 0; i < array.length; i++) {
-//         var obj = array[i];
-//         for (var key in obj) {
-//             var item = obj[prop];
-//             if (item === value) {
-//                 filtered.push(obj);
-//                 break;
-//             }
-//         }
-//     } 
-//     return filtered;
-// }
-
 function filterByAge(array, prop, min, max) {
     var filtered = new Array();
     for (var i = 0; i < array.length; i++) {
@@ -385,6 +370,22 @@ function multiFilter(users, filters){
     });
   };
 
+function filterBlockedUsers(user, users) {
+    if (user[0].usersBlockedByMe != null) {
+        var usersBlockedByMe = user[0].usersBlockedByMe.split(',');
+        for (var i = 0; i < users.length; i++) {
+            for (var j = 0; j < usersBlockedByMe.length; j++) {
+                if (users[i]["user_id"] == usersBlockedByMe[j]) {
+                    users.splice(i, 1);
+                  }
+            }
+        }
+        return users;
+    } else {
+        return users;
+    }     
+}
+
 function filterByLikesProfile(user, users) {
     if (user[0].usersWholikedMe !=  null) {
         var likedByUsers = user[0].usersWholikedMe.split(',');
@@ -595,6 +596,7 @@ module.exports = {
     filterByAge: filterByAge,
     filterByPopularity: filterByPopularity,
     filterByDistance: filterByDistance,
+    filterBlockedUsers: filterBlockedUsers,
     findAge: findAge,
     sortByAge: sortByAge,
     findPop: findPop,

@@ -50,7 +50,6 @@ class Header extends Component {
     async showDialog() {
         document.getElementById('modal_dialog').classList.add("is-active");
         const res = await axios.post('/api/searchNotifications')
-        console.log(res.data)
         if (res.data.length === 0) {
             this.setState ({
                 notification: false
@@ -67,8 +66,6 @@ class Header extends Component {
     }
 
     async closeNotification(notification_id) {
-        console.log('state notif:', this.state.notification)
-        console.log('notif id:', notification_id)
         // mettre status de notif_object a 1
         const res = await axios.post('/api/changeStatusNotification', { notification_id : notification_id }) 
         //parcourir state notification et supprimer le message qui a notification_id

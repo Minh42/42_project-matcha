@@ -2,7 +2,7 @@ import React from 'react'
 import { Field, reduxForm } from 'redux-form'
 import validate from './validate'
 
-const relationship = ['Marriage', 'Casual sex', 'friends', 'One night stand', 'Long term relationship', 'Short term relationship']
+const relationship = ['Marriage', 'Casual sex', 'Friends', 'One night stand', 'Long term relationship', 'Short term relationship']
 		  
 const renderErrorInterest = ({ meta: { touched, error } }) =>
 	touched && error ? <span className= "help is-danger">{error}</span> : false
