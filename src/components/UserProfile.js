@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import { sendNotification } from '../actions/actionNotifications';
 import { bindActionCreators } from 'redux';
 import axios from 'axios';
+import LazyLoad from 'react-lazy-load';
 
 class UserProfile extends Component {
     constructor(props) {
@@ -191,7 +192,9 @@ class UserProfile extends Component {
                 <div className="cardProfile">
                     <div className="card-image">
                         <figure className="image is-3by2">
+                        <LazyLoad height={50}>
                             <img className="imageCard" src={path} alt=""/>
+                        </LazyLoad>
                         </figure>
                         <div className="card-content is-overlay is-clipped">
                         <div className="columns">

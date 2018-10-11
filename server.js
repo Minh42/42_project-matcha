@@ -67,6 +67,10 @@ server.listen(PORT, () => {
 var users = [];
 io.sockets.on('connection', function (socket) {
 
+  socket.on("manual-connection", function(data) {
+    console.log("User Manually connected. ID: " + data);
+  });
+
   socket.on('joinRequested', function(user_id) {
     if (users.length === 0) {
       users.push({
@@ -87,6 +91,7 @@ io.sockets.on('connection', function (socket) {
       }
     }
 
+    console.log(users)
     let len = users.length;
     len--;
     io.emit('userJoined', {users: users, socketID: users[len].socketID})
@@ -104,7 +109,7 @@ io.sockets.on('connection', function (socket) {
   socket.on('requestMessages', async function(data) {
     var conversations = [];
     for (var i = 0; i < data.conversationIDs.length; i++) {
-      var res1 = await pool.query('SELECT firstname, lastname, imageProfile_path, participant_id, message FROM `message` INNER JOIN `users` ON users.user_id = message.participant_id WHERE message.conversation_id = ?', [data.conversationIDs[i].conversation_id]);
+      var res1 = await pool.query('SELECT firstname, lastname, imageProfile_path, participant_id, message FROM `message` INNER JOIN `users` ON users.user_id = message.participant_id WHERE message.conversation_id = ? ORDER BY message_id DESC LIMIT 10', [data.conversationIDs[i].conversation_id]);
       var message = JSON.parse(JSON.stringify(res1));
       var res2 = await pool.query('SELECT user_id, firstname, lastname, imageProfile_path FROM `participant` INNER JOIN `users` ON users.user_id = participant.participant_id WHERE participant.conversation_id = ?', [data.conversationIDs[i].conversation_id]);
       var user_id;
@@ -148,4 +153,9 @@ io.sockets.on('connection', function (socket) {
     }
     io.emit('userLeft', {users: users});
   })
+
+  socket.on("manual-disconnection", function(data) {
+    console.log("User Manually Disconnected. ID: " + data);
+  });
+
 });

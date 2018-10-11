@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import axios from 'axios';
 import { bindActionCreators } from 'redux';
-import { joinRoom, showConversation } from '../actions/actionConversations';
+import { joinRoom, showConversation, requestMessages } from '../actions/actionConversations';
 import ConversationComponent from '../components/ConversationComponent';
 
 class Conversation extends Component {
@@ -10,9 +11,22 @@ class Conversation extends Component {
 		this.openTchat = this.openTchat.bind(this);
 	}
 
-	openTchat(conversation) {
+	async openTchat(conversation) {
 		this.props.joinRoom(conversation.conversation_id);
 		this.props.showConversation(conversation.conversation_id);
+
+		var currentUser = this.props.currentUser[0].user_id;
+		var userList = this.props.socket.connectedUsers;
+		var notifier_socketID;
+
+		for(var i = 0; i < userList.length; i++) {
+			if(userList[i].userID === currentUser) {
+			  notifier_socketID = userList[i].socketID;
+			}
+		}
+		var res = await axios.post('/api/findAllConversations');
+		this.props.requestMessages(res.data, currentUser, notifier_socketID);
+
 	}
 
 	renderConversation() {
@@ -61,7 +75,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({ 
 		joinRoom: joinRoom,
-		showConversation: showConversation
+		showConversation: showConversation,
+		requestMessages: requestMessages
     }, dispatch);
 }
 

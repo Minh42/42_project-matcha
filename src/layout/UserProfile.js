@@ -30,6 +30,7 @@ class UserProfile extends Component {
 	}
 
 	componentDidUpdate() {
+		console.log(this.props.socket)
 		if (this.props.socket.message != null) {
 			izitoast.show({
 				message: this.props.socket.message,

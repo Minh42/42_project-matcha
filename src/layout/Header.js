@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import LoginContainer from '../containers/LoginContainer';
 import LinkButton from "../components/LinkButton";
 import { withRouter } from 'react-router-dom';
-import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { signOutAction } from '../actions/actionUsers';
 import { disconnectSocket } from '../actions/actionSocket';
@@ -29,17 +28,44 @@ class Header extends Component {
     }
 
     async componentDidMount() {
-        try {
-            const res = await axios.get('/api/searchNotifications', { cancelToken: this.signal.token })
-            console.log(res.data.length)
-            if (res.data) {
-                this.setState ({
-                    numberNotification: res.data.length
-                })
+        if (this.props.currentUser) {
+            try {
+                const res = await axios.get('/api/searchNotifications', { cancelToken: this.signal.token })
+                if (res.data != undefined) {
+                    this.setState ({
+                        numberNotification: res.data.length
+                    })
+                } else {
+                    this.setState ({
+                        numberNotification: 0
+                    })
+                }
+            } catch (err) {
+                if (axios.isCancel(err)) {
+                    // console.log(err.message); 
+                }
             }
-        }  catch (err) {
-            if (axios.isCancel(err)) {
-                // console.log(err.message); 
+        }
+    }
+
+
+    async componentDidUpdate(prevProps, prevState) { 
+        if (prevProps.currentUser != this.props.currentUser) {
+            try {
+                const res = await axios.get('/api/searchNotifications', { cancelToken: this.signal.token })
+                if (res.data != undefined) {
+                    this.setState ({
+                        numberNotification: res.data.length
+                    })
+                } else {
+                    this.setState ({
+                        numberNotification: 0
+                    })
+                }
+            } catch (err) {
+                if (axios.isCancel(err)) {
+                    // console.log(err.message); 
+                }
             }
         }
     }
@@ -47,6 +73,7 @@ class Header extends Component {
     componentWillUnmount() {
         this.signal.cancel('Api is being canceled');
     }
+
 
 	showModal() {
 		document.getElementById('modal_signin').classList.add("is-active");
@@ -63,11 +90,13 @@ class Header extends Component {
         console.log(res.data)
         if (res.data.length === 0) {
             this.setState ({
-                notification: false
+                notification: false,
+                numberNotification: 0
             })
         } else {
             this.setState ({
-                notification: res.data
+                notification: res.data,
+                numberNotification: res.data.length
             })
         }
 	}
@@ -126,6 +155,7 @@ class Header extends Component {
 
     handleLogout() {
         this.props.signOutAction();
+        this.props.disconnectSocket();
     }
 
     showNavbar() {
@@ -156,7 +186,7 @@ class Header extends Component {
                                 <LinkButton to='/profile' className="button buttonHeader">My profile</LinkButton>
                             </p>,
                             <p key = "logout" className="control navbar-item">
-                                <Link to = '' onClick={this.handleLogout} className="button buttonHeader">Signout</Link>
+                                <LinkButton to='/' onClick={this.handleLogout} className="button buttonHeader">Signout</LinkButton>
                             </p>
                         ];
                     }

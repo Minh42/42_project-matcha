@@ -41,8 +41,7 @@ body {
     line-height: 1.2;
     color: black;
     height:100%; 
-    min-width: 900px
-    // padding: 30px;
+    min-width: 900px;
 }
 
 $color-primary: #E52A6F;
@@ -500,54 +499,6 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
     border-radius: 500px;
 }
 
-
-// .aside .compose .button .compose {
-//     font-size: 14px;
-//     font-weight: 700;
-// }
-
-// .aside .main {
-//     padding: 40px;
-//     color: #6F7B7E;
-// }
-
-// .aside .title {
-//     color: #6F7B7E;
-//     font-size: 12px;
-//     font-weight: bold;
-//     text-transform: uppercase;
-// }
-
-// .aside .main .item {
-//     display: block;
-//     padding: 10px 0;
-//     color: #6F7B7E;
-// }
-
-// .aside .main .item.active {
-//     background-color: #F1F1F1;
-//     margin: 0 -50px;
-//     padding-left: 50px;
-// }
-
-// .aside .main .item:active,.aside .main .item:hover {
-//     background-color: #F2F2F2;
-//     margin: 0 -50px;
-//     padding-left: 50px;
-// }
-
-// .aside .main .icon {
-//     font-size: 19px;
-//     padding-right: 30px;
-//     color: #A0A0A0;
-// }
-
-// .aside .main .name {
-//     font-size: 15px;
-//     color: #5D5D5D;
-//     font-weight: 500;
-// }
-
 .card.active {
     background-color:#F5F5F5;
 }
@@ -678,16 +629,9 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
     position: absolute;
     top: -1.8rem; }
   
-//   .input-range__label-container {
-//     left: -50%;
-//     position: relative; }
-//     .input-range__label--max .input-range__label-container {
-//       left: 50%; }
-  
   .input-range__track {
     background: rgb(216, 3, 81);
     border-radius: 0.3rem;
-    /* cursor: pointer; */
     display: block;
     height: 0.3rem;
     position: relative;
@@ -762,15 +706,9 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
     font-family: 'Lato', sans-serif;
     color: white;
     margin: 3%;
-    // border: solid 1px white;
     background-color: rgba(103, 174, 202, 0.44);
     box-shadow: 0 5px 5px rgba(0, 0, 0, .2); 
 }
-
-// .sectionTchat {
-//     margin: 0;
-//     padding:0;
-// }
 
 .input_msg_write input {
     background: rgba(0, 0, 0, 0) none repeat scroll 0 0;

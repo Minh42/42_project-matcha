@@ -383,20 +383,10 @@ class User {
         } 
     }
 
-    static async findIdTagUser(user_id) {
-        try {
-            let ret = await pool.query("SELECT `tag_id` FROM `user_tags` WHERE `user_id` = ?", [user_id]);
-            return ret;
-        }
-        catch(err) {
-            throw new Error(err)
-        } 
-    }
-
     //---------------------------FIND TAGS FROM TAGS------------------------------
-    static async findTagName(tag_id) {
+    static async findTags(user_id) {
         try {
-            let ret = await pool.query("SELECT `name` FROM `tags` WHERE `tag_id` = ?", [tag_id]);
+            let ret = await pool.query("SELECT `name` FROM `tags` INNER JOIN `user_tags` ON user_tags.tag_id = tags.tag_id WHERE `user_id` = ?", [user_id]);
             return ret;
         }
         catch(err) {
@@ -916,9 +906,12 @@ class User {
     static async searchNotifications(user_id) {
         try {
             var infoNotif = new Array();
-            var ret = await pool.query("SELECT notification_object.id, `entity_type_id`, `actor_id` FROM `notification_object` INNER JOIN `notification` ON notification.notification_object_id = notification_object.id INNER JOIN `notification_change` ON notification_change.notification_object_id = notification_object.id WHERE notification.notifier_id = ? AND notification_object.status = ?", [user_id, 0]);
+
+
+            var ret = await pool.query("SELECT notification_object.id, notification_object.entity_type_id, notification_change.actor_id FROM `notification_object` INNER JOIN `notification` ON notification.notification_object_id = notification_object.id INNER JOIN `notification_change` ON notification_change.notification_object_id = notification_object.id WHERE notification.notifier_id = ? AND notification_object.status = ?", [user_id, 0]);
+            console.log('searchNotifi', ret)
             for (var i = 0; ret.length > i; i++) {
-                console.log(ret[i].id)
+                // console.log(ret[i].id)
                 if (ret[i].entity_type_id === 1) {
                    var message = " liked your profile."
                 } else if (ret[i].entity_type_id === 2){
@@ -930,9 +923,12 @@ class User {
                 } else if (ret[i].entity_type_id === 5){
                     var message = " send you a message."
                 }
-                var ret1 = await pool.query("SELECT `user_id`, `firstname`, `lastname` FROM `users` INNER JOIN `notification_change` ON notification_change.actor_id = users.user_id INNER JOIN `notification_object` ON notification_object.id = notification_change.notification_object_id WHERE users.user_id = ?", [ret[i].actor_id]);
+                var ret1 = await pool.query("SELECT `user_id`, `firstname`, `lastname` FROM `users` WHERE user_id = ?", [ret[i].actor_id]);
+                console.log('before', ret1)
                 ret1.push(message, ret[i].id)
+                console.log('after', ret1)
                 infoNotif.push(ret1)
+                console.log(infoNotif)
             }
             return infoNotif;
         } catch(err) {

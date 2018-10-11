@@ -7,6 +7,7 @@ import { withRouter } from 'react-router-dom';
 import LinkButton from "../components/LinkButton";
 import PropTypes from 'prop-types';
 import Button from '../components/Button';
+import { connectSocket } from '../actions/actionSocket';
 
 class LoginContainer extends Component {
     
@@ -45,6 +46,7 @@ class LoginContainer extends Component {
 
     onSubmit(values) {
         this.props.signInAction(values, this.props.history);
+        this.props.connectSocket();
     }
 
     errorMessage() {
@@ -127,7 +129,10 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({ signInAction: signInAction}, dispatch);
+    return bindActionCreators({ 
+        signInAction: signInAction,
+        connectSocket: connectSocket
+    }, dispatch);
 }
 
 const reduxFormSignin = reduxForm({

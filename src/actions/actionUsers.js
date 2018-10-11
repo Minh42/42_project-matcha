@@ -60,7 +60,8 @@ export function signOutAction() {
 		localStorage.removeItem('jwtToken');
 		setAuthorizationToken(false);
 		dispatch({ 
-			type: UNAUTHENTICATED
+			type: UNAUTHENTICATED,
+			payload: null
 		})
 		await axios.get('/api/signout')
 	}
