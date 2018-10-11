@@ -1,11 +1,13 @@
 import React, { Component }  from 'react';
 import { connect } from 'react-redux';
+import axios from 'axios';
 import izitoast from 'izitoast';
 import Match from '../containers/Match';
 import { bindActionCreators } from 'redux';
 import { joinSocket } from '../actions/actionNotifications';
 import Conversation from '../containers/Conversation';
 import Tchat from '../containers/Tchat';
+import { requestMessages, requestConversations } from '../actions/actionConversations';
 
 class MessagesPage extends Component {
 	constructor(props) {    
@@ -15,8 +17,22 @@ class MessagesPage extends Component {
 		};
 	}
 	
-	componentDidMount() {
+	async componentDidMount() {
 		this.props.joinSocket(this.props.currentUser[0].user_id);
+
+		var currentUser = this.props.currentUser[0].user_id;
+		var userList = this.props.socket.connectedUsers;
+		var notifier_socketID;
+
+		for(var i = 0; i < userList.length; i++) {
+			if(userList[i].userID === currentUser) {
+			  notifier_socketID = userList[i].socketID;
+			}
+		}
+		var res = await axios.post('/api/findAllConversations');
+		var conversationIDs = res.data;
+		this.props.requestConversations(conversationIDs, currentUser);
+		this.props.requestMessages(res.data, currentUser, notifier_socketID);
 	}
 
 	componentDidUpdate(prevProps) {
@@ -64,7 +80,9 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
 	return bindActionCreators({
-		joinSocket: joinSocket
+		joinSocket: joinSocket,
+		requestMessages: requestMessages,
+		requestConversations: requestConversations
 	}, dispatch);
 }
 

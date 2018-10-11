@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 import { selectUser } from '../actions/actionUsers';
 import { bindActionCreators } from 'redux';
+import izitoast from 'izitoast';
+import { withRouter } from 'react-router-dom';
 
 import UserProfileContainer from '../containers/UserProfileContainer';
 
@@ -17,7 +19,11 @@ class ProfileOtherUser extends Component {
 	async componentDidMount() {
 		var user_id = this.props.match.params.id;
 		const res = await axios.get('/api/otherProfile/?user_id=' + user_id);
-		this.props.selectUser({data: res.data});
+		if (res.data === "error") {
+			this.props.history.push('/homepage');
+		} else {
+			this.props.selectUser({data: res.data});
+		}
 	}
 
 	componentDidUpdate(prevProps) {
@@ -74,4 +80,4 @@ function mapDispatchToProps(dispatch) {
     }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ProfileOtherUser);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ProfileOtherUser));

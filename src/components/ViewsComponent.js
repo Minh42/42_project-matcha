@@ -20,18 +20,14 @@ class ViewsComponent extends Component {
 			var path = 'http://localhost:8080/' + src;
 		}
 		return (
-			<div>
-				<article className="media">
-					<figure className="media-left">
-						<p className="image is-96x96">
-							<img src={path} alt="userLikes" onClick={this.handleClick}/>
-						</p>
-					</figure>
-					<div className="media-content">
-						<p> {firstname} {lastname}, {getAge(age)}</p>
-						<p> {occupation} </p>
+			<div className="columns">
+					<div className="column is-6 ">
+						<img src={path} alt="userLikes" onClick={this.handleClick} />
 					</div>
-				</article>
+					<div className="column is-6">
+						<p className="id_font"> {firstname} {lastname}, {getAge(age)}</p>
+						<p className="id_font"> {occupation} </p>
+					</div>
 			</div>	
 		)
 	}

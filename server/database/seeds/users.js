@@ -103,7 +103,7 @@ async function getCloudinaryPhotos(gender) {
     });
 
     try {
-        const res = await cloudinary.v2.api.resources({ type: 'upload', prefix: 'matcha/' + gender + '/', max_results: 250 });
+        const res = await cloudinary.v2.api.resources({ type: 'upload', prefix: 'matcha/' + gender + '/', max_results: 550 });
         const photos = res.resources;
         return photos;
     } catch(e) {
@@ -150,14 +150,14 @@ exports.seed = function(knex, Promise) {
     
             var promise = await getData();
             const { bio, occupations, female, male } = promise;
-            for (let id = 1; id <= 100; id++) {
+            for (let id = 1; id <= 500; id++) {
                 users.push(createUser(knex, id, bio, occupations, female, male))
             }
             return knex("users").insert(users);
         })
         .then(function () {
             let usersPhotos = [];
-            for (let id = 1; id <= 100; id++) {
+            for (let id = 1; id <= 500; id++) {
                 for (var i = 0; i < 1; i++) {
                     usersPhotos.push(createUserPhoto(knex, id))
                 }
@@ -166,7 +166,7 @@ exports.seed = function(knex, Promise) {
         })
         .then(() => {
             let usersTags = [];
-            for (let id = 1; id <= 100; id++) {
+            for (let id = 1; id <= 500; id++) {
                 for (var i = 0; i < 5; i++) {
                     usersTags.push(createUserTag(knex, id))
                 }
@@ -175,14 +175,14 @@ exports.seed = function(knex, Promise) {
         })
         .then(() => {
             let usersGenderInterest = [];
-            for (let id = 1; id <= 100; id++) {
+            for (let id = 1; id <= 500; id++) {
                 usersGenderInterest.push(createUserGenderInterest(knex, id))
             }
             return knex("interested_in_gender").insert(usersGenderInterest);
         })
         .then(() => {
             let usersRelationshipInterest = [];
-            for (let id = 1; id <= 100; id++) {
+            for (let id = 1; id <= 500; id++) {
                 usersRelationshipInterest.push(createUserRelationshipInterest(knex, id))
             }
             return knex("interested_in_relation").insert(usersRelationshipInterest);

@@ -1,4 +1,5 @@
 import * as config from '../constants/websockets';
+import { REQUEST_CONVERSATION } from '../actions/actionConversations';
 const { messageTypes } = config;
 
 export default function (state = null, action) {
@@ -8,7 +9,7 @@ export default function (state = null, action) {
 				...state,
 				conversations: action.payload
 			};
-		case messageTypes.sendConversations:
+		case REQUEST_CONVERSATION:
 			return {
 				...state,
 				conversations_list: action.payload

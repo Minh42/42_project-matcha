@@ -7,6 +7,7 @@ import { withRouter } from 'react-router-dom';
 import LinkButton from "../components/LinkButton";
 import PropTypes from 'prop-types';
 import Button from '../components/Button';
+import { connectSocket } from '../actions/actionSocket';
 
 class LoginContainer extends Component {
     
@@ -45,6 +46,7 @@ class LoginContainer extends Component {
 
     onSubmit(values) {
         this.props.signInAction(values, this.props.history);
+        this.props.connectSocket();
     }
 
     errorMessage() {
@@ -90,12 +92,12 @@ class LoginContainer extends Component {
                 <div className="field">
                     <div>
                         <p className="control">
-                            <Button type="submit" className="button is-rounded buttonOnboarding" title="Sign In" />
+                            <Button type="submit" className="button buttonOnboarding" title="Sign In" />
                         </p>
                     </div>
                     <div>
                         <p className="control">
-                            <LinkButton to='/forgotPassword' onClick={this.handleModal}>Forgot password ?</LinkButton>
+                            <LinkButton to='/forgotPassword' onClick={this.handleModal} className="forgotPassword">Forgot password ?</LinkButton>
                         </p>
                     </div>
                 </div>
@@ -127,7 +129,10 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({ signInAction: signInAction}, dispatch);
+    return bindActionCreators({ 
+        signInAction: signInAction,
+        connectSocket: connectSocket
+    }, dispatch);
 }
 
 const reduxFormSignin = reduxForm({

@@ -295,7 +295,6 @@ router.post('/api/addTags', authenticate, (req, res) => {
   let user = require('../models/user.class');
   const user_id = req.currentUser[0].user_id
   const tag = req.body.text
-  console.log(tag)
 
   function processArray(tag, user_id) 
   {
@@ -338,9 +337,7 @@ router.post('/api/addTags', authenticate, (req, res) => {
         })
   }
 
-  console.log(tag.length)
   if (tag.length > 32) {
-    console.log('here')
     res.send("error")
   } else {
     processArray(tag, user_id);
@@ -349,28 +346,18 @@ router.post('/api/addTags', authenticate, (req, res) => {
 })
 
 // FIND TAGS USER BDD
-router.post('/api/findTags', authenticate, (req, res) => {
+router.post('/api/findTags', authenticate, async (req, res) => {
   let user = require('../models/user.class');
   const user_id = req.currentUser[0].user_id
 
   var array = [];
   var i = 0;
 
-  user.findIdTagUser(user_id)
-    .then((ret) => {
-      ret.forEach(element => {
-        tag_id = element.tag_id
-        user.findTagName(tag_id)
-          .then((ret1) => {
-            name = ret1[0].name
-            array.push(name)
-            i++;
-            if (i === ret.length) {
-              res.json(array)
-            }
-          })
-      });
-    })
+  const ret = await user.findTags(user_id);
+  for (var i = 0; i < ret.length; i++) {
+    array.push(ret[i].name)
+  }
+  res.json(array)
 })
 
 //DELETE TAG user BDD
@@ -545,13 +532,11 @@ router.get('/api/geocoder/', authenticate, (req, res) => {
    key: 'AIzaSyBjuKElQlsRx1YhCfTHe-tN7kXVk4nL1r0'
   },
  };
- console.log(options)
 
   if (check.isAddress(address) === true)
   {
     request(options, function (error, response, body) {
     //   if (error) throw new Error(error);
-      console.log('body', body);
       var bodyParse = JSON.parse(body)
       if (bodyParse.results[0] === undefined) {
         messages.error = "address doesn't exist"
@@ -796,25 +781,31 @@ router.post('/api/changePassword', authenticate, (req, res) => {
 router.get('/api/otherProfile', async (req, res) => {
   let user = require('../models/user.class');
   var id = req.param('user_id');
-  async function getData() {
-    const infos = JSON.parse(JSON.stringify(await user.selectAllUserInfos(id)));
-    const photos = await user.selectAllUserPhotos(id);
-    const tags = await user.selectAllUserTags(id);
-    const interest = await user.selectNameGenders(id);
-    const relationship = await user.selectNameRelationship(id)
-  
-    const customData = {
-      infos: infos[0],
-      photos: photos,
-      tags: tags,
-      interest: interest,
-      relationship: relationship
-    };
-    return customData;
-  }
 
-  var promise = await getData();
-  res.json(promise);
+  const ret = await user.findOne("user_id", id)
+   if (ret === true) {
+    async function getData() {
+      const infos = JSON.parse(JSON.stringify(await user.selectAllUserInfos(id)));
+      const photos = await user.selectAllUserPhotos(id);
+      const tags = await user.selectAllUserTags(id);
+      const interest = await user.selectNameGenders(id);
+      const relationship = await user.selectNameRelationship(id)
+    
+      const customData = {
+        infos: infos[0],
+        photos: photos,
+        tags: tags,
+        interest: interest,
+        relationship: relationship
+      };
+      return customData;
+    }
+  
+    var promise = await getData();
+    res.json(promise);
+   } else {
+      res.send("error")
+   }
 });
 
 // LIKES
@@ -854,7 +845,6 @@ router.post('/api/savePicture', authenticate, (req, res) => {
   } else {
     path = req.body.picture.replace('http://localhost:8080/', '');
   }
-  console.log(path)
   user.addProfilePicture(user_id, path).then((ret) => {
     res.send("success");
   })
@@ -866,7 +856,6 @@ router.post('/api/addUserViews', authenticate, (req, res) => {
   var user_id = req.body.user_id;
   user.addUserViews(current_user, user_id).then((ret) => {
     if(ret) {
-      console.log(ret);
       res.send(ret);
     }
   })
@@ -985,7 +974,6 @@ router.post('/api/findConversationID', authenticate, (req, res) => {
           if (convers1[i].conversation_id === convers2[y].conversation_id) {
             convers.push(convers1[i].conversation_id)
             convers.push(current_user)
-            console.log(convers)
             res.send(convers)
           }
         }
@@ -1033,18 +1021,16 @@ router.post('/api/findUserByID', async (req, res) => {
 
 router.post('/api/notificationMessage', authenticate, async (req, res) => {
   let user = require('../models/user.class');
-  console.log(req.body)
   const ret = await user.insertNotification(req.body.entity_type_id, req.body.entity_id, req.body.actor_id, req.body.notifier_id);
   if (ret) {
     res.json(ret)
   }
 });
 
-router.post('/api/searchNotifications', authenticate, async (req, res) => {
+router.get('/api/searchNotifications', authenticate, async (req, res) => {
   let user = require('../models/user.class');
   var current_user = req.currentUser[0].user_id;
   const ret = await user.searchNotifications(current_user);
-  console.log(ret)
     if (ret) {
       res.send(ret)
     }
@@ -1064,6 +1050,35 @@ router.post('/api/blockedUsers', authenticate, async (req, res) => {
   let user_id = req.body.notifier_id;
   const ret = await user.selectAllUsersInformations(user_id);
   res.send(ret);
+})
+
+router.post('/api/getConversationsList', authenticate, async (req, res) => {
+  let user = require('../models/user.class');
+  var conversation_id = req.body.conversation_id;
+  const ret = await user.getConversationsList(conversation_id);
+    if (ret) {
+      res.send(ret)
+    }
+})
+
+router.post('/api/getLastParticipantID', authenticate, async (req, res) => {
+  let user = require('../models/user.class');
+  var conversation_id = req.body.conversation_id;
+  const ret = await user.getLastParticipantID(conversation_id);
+    if (ret) {
+      res.json(ret)
+    }
+})
+
+router.get('/api/findLike', authenticate, async (req, res) => {
+  let user = require('../models/user.class');
+  var current_user = req.currentUser[0].user_id;
+  var otherUser_id = req.param('user_id');
+
+  const ret = await user.findLikeUser(current_user, otherUser_id);
+  if (ret) {
+    res.send(ret);
+  }
 })
 
 module.exports = router 

@@ -94,7 +94,7 @@ class LikesViewsContainer extends Component {
 				</ul>
 			</div>
 			<div className="columns is-multiline">
-				<div className="column is-12 is-fullwidth">
+				<div className="column is-12">
 					{this.showLikesOrViews()}
 				</div>
 			</div>

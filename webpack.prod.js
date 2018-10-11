@@ -2,8 +2,8 @@ const webpack = require('webpack')
 const merge = require('webpack-merge')
 const common = require('./webpack.common.js')
 const MiniCssExtractPlugin = require("mini-css-extract-plugin"); // extracts CSS into separate files. It creates a CSS file per JS file which contains CSS
-// const UglifyJSPlugin = require("uglifyjs-webpack-plugin");
-// const OptimizeCSSAssets = require("optimize-css-assets-webpack-plugin");
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const OptimizeCSSAssets = require("optimize-css-assets-webpack-plugin");
 
 module.exports = merge(common, {
     mode: 'production',
@@ -29,7 +29,9 @@ module.exports = merge(common, {
     },
     plugins: [
         new MiniCssExtractPlugin("styles.css"),
-        // new webpack.optimize.UglifyJsPlugin(),
-        // new OptimizeCSSAssets()
+        new OptimizeCSSAssets()
     ],
+    optimization: {
+        minimizer: [new UglifyJsPlugin()]
+    }
 })

@@ -2,23 +2,17 @@ import React, { Component } from 'react';
 import LoginContainer from '../containers/LoginContainer';
 import LinkButton from "../components/LinkButton";
 import { withRouter } from 'react-router-dom';
-import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { signOutAction } from '../actions/actionUsers';
+import { disconnectSocket } from '../actions/actionSocket';
 import { bindActionCreators } from 'redux';
-import io from 'socket.io-client';
 
 import { Badge, Button, SVGIcon } from 'react-md';
 import axios from 'axios';
 
 class Header extends Component {
 	constructor(props) {
-		super(props);
-		this.showModal = this.showModal.bind(this);
-        this.closeModal = this.closeModal.bind(this);
-        this.handleLogout = this.handleLogout.bind(this);
-        this.showDialog = this.showDialog.bind(this);
-
+        super(props);
         this.state = {
             firstname : "",
             lastname : "",
@@ -26,17 +20,60 @@ class Header extends Component {
             message: '',
             numberNotification: 0
         }
-
-        this.socket = io('ws://localhost:8080', {transports: ['websocket']});
+        this.signal = axios.CancelToken.source();
+		this.showModal = this.showModal.bind(this);
+        this.closeModal = this.closeModal.bind(this);
+        this.handleLogout = this.handleLogout.bind(this);
+        this.showDialog = this.showDialog.bind(this);
     }
 
     async componentDidMount() {
-        const res = await axios.post('/api/searchNotifications')
-
-        this.setState ({
-            numberNotification: res.data.length
-        })
+        if (this.props.currentUser) {
+            try {
+                const res = await axios.get('/api/searchNotifications', { cancelToken: this.signal.token })
+                if (res.data != undefined) {
+                    this.setState ({
+                        numberNotification: res.data.length
+                    })
+                } else {
+                    this.setState ({
+                        numberNotification: 0
+                    })
+                }
+            } catch (err) {
+                if (axios.isCancel(err)) {
+                    // console.log(err.message); 
+                }
+            }
+        }
     }
+
+
+    async componentDidUpdate(prevProps, prevState) { 
+        if (prevProps.currentUser != this.props.currentUser) {
+            try {
+                const res = await axios.get('/api/searchNotifications', { cancelToken: this.signal.token })
+                if (res.data != undefined) {
+                    this.setState ({
+                        numberNotification: res.data.length
+                    })
+                } else {
+                    this.setState ({
+                        numberNotification: 0
+                    })
+                }
+            } catch (err) {
+                if (axios.isCancel(err)) {
+                    // console.log(err.message); 
+                }
+            }
+        }
+    }
+
+    componentWillUnmount() {
+        this.signal.cancel('Api is being canceled');
+    }
+
 
 	showModal() {
 		document.getElementById('modal_signin').classList.add("is-active");
@@ -49,14 +86,17 @@ class Header extends Component {
     // NOTIFICATIONS
     async showDialog() {
         document.getElementById('modal_dialog').classList.add("is-active");
-        const res = await axios.post('/api/searchNotifications')
+        const res = await axios.get('/api/searchNotifications')
+        console.log(res.data)
         if (res.data.length === 0) {
             this.setState ({
-                notification: false
+                notification: false,
+                numberNotification: 0
             })
         } else {
             this.setState ({
-                notification: res.data
+                notification: res.data,
+                numberNotification: res.data.length
             })
         }
 	}
@@ -70,7 +110,7 @@ class Header extends Component {
         const res = await axios.post('/api/changeStatusNotification', { notification_id : notification_id }) 
         //parcourir state notification et supprimer le message qui a notification_id
         if (res) {
-            const res = await axios.post('/api/searchNotifications')
+            const res = await axios.get('/api/searchNotifications')
             if (res.data.length === 0) {
                 this.setState ({
                     notification: false,
@@ -89,11 +129,22 @@ class Header extends Component {
     allNotifiactions() {
         if (this.state.notification !== false ) {
             return this.state.notification.map((notif, i) => {
+                const src = notif[0].imageProfile_path
+                if (src.includes("cloudinary")) {
+                    var path = src;
+                } else {
+                    var path = 'http://localhost:8080/' + src;
+                }
                 return (
                     <div key={i}>
                         <div className="card-content">
-                            <div className="card columns">
-                                <div className="column is-8 is-offset-3">
+                            <div className="card columns notification_id">
+                                <div className="column is-4">
+                                    <figure>
+                                        <img className="size_image" src={path} height="15px"/>
+                                    </figure>
+                                </div>
+                                <div className="column is-7">
                                     <p> {notif[0].firstname} {notif[0].lastname} {notif[notif.length - 2]}</p>
                                 </div>
                                 <div className="column is-1">
@@ -114,8 +165,8 @@ class Header extends Component {
     //END
 
     handleLogout() {
-        this.socket.emit('disconnect_user', this.props.currentUser[0].user_id);
-        this.props.signOutAction(this.props.history);
+        this.props.signOutAction();
+        this.props.disconnectSocket();
     }
 
     showNavbar() {
@@ -160,7 +211,7 @@ class Header extends Component {
 			<nav className="navbar">
                 <div className="navbar-brand">
 
-                    <a className="navbar-item" id="logo">
+                    <a className="navbar-item is-transparent" id="logo">
                        <span> MATCHA </span>
                     </a>
 
@@ -223,7 +274,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({ 
-        signOutAction: signOutAction
+        signOutAction: signOutAction,
+        disconnectSocket: disconnectSocket
     }, dispatch);
 }
 

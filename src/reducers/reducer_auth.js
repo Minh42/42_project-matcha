@@ -13,7 +13,7 @@ export default function(state = INITIAL_STATE, action) {
     case AUTHENTICATED:
       return { ...state, authenticated: true, currentUser: action.payload };
     case UNAUTHENTICATED:
-      return { ...state, authenticated: false };
+      return { ...state, authenticated: false, currentUser: action.payload };
     case AUTHENTICATION_ERROR:
       return { ...state, error: action.payload };
     case ONBOARDING:

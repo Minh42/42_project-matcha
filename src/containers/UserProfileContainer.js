@@ -26,6 +26,7 @@ class UserProfileContainer extends Component {
     async componentDidMount() {
         try {
             var user_id = this.props.id;
+            console.log(user_id)
             const res1 = await axios.get('/api/showBlockProfile/?user_id=' + user_id, { cancelToken: this.signal.token });
             const res2 = await axios.get('/api/showReportProfile/?user_id=' + user_id, { cancelToken: this.signal.token });
             var block_status = res1.data;
@@ -46,11 +47,21 @@ class UserProfileContainer extends Component {
                     this.setState({like : true})
                 }
             }
+
+            const res4 = await axios.get('/api/findLike/?user_id=' + user_id, { cancelToken: this.signal.token })
+            if (res4.data === true) {
+                document.getElementById(this.props.id).style.color = "red";
+            }
+            else {
+                document.getElementById(this.props.id).style.color = "grey";
+            }
         } catch (err) {
             if (axios.isCancel(err)) {
             //   console.log(err.message);
             }
         }
+
+
     }
 
     componentWillUnmount() {
@@ -229,13 +240,13 @@ class UserProfileContainer extends Component {
                 if (notifier_socketID != null && !isBlocked) {
                     if (entity_type_id === 1) {
                         var message = firstname + " " + lastname + " liked your profile."
-                        this.props.sendNotification(notifier_socketID, message);
+                        this.props.sendNotification(notification_object_id, notifier_socketID, message);
                     } else if (entity_type_id === 2) {
                         var message = firstname + " " + lastname + " unliked your profile."
-                        this.props.sendNotification(notifier_socketID, message);
+                        this.props.sendNotification(notification_object_id, notifier_socketID, message);
                     } else if (entity_type_id === 3) {
                         var message = firstname + " " + lastname + " matches with you."
-                        this.props.sendNotification(notifier_socketID, message);
+                        this.props.sendNotification(notification_object_id, notifier_socketID, message);
                     }
                 }
             }

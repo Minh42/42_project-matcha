@@ -27,7 +27,6 @@ class App extends Component {
 
  
     render() {
-
         return (
             <Router>
                 <div>
@@ -41,7 +40,7 @@ class App extends Component {
                         <Route path="/profile" component={requireAuth(UserProfile)} />
                         <Route path="/otherProfile/:id" component={requireAuth(profileOtherUser)} />
                         <Route path="/onboarding" component={Onboarding} />
-                        <Route component={NotFound} />
+                        <Route path="*" component={NotFound} />
                     </Switch>
                     <Footer />
                 </div>

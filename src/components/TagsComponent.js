@@ -59,22 +59,29 @@ class TagsComponent extends React.Component{
   async handleDelete(i) {
 	const { tags } = this.state
 	const currentTag = this.state.tags[i]
-	const res = await axios.post('/api/deleteTags', currentTag)
-	const ret = await axios.post('/api/searchTags');
-
-	console.log(ret.data)
-	if (document.getElementById("disabled")) {
-		if (ret.data === false) {
-			document.getElementById("disabled").disabled = true; 
-		} else {
-			document.getElementById("disabled").disabled = false;
+	console.log(tags.length)
+		if (tags.length > 1) {
+			const res = await axios.post('/api/deleteTags', currentTag)
+			const ret = await axios.post('/api/searchTags');
+			if (document.getElementById("disabled")) {
+				if (ret.data === false) {
+					document.getElementById("disabled").disabled = true; 
+				} else {
+					document.getElementById("disabled").disabled = false;
+				}
+			}
+				this.setState({
+					tags: tags.filter((tag, index) => index !== i),
+					message: (ret.data === false) ? 'at least one tag' : '',
+					messageSuccess: (ret.data === false) ? '' : ''
+				});
+		} else if (tags.length === 1) {
+			const ret = await axios.post('/api/searchTags');
+			this.setState({
+				message: (ret.data === false) ? 'at least one tag' : '',
+				messageSuccess: (ret.data === false) ? '' : ''
+			});
 		}
-	}
-		this.setState({
-			tags: tags.filter((tag, index) => index !== i),
-			message: (ret.data === false) ? 'at least one tag' : '',
-			messageSuccess: (ret.data === false) ? '' : ''
-		});
 	}
 
 	handleAddition(tag) {
