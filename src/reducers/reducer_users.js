@@ -1,4 +1,4 @@
-import { FETCH_USERS_REQUEST, FETCH_USERS_SUCCESS, FETCH_USERS_FAILURE } from '../actions/actionFetch';
+import { FETCH_USERS_REQUEST, FETCH_USERS_SUCCESS, FETCH_USERS_FAILURE, FETCH_USERS_CANCEL, FETCH_USERS_RESET } from '../actions/actionFetch';
 import shortid from 'shortid';
 
 const initialState = {
@@ -20,7 +20,7 @@ export default function (state = initialState, action) {
             ...state,
             id: shortid.generate(),
             loading: false,
-            items: action.payload
+            items: state.items.concat(action.payload)
         }
         case FETCH_USERS_FAILURE:
         return {
@@ -29,6 +29,14 @@ export default function (state = initialState, action) {
             error: action.payload,
             items: []
         }
+        case FETCH_USERS_CANCEL:
+        return {
+            ...state,
+            loading: false,
+            cancelFetch: action.payload
+        }
+        case FETCH_USERS_RESET:
+            return initialState
         default:
         return state;
     }

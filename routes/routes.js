@@ -267,11 +267,13 @@ router.get('/api/current_user', authenticate, async (req, res) => {
   }
 });
 
-router.get('/api/homepage', authenticate, async (req, res) => {
+router.post('/api/homepage', authenticate, async (req, res) => {
   let user = require('../models/user.class');
   let id = req.currentUser[0].user_id;
-  const ret = await user.selectAllUsers(id);
+  let offset = req.body.offset;
+  const ret = await user.selectAllUsers(id, offset);
     if (ret) {
+      console.log(ret)
       res.json(ret);
     } else {
       res.sendStatus(404);

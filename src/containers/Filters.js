@@ -23,9 +23,9 @@ class Filters extends Component {
 			max: 100,
 		  },
 		};
-		this.handleAge =this.handleAge.bind(this);
-		this.handleDistance =this.handleDistance.bind(this);
-		this.handlePopularity =this.handlePopularity.bind(this);
+		this.handleAge = this.handleAge.bind(this);
+		this.handleDistance = this.handleDistance.bind(this);
+		this.handlePopularity = this.handlePopularity.bind(this);
 		}
 		
 		componentDidMount() {
