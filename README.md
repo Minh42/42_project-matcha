@@ -1,4 +1,5 @@
 # 42_project-matcha
+![Screenshot landing](https://i.imgur.com/gOm2CEZ.png)
 
 ## Overview
 💞 Modern real-time dating web application. This is the second project of 42 school's web branch. No ORM, validators or User Accounts Manager were allowed for this project.
