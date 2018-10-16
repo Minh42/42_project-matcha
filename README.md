@@ -45,7 +45,7 @@ Here is a working live demo :
   - [x] Facebook Messenger-like real-time chat
 + Notifications
   - [x] Real-time notifications when a user received a "like", the user's profile has been checked, the user received a message, a "liked" user "liked" back, a connected user "unliked you"
-+ Notifications
++ Bonus
   - [x] Oauth strategies
   - [x] Advanced webpack configuration
 
