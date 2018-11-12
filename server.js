@@ -18,7 +18,7 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server, {
   pingInterval: 1000,
   pingTimeout: 5000,
-}) 
+})
 
 const PORT = process.env.PORT || 8080;
 
@@ -59,6 +59,13 @@ app.use((err, req, res, next) => {
   console.error(err.stack)
   res.status(500).send('Something broke!')
 })
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static('dist'));
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'views', 'index.html'));
+  });
+}
 
 server.listen(PORT, () => {
   console.log('App running at http://localhost:8080')
