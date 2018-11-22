@@ -62,7 +62,7 @@ class SignupContainer extends Component{
 
 			<div className="column">
 				<div className="button-box">
-					<Button className="button is-medium is-fullwidth is-rounded btn btn-register" title="Create your account" action={this.showModal} />
+					<Button className="button is-medium is-fullwidth btn btn-register" title="Create your account" action={this.showModal} />
 					<span className="button-box-sub">Or</span>
 					<GoogleLoginButton onClick={this.onSubmitGoogle} className="btn btn-google" style={buttonStyle} iconSize={"23px"}/>
 					<FacebookLoginButton onClick={this.onSubmitFacebook} className="btn btn-facebook" style={buttonStyle} iconSize={"23px"}/>

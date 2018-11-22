@@ -16,10 +16,6 @@ class ResetPassword extends Component {
         }
     }
 
-    componentDidMount() {
-        console.log('i came here')
-    }
-
    async onSubmit(values) {
         var dataReset = { newPasswordReset : values.newPasswordReset,
                         confirmedNewPassword : values.confirmedNewPassword,

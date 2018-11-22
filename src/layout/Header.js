@@ -87,7 +87,6 @@ class Header extends Component {
     async showDialog() {
         document.getElementById('modal_dialog').classList.add("is-active");
         const res = await axios.get('/api/searchNotifications')
-        console.log(res.data)
         if (res.data.length === 0) {
             this.setState ({
                 notification: false,
@@ -129,11 +128,22 @@ class Header extends Component {
     allNotifiactions() {
         if (this.state.notification !== false ) {
             return this.state.notification.map((notif, i) => {
+                const src = notif[0].imageProfile_path
+                if (src.includes("cloudinary")) {
+                    var path = src;
+                } else {
+                    var path = 'http://localhost:8080/' + src;
+                }
                 return (
                     <div key={i}>
                         <div className="card-content">
-                            <div className="card columns">
-                                <div className="column is-8 is-offset-3">
+                            <div className="card columns notification_id">
+                                <div className="column is-4">
+                                    <figure>
+                                        <img className="size_image" src={path} height="15px"/>
+                                    </figure>
+                                </div>
+                                <div className="column is-7">
                                     <p> {notif[0].firstname} {notif[0].lastname} {notif[notif.length - 2]}</p>
                                 </div>
                                 <div className="column is-1">
@@ -200,7 +210,7 @@ class Header extends Component {
 			<nav className="navbar">
                 <div className="navbar-brand">
 
-                    <a className="navbar-item" id="logo">
+                    <a className="navbar-item is-transparent" id="logo">
                        <span> MATCHA </span>
                     </a>
 

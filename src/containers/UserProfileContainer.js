@@ -26,7 +26,6 @@ class UserProfileContainer extends Component {
     async componentDidMount() {
         try {
             var user_id = this.props.id;
-            console.log(user_id)
             const res1 = await axios.get('/api/showBlockProfile/?user_id=' + user_id, { cancelToken: this.signal.token });
             const res2 = await axios.get('/api/showReportProfile/?user_id=' + user_id, { cancelToken: this.signal.token });
             var block_status = res1.data;

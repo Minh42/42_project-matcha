@@ -29,12 +29,6 @@ export default function (state = initialState, action) {
             error: action.payload,
             items: []
         }
-        case FETCH_USERS_CANCEL:
-        return {
-            ...state,
-            loading: false,
-            cancelFetch: action.payload
-        }
         case FETCH_USERS_RESET:
             return initialState
         default:

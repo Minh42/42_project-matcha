@@ -37,7 +37,6 @@ class TchatInputComponent extends Component {
 			message: input
 		}
 
-		console.log(conversations)
 		for (var i = 0; i < conversations.length; i++) {
 			if (conversations[i].conversation_id === conversation_id) {
 				conversations[i].messages.push(message);
@@ -50,8 +49,6 @@ class TchatInputComponent extends Component {
 		var notifier_id;
 		participant_id === lst.data[0].user_id ? notifier_id = lst.data[1].user_id : notifier_id = lst.data[0].user_id;
 
-		console.log(notifier_id)
-
 		var notificationData = {
 			action_type: "add message",
 			entity_type_id: 5,
@@ -59,9 +56,7 @@ class TchatInputComponent extends Component {
 			actor_id: participant_id,
 			notifier_id: notifier_id
 		}
-		// console.log(notificationData)
 		const res = await axios.post('/api/notificationMessage', notificationData)
-		// console.log(res.data)
 		var notification_object_id = res.data;
 		if (res.data) {
 			const ret = await axios.post('/api/lastNotification', { "notification_object_id" : notification_object_id })

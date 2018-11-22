@@ -12,13 +12,17 @@ const withInfiniteScroll = (WrappedComponent) => {
       this.state = {
           offset: 0
       };
-      this.onScroll = throttle(this.onScroll.bind(this), 20);
+      this.onScroll = throttle(this.onScroll.bind(this), 50);
     }
     
     componentDidMount() {
       this.props.resetUsers();
       this.props.fetchUsers(this.state.offset);
       window.addEventListener('scroll', this.onScroll, false);
+    }
+
+    componentDidUpdate() {
+      console.log(this.props.users)
     }
   
     componentWillUnmount() {
@@ -29,7 +33,7 @@ const withInfiniteScroll = (WrappedComponent) => {
       if ((window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 500) && this.props.users) {
         if (this.props.cancelFetch != 'No more users') {
           this.setState({
-            offset: this.state.offset + 10
+            offset: this.state.offset + 20
           })
           this.props.fetchUsers(this.state.offset);
         }
@@ -40,7 +44,6 @@ const withInfiniteScroll = (WrappedComponent) => {
       return (
         <WrappedComponent 
           {...this.props}
-          users = {this.props.users}
         />
       ); 
     }

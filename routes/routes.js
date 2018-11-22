@@ -273,7 +273,6 @@ router.post('/api/homepage', authenticate, async (req, res) => {
   let offset = req.body.offset;
   const ret = await user.selectAllUsers(id, offset);
     if (ret) {
-      console.log(ret)
       res.json(ret);
     } else {
       res.sendStatus(404);
@@ -525,7 +524,6 @@ router.get('/api/geocoder/', authenticate, (req, res) => {
 
   const address = req.param('address')
   const user_id = req.currentUser[0].user_id
-  console.log('address', address)
 
   var options = { method: 'GET',
   url: 'https://maps.googleapis.com/maps/api/geocode/json',

@@ -5,7 +5,6 @@ const getUsers = (state) => state.users.items
 const getCurrentUser = (state) => state.auth.currentUser
 const getFilter = (state) => state.filterUsers
 const getConversationProfileID = (state) => state.profileConversation // tous les user avec qui le current user a une conversation en cours
-const getRemitteeUserID = (state) => state.profileTchatID
 
 export const getLikesUsers = createSelector([getUsers, getCurrentUser], (users, currentUser) => {
     const result = filterByLikesProfile(currentUser, users)
@@ -82,14 +81,3 @@ export const getConversationProfileUser = createSelector([getUsers, getConversat
     }
     return profileUserConvers;
 })
-
-// export const getProfileRemittee = createSelector([getUsers, getRemitteeUserID], (users, remitteeID) => {
-//     console.log('users', users)
-//     console.log(remitteeID)
-//     if (remitteeID !== null) {
-//         var remittee = [remitteeID.profileTchatID]
-//         console.log(remittee[0])
-//         var profileUserTchat = findUserByID(users, remitteeID.profileTchatID)
-//     }
-//     return profileUserTchat;
-// })

@@ -91,15 +91,12 @@ io.sockets.on('connection', function (socket) {
       }
     }
 
-    console.log(users)
     let len = users.length;
     len--;
     io.emit('userJoined', {users: users, socketID: users[len].socketID})
   })
 
   socket.on('sendNotification', async function(data) {
-    console.log(data.notification_object_id)
-
     await pool.query("UPDATE `notification_object` INNER JOIN `notification` ON notification_object.id = notification.notification_object_id SET notification_object.status = ? WHERE notification.notification_object_id = ?", [1, data.notification_object_id])
     io.to(data.notifier_socketID).emit('showNotification', {
       message: data.message
@@ -129,7 +126,6 @@ io.sockets.on('connection', function (socket) {
         messages: message
       })
     }
-    console.log(user_id)
     io.to(data.notifier_socketID).emit('sendMessages', conversations);
   })
 

@@ -41,7 +41,7 @@ class User {
 
     static async selectAllUsers(userId, offset) {
         try {
-            let ret = await pool.query("SELECT users.user_id, users.firstname, users.lastname, users.username, users.imageProfile_path, GROUP_CONCAT(DISTINCT tags.name) AS tags, users.birth_date, users.gender, users.latitude, users.longitude, users.occupation, users.popularity, GROUP_CONCAT(DISTINCT likes.from_user_id) AS likes, GROUP_CONCAT(DISTINCT views.from_user_id) AS views, GROUP_CONCAT(DISTINCT genders.name) AS genders, GROUP_CONCAT(DISTINCT relationships_type.name) AS relationships_type FROM `users` INNER JOIN `user_tags` ON user_tags.user_id = users.user_id LEFT JOIN `tags` ON tags.tag_id = user_tags.tag_id LEFT JOIN `likes` ON likes.to_user_id = users.user_id LEFT JOIN `views` ON views.to_user_id = users.user_id INNER JOIN `interested_in_gender` ON interested_in_gender.user_id = users.user_id LEFT JOIN `genders` ON genders.gender_id = interested_in_gender.gender_id INNER JOIN `interested_in_relation` ON interested_in_relation.user_id = users.user_id LEFT JOIN `relationships_type` ON relationships_type.relationship_type_id = interested_in_relation.relationship_type_id WHERE users.user_id != ? GROUP BY users.user_id LIMIT 10 OFFSET ?", [userId, offset]);
+            let ret = await pool.query("SELECT users.user_id, users.firstname, users.lastname, users.username, users.imageProfile_path, GROUP_CONCAT(DISTINCT tags.name) AS tags, users.birth_date, users.gender, users.latitude, users.longitude, users.occupation, users.popularity, GROUP_CONCAT(DISTINCT likes.from_user_id) AS likes, GROUP_CONCAT(DISTINCT views.from_user_id) AS views, GROUP_CONCAT(DISTINCT genders.name) AS genders, GROUP_CONCAT(DISTINCT relationships_type.name) AS relationships_type FROM `users` INNER JOIN `user_tags` ON user_tags.user_id = users.user_id LEFT JOIN `tags` ON tags.tag_id = user_tags.tag_id LEFT JOIN `likes` ON likes.to_user_id = users.user_id LEFT JOIN `views` ON views.to_user_id = users.user_id INNER JOIN `interested_in_gender` ON interested_in_gender.user_id = users.user_id LEFT JOIN `genders` ON genders.gender_id = interested_in_gender.gender_id INNER JOIN `interested_in_relation` ON interested_in_relation.user_id = users.user_id LEFT JOIN `relationships_type` ON relationships_type.relationship_type_id = interested_in_relation.relationship_type_id WHERE users.user_id != ? GROUP BY users.user_id LIMIT 20 OFFSET ?", [userId, offset]);
             return ret;
         } catch(err) {
             throw new Error(err)
@@ -175,10 +175,6 @@ class User {
     static async compareTokenReset(user_id, token_reset) {
         try {
             let ret = await pool.query("SELECT `token_reset` FROM `users` WHERE `user_id` = ?", [user_id]);
-            console.log('im here')
-            console.log(ret[0].token_reset)
-            console.log(token_reset)
-            console.log('im here')
             if (ret[0].token_reset === token_reset)
                 return true;
             else
@@ -221,10 +217,8 @@ class User {
                 if(Object.keys(ret).length > 0 && ret[0]['status'] === 1) {
                     const res = await bcrypt.compare(password, hash);
                     if(res) {
-                        console.log('Passwords match');
                         return true;
                     } else {
-                        console.log('Passwords don\'t match');
                         return false;
                     } 
                 }
@@ -705,7 +699,6 @@ class User {
     static async addUserViews(current_user, user_id) {
         try {
             let ret = await pool.query("INSERT INTO `views` SET `from_user_id` = ?, `to_user_id` = ? ", [current_user, user_id]);
-            console.log('views info:', ret)
             if (ret) {
                 var notificationData = {
                 action_type: "add view",
@@ -714,7 +707,6 @@ class User {
                 actor_id: current_user,
                 notifier_id: user_id
                 }
-                console.log(notificationData)
                 return notificationData;
             }
         }
@@ -739,7 +731,6 @@ class User {
         try {
             let count = await pool.query("SELECT count(conversation.conversation_id) AS `value_exists` FROM `conversation` INNER JOIN `participant` AS p1 ON p1.conversation_id = conversation.conversation_id INNER JOIN `participant` as p2 ON p2.conversation_id = conversation.conversation_id WHERE p1.participant_id = ? AND p2.participant_id = ?", [participant1, participant2]);
             if (count[0].value_exists > '0') {
-                console.log('i came here')
                 return false;
             } else {
                 let ret = await pool.query("INSERT INTO `conversation` SET `user_id` = ?", [participant1]);
@@ -771,17 +762,6 @@ class User {
                 return true;
             else
                 return false;
-        }
-        catch(err) {
-            throw new Error(err)
-        } 
-    }
-
-    static async addParticipant(participant_id, conversation_id) {
-        console.log(conversation_id)
-        try {
-            let ret = await pool.query("INSERT INTO `participant` SET `conversation_id` = ?, `participant_id` = ?", [id_conversation, user_id]);
-            return true;
         }
         catch(err) {
             throw new Error(err)
@@ -867,7 +847,6 @@ class User {
             await pool.query("INSERT INTO `notification_change` SET `notification_object_id` = ?, `actor_id` = ? ", [notification_object_id, actor_id]);
             await pool.query("INSERT INTO `notification` SET `notification_object_id` = ?, `notifier_id` = ? ", [notification_object_id, notifier_id]);
             if (ret) {
-                console.log(notification_object_id)
                 return notification_object_id;
             }
         } catch(err) {
@@ -908,9 +887,7 @@ class User {
 
 
             var ret = await pool.query("SELECT notification_object.id, notification_object.entity_type_id, notification_change.actor_id FROM `notification_object` INNER JOIN `notification` ON notification.notification_object_id = notification_object.id INNER JOIN `notification_change` ON notification_change.notification_object_id = notification_object.id WHERE notification.notifier_id = ? AND notification_object.status = ?", [user_id, 0]);
-            console.log('searchNotifi', ret)
             for (var i = 0; ret.length > i; i++) {
-                // console.log(ret[i].id)
                 if (ret[i].entity_type_id === 1) {
                    var message = " liked your profile."
                 } else if (ret[i].entity_type_id === 2){
@@ -922,12 +899,9 @@ class User {
                 } else if (ret[i].entity_type_id === 5){
                     var message = " send you a message."
                 }
-                var ret1 = await pool.query("SELECT `user_id`, `firstname`, `lastname` FROM `users` WHERE user_id = ?", [ret[i].actor_id]);
-                console.log('before', ret1)
+                var ret1 = await pool.query("SELECT `user_id`, `firstname`, `lastname`, `imageProfile_path` FROM `users` WHERE user_id = ?", [ret[i].actor_id]);
                 ret1.push(message, ret[i].id)
-                console.log('after', ret1)
                 infoNotif.push(ret1)
-                console.log(infoNotif)
             }
             return infoNotif;
         } catch(err) {

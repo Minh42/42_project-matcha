@@ -92,12 +92,12 @@ class LoginContainer extends Component {
                 <div className="field">
                     <div>
                         <p className="control">
-                            <Button type="submit" className="button is-rounded buttonOnboarding" title="Sign In" />
+                            <Button type="submit" className="button buttonOnboarding" title="Sign In" />
                         </p>
                     </div>
                     <div>
                         <p className="control">
-                            <LinkButton to='/forgotPassword' onClick={this.handleModal}>Forgot password ?</LinkButton>
+                            <LinkButton to='/forgotPassword' onClick={this.handleModal} className="forgotPassword">Forgot password ?</LinkButton>
                         </p>
                     </div>
                 </div>

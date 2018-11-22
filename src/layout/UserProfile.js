@@ -29,13 +29,18 @@ class UserProfile extends Component {
 		this.props.selectUser(res);
 	}
 
-	componentDidUpdate() {
-		console.log(this.props.socket)
-		if (this.props.socket.message != null) {
-			izitoast.show({
-				message: this.props.socket.message,
-				position: 'topRight'
-			});
+	componentDidUpdate(prevProps) {
+		if (prevProps.socket != null && this.props.socket != null) {
+			if (prevProps.socket.message != this.props.socket.message) {
+				if (this.props.socket != null && !this.state.isUpdated) {
+					if (this.props.socket.message != null) {
+						izitoast.show({
+							message: this.props.socket.message,
+							position: 'topRight'
+						});
+					}
+				}
+			}
 		}
 	}
 

@@ -127,7 +127,7 @@ class FormContainer extends Component {
 					component= {this.renderField}
 					placeholder="**********"
 				/>
-				<Button type='submit' className="button is-rounded buttonOnboarding" title="Submit"/>
+				<Button type='submit' className="button buttonOnboarding" title="Submit"/>
 				{this.errorMessage()}
 			</form>
 		);

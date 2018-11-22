@@ -12,18 +12,23 @@ export function fetchUsers(offset) {
             dispatch({
                 type: FETCH_USERS_REQUEST
             })
-            const res = await axios.post('/api/homepage', { offset: offset });    
-            if (res.data.length > 0) {
-                dispatch({
-                    type: FETCH_USERS_SUCCESS,
-                    payload: res.data
-                })
-            } else {
-                dispatch({
-                    type: FETCH_USERS_CANCEL,
-                    payload: "No more users"
-                }); 
+            console.log(offset)
+            if (offset != undefined) {
+                const res = await axios.post('/api/homepage', { offset: offset });  
+                console.log(res.data) 
+                if (res.data.length > 0) {
+                    dispatch({
+                        type: FETCH_USERS_SUCCESS,
+                        payload: res.data
+                    })
+                } else {
+                    dispatch({
+                        type: FETCH_USERS_CANCEL,
+                        payload: "No more users"
+                    }); 
+                }
             }
+
         } catch (error) {
             dispatch({
                 type: FETCH_USERS_FAILURE,
